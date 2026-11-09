@@ -1,0 +1,8 @@
+pre-commit:
+  commands:
+    vp-check:
+      glob: '*.{js,ts,jsx,tsx,json,jsonc,css,html,yaml,yml,md}'
+      run: pnpm exec vp check --fix --no-error-on-unmatched-pattern {staged_files}
+      stage_fixed: true
+    knip:
+      run: pnpm knip

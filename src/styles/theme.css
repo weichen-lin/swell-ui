@@ -1,0 +1,337 @@
+/*
+ * swell-ui design tokens, dark theme and base styles.
+ * Import right after tailwindcss. Contains no utilities and no @source:
+ * use styles.css to also have Tailwind scan the components.
+ */
+
+/* Tokens. Light values live on bare :root (and @theme). */
+@theme {
+  --color-bg: #f5f4ed; /* Parchment */
+  --color-surface: #faf9f5; /* Ivory */
+  --color-surface-raised: #ffffff; /* Pure White */
+  --color-surface-muted: #e8e6dc; /* Warm Sand */
+  --color-fg: #141413; /* Near Black */
+  --color-fg-strong: #4d4c48; /* Charcoal Warm */
+  --color-fg-muted: #5e5d59; /* Olive Gray */
+  --color-fg-subtle: #686761; /* Warm gray: >=4.5:1 even on surface-muted */
+  --color-border: #f0eee6; /* Border Cream */
+  --color-border-strong: #e8e6dc; /* Border Warm */
+  --color-ring: #d1cfc5; /* Ring Warm */
+  --color-ring-deep: #c2c0b6; /* Ring Deep */
+  --color-primary: #8b5e3c; /* Warm Brown */
+  --color-primary-fg: #faf9f5;
+  --color-accent: #c49a6c; /* Warm Tan */
+  --color-inverse: #30302e; /* Dark Surface */
+  --color-inverse-fg: #faf9f5;
+  --color-danger: #b53333; /* Error Crimson */
+  --color-danger-fg: #faf9f5;
+  --color-focus: #3898ec; /* Focus Blue */
+  /*
+   * Text fields: a slightly sunk solid fill.
+   * Borders are fg mixed over bg in oklab, kept >=3:1 against both the page and the fill (WCAG 1.4.11).
+   * Focus is neutral, not blue: border steps up to near-fg plus a soft halo.
+   */
+  /* Fill = fg 4% over bg in oklab, baked to hex: a color-mix token gets a wrong static fallback per theme */
+  --color-input-bg: #ebeae3;
+  --color-input-border: #7f7e7b;
+  --color-input-placeholder: #6a6964;
+  /* Hover stacks cues (stronger border, lifted fill, faint drop shadow): a border step alone is too subtle */
+  --color-input-border-hover: #4d4c48;
+  --color-input-bg-hover: #f3f2ec;
+  --color-input-focus: #8b5e3c; /* Warm Brown (primary) */
+  --color-input-highlight: rgb(0 0 0 / 0.03);
+  --shadow-input: inset 0 1px 0 var(--color-input-highlight);
+  --shadow-input-lift: 0 1px 2px rgb(0 0 0 / 0.06);
+  /* Focus/error halos: decorative 3px rings outside the border */
+  --color-input-halo: color-mix(in oklab, var(--color-input-focus) 14%, transparent);
+  --color-input-halo-invalid: color-mix(in oklab, var(--color-danger) 12%, transparent);
+  --color-input-halo-invalid-focus: color-mix(in oklab, var(--color-danger) 22%, transparent);
+  /*
+   * Selection controls (Switch, Checkbox): the checked fill and the mark drawn on it (thumb, check, dash).
+   * The off track/box reuses the input border, which is already >=3:1 on the page and the fill.
+   */
+  --color-control-checked: #8b5e3c; /* Warm Brown (primary) */
+  --color-control-checked-fg: #ffffff; /* 5.58:1 on the fill */
+  /* Thumb: a hairline plus a soft drop straight down. Geist's sideways offset made the small thumb
+   * look shifted, so the shadow stays horizontally symmetric. */
+  --shadow-switch-thumb: 0 0 0 0.5px rgb(0 0 0 / 0.08), 0 1px 2px rgb(0 0 0 / 0.2);
+  /*
+   * Popovers (the Select picker): raised above the page with a warm hairline and a soft shadow.
+   * Highlight is the hovered/keyboard-active row; same fill for both so they never disagree.
+   */
+  --color-popover-bg: #ffffff; /* Pure White */
+  --color-popover-border: #e0ded4; /* between Border Warm and Ring Warm: Border Warm vanishes on white */
+  --color-popover-highlight: #efede5;
+  --shadow-popover: 0 8px 24px rgb(0 0 0 / 0.08), 0 1px 3px rgb(0 0 0 / 0.06);
+  /*
+   * Dialogs: same surface and hairline as popovers, one elevation step higher (a wider, softer
+   * drop) since they sit over a dimmed page. Backdrop is warm near-black, never blurred.
+   */
+  --shadow-dialog: 0 16px 48px rgb(0 0 0 / 0.12), 0 2px 6px rgb(0 0 0 / 0.06);
+  --color-dialog-backdrop: rgb(20 20 19 / 0.4);
+  /*
+   * Status tones (Badge, later Dialog/Toast/table state). Per tone: main = solid fill / standalone icon,
+   * -fg = text on a solid fill, -subtle-bg/-subtle-fg = tinted badge, -border = its hairline.
+   * subtle-bg is main mixed over bg in oklab (14% light / 16% dark), baked to hex; subtle-fg is main
+   * pushed along lightness until >=5:1 on it and >=4.5:1 on the translucent equivalent over any surface.
+   * Meaning is carried by text + icon; hue/lightness are spaced so success vs danger also survives red-green CVD.
+   * danger main/-fg already exist above; only its subtle-* are new.
+   */
+  /* success: olive, hue 125; deepest tone so it separates from danger by lightness for red-green CVD */
+  --color-success: #394d00;
+  --color-success-fg: #faf9f5;
+  --color-success-subtle-bg: #d8dbcc;
+  --color-success-subtle-fg: #3a4c0e;
+  --color-success-border: #aeb79b;
+  /* warning: ochre/amber, hue 78; lighter than danger; dark solid-fg because ivory on amber fails 4.5:1 */
+  --color-warning: #a5761d;
+  --color-warning-fg: #141413;
+  --color-warning-subtle-bg: #eae2d1;
+  --color-warning-subtle-fg: #7e5600;
+  --color-warning-border: #d9c7a9;
+  /* danger: existing Error Crimson (unchanged) */
+  --color-danger-subtle-bg: #f0dad2;
+  --color-danger-subtle-fg: #a2302f;
+  --color-danger-border: #e5b3aa;
+  /* info: dusty teal-blue, hue 230, chroma 0.065 (muted; the only cool-leaning tone besides Focus Blue) */
+  --color-info: #3e7087;
+  --color-info-fg: #faf9f5;
+  --color-info-subtle-bg: #dbe1de;
+  --color-info-subtle-fg: #356075;
+  --color-info-border: #b4c4c9;
+  /* neutral: warm gray (Olive Gray family) */
+  --color-neutral: #66635c;
+  --color-neutral-fg: #faf9f5;
+  --color-neutral-subtle-bg: #e0ded7;
+  --color-neutral-subtle-fg: #5e5b55;
+  --color-neutral-border: #c0bfb8;
+
+  --font-sans: "Anthropic Sans", system-ui, Inter, Arial, sans-serif;
+  --font-serif: "Anthropic Serif", Georgia, serif;
+  --font-mono: "Anthropic Mono", ui-monospace, Menlo, monospace;
+
+  /* Radius scale */
+  --radius-sharp: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-3xl: 32px;
+
+  --shadow-whisper: rgba(0, 0, 0, 0.05) 0 4px 24px;
+  --container-page: 1200px;
+}
+
+:root {
+  color-scheme: light;
+}
+
+/* Dark values */
+:root:not([data-theme="light"]) {
+  @media (prefers-color-scheme: dark) {
+    color-scheme: dark;
+    --color-bg: #141413;
+    --color-surface: #30302e;
+    --color-surface-raised: #30302e;
+    --color-surface-muted: #262625; /* sunk below Dark Surface: header rows, hover fills */
+    --color-fg: #faf9f5;
+    --color-fg-strong: #b0aea5;
+    --color-fg-muted: #b0aea5;
+    --color-fg-subtle: #a8a79e; /* >=4.5:1 on raised and highlighted surfaces */
+    --color-border: #383836; /* between Dark Surface and Dark Warm: row dividers */
+    --color-border-strong: #3d3d3a; /* Dark Warm */
+    --color-ring: #3d3d3a; /* Dark Warm */
+    --color-ring-deep: #4d4c48; /* Charcoal Warm */
+    --color-inverse: #141413;
+    --color-inverse-fg: #b0aea5;
+    --color-danger: #ee8a80;
+    --color-danger-fg: #141413;
+    --color-input-bg: #1f1f1e; /* white 6% over bg in oklab */
+    --color-input-border: #81817e;
+    --color-input-placeholder: #9a998f;
+    --color-input-border-hover: #b0aea5;
+    --color-input-bg-hover: #262625;
+    --color-input-focus: #c49a6c; /* Warm Tan: primary is too dark on dark surfaces */
+    --color-control-checked: #c49a6c; /* Warm Tan, as the focus color */
+    --color-control-checked-fg: #141413; /* white on tan is only ~2.6:1; near-black is 7.2:1 */
+    --color-input-highlight: rgb(255 255 255 / 0.04);
+    --shadow-input-lift: 0 0 #0000; /* a drop shadow doesn't read on near-black */
+    --color-popover-bg: #30302e; /* Dark Surface */
+    --color-popover-border: #3d3d3a; /* Dark Warm */
+    --color-popover-highlight: #3d3d3a;
+    /* Darker and denser than light: the surface itself already separates from near-black */
+    --shadow-popover: 0 8px 24px rgb(0 0 0 / 0.4), 0 1px 3px rgb(0 0 0 / 0.3);
+    --shadow-dialog: 0 16px 48px rgb(0 0 0 / 0.5), 0 2px 6px rgb(0 0 0 / 0.3);
+    /* Darker than light: a 40% dim barely reads over a near-black page */
+    --color-dialog-backdrop: rgb(0 0 0 / 0.6);
+    /* Status tones: lightened for dark surfaces, solid-fg flips to near-black */
+    /* success: olive, lightened for dark; kept darker than danger for CVD */
+    --color-success: #758e48;
+    --color-success-fg: #141413;
+    --color-success-subtle-bg: #22251c;
+    --color-success-subtle-fg: #98b070;
+    --color-success-border: #384128;
+    /* warning: amber */
+    --color-warning: #e6b463;
+    --color-warning-fg: #141413;
+    --color-warning-subtle-bg: #302a20;
+    --color-warning-subtle-fg: #e2b56e;
+    --color-warning-border: #5f4e33;
+    /* danger: existing (unchanged) */
+    --color-danger-subtle-bg: #322522;
+    --color-danger-subtle-fg: #f0958c;
+    --color-danger-border: #63403b;
+    /* info: dusty teal-blue */
+    --color-info: #74a6bf;
+    --color-info-fg: #141413;
+    --color-info-subtle-bg: #22282a;
+    --color-info-subtle-fg: #87b4cb;
+    --color-info-border: #384951;
+    /* neutral: Warm Silver */
+    --color-neutral: #b0aea5;
+    --color-neutral-fg: #141413;
+    --color-neutral-subtle-bg: #292927;
+    --color-neutral-subtle-fg: #b4b2aa;
+    --color-neutral-border: #4c4c48;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-bg: #141413;
+  --color-surface: #30302e;
+  --color-surface-raised: #30302e;
+  --color-surface-muted: #262625; /* sunk below Dark Surface: header rows, hover fills */
+  --color-fg: #faf9f5;
+  --color-fg-strong: #b0aea5;
+  --color-fg-muted: #b0aea5;
+  --color-fg-subtle: #a8a79e; /* >=4.5:1 on raised and highlighted surfaces */
+  --color-border: #383836; /* between Dark Surface and Dark Warm: row dividers */
+  --color-border-strong: #3d3d3a; /* Dark Warm */
+  --color-ring: #3d3d3a; /* Dark Warm */
+  --color-ring-deep: #4d4c48; /* Charcoal Warm */
+  --color-inverse: #141413;
+  --color-inverse-fg: #b0aea5;
+  /* Light red + dark text: a single danger token can't pass 4.5:1 both as fill and as text on dark */
+  --color-danger: #ee8a80;
+  --color-danger-fg: #141413;
+  --color-input-bg: #1f1f1e; /* white 6% over bg in oklab */
+  --color-input-border: #81817e;
+  --color-input-placeholder: #9a998f;
+  --color-input-border-hover: #b0aea5;
+  --color-input-bg-hover: #262625;
+  --color-input-focus: #c49a6c; /* Warm Tan: primary is too dark on dark surfaces */
+  --color-control-checked: #c49a6c; /* Warm Tan, as the focus color */
+  --color-control-checked-fg: #141413; /* white on tan is only ~2.6:1; near-black is 7.2:1 */
+  --color-input-highlight: rgb(255 255 255 / 0.04);
+  --shadow-input-lift: 0 0 #0000; /* a drop shadow doesn't read on near-black */
+  --color-popover-bg: #30302e; /* Dark Surface */
+  --color-popover-border: #3d3d3a; /* Dark Warm */
+  --color-popover-highlight: #3d3d3a;
+  /* Darker and denser than light: the surface itself already separates from near-black */
+  --shadow-popover: 0 8px 24px rgb(0 0 0 / 0.4), 0 1px 3px rgb(0 0 0 / 0.3);
+  --shadow-dialog: 0 16px 48px rgb(0 0 0 / 0.5), 0 2px 6px rgb(0 0 0 / 0.3);
+  --color-dialog-backdrop: rgb(0 0 0 / 0.6);
+  /* Status tones: lightened for dark surfaces, solid-fg flips to near-black */
+  /* success: olive, lightened for dark; kept darker than danger for CVD */
+  --color-success: #758e48;
+  --color-success-fg: #141413;
+  --color-success-subtle-bg: #22251c;
+  --color-success-subtle-fg: #98b070;
+  --color-success-border: #384128;
+  /* warning: amber */
+  --color-warning: #e6b463;
+  --color-warning-fg: #141413;
+  --color-warning-subtle-bg: #302a20;
+  --color-warning-subtle-fg: #e2b56e;
+  --color-warning-border: #5f4e33;
+  /* danger: existing (unchanged) */
+  --color-danger-subtle-bg: #322522;
+  --color-danger-subtle-fg: #f0958c;
+  --color-danger-border: #63403b;
+  /* info: dusty teal-blue */
+  --color-info: #74a6bf;
+  --color-info-fg: #141413;
+  --color-info-subtle-bg: #22282a;
+  --color-info-subtle-fg: #87b4cb;
+  --color-info-border: #384951;
+  /* neutral: Warm Silver */
+  --color-neutral: #b0aea5;
+  --color-neutral-fg: #141413;
+  --color-neutral-subtle-bg: #292927;
+  --color-neutral-subtle-fg: #b4b2aa;
+  --color-neutral-border: #4c4c48;
+}
+
+/* `dark:` follows the tokens: data-theme="dark" on the root, or the system when not forced light */
+@custom-variant dark {
+  &:where(:root[data-theme="dark"], :root[data-theme="dark"] *) {
+    @slot;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not([data-theme="light"]), :root:not([data-theme="light"]) *) {
+      @slot;
+    }
+  }
+}
+
+/* Compact scrollbars with a visible, theme-aware thumb and no contrasting track. */
+@utility scrollbar-subtle {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-fg-subtle) transparent;
+
+  @supports not (scrollbar-width: thin) {
+    &::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--color-fg-subtle);
+      border: 2px solid transparent;
+      border-radius: 999px;
+      background-clip: padding-box;
+    }
+  }
+
+  @media (forced-colors: active) {
+    scrollbar-color: auto;
+  }
+}
+
+/* Layered so the app's own utilities (e.g. a body background, `font-sans` on a title) win */
+@layer base {
+  body {
+    margin: 0;
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+  }
+
+  /* Dialog and Drawer titles rely on this */
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-serif);
+    font-weight: 500;
+  }
+}
+
+/* Unlayered: beats Tailwind's layered utilities (e.g. `transition-*`) on cascade order alone */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+    transition-duration: 0.01ms;
+    scroll-behavior: auto;
+  }
+}

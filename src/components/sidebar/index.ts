@@ -1,0 +1,16 @@
+export {
+  Sidebar,
+  SidebarBadge,
+  SidebarBody,
+  SidebarFooter,
+  SidebarGroup,
+  type SidebarGroupProps,
+  SidebarHeader,
+  SidebarIcon,
+  SidebarItem,
+  type SidebarItemProps,
+  type SidebarProps,
+  SidebarProvider,
+  SidebarTrigger,
+  type SidebarTriggerProps,
+} from './sidebar'

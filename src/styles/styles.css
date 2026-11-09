@@ -1,0 +1,6 @@
+/*
+ * Tokens plus component scanning. Import right after tailwindcss.
+ * Published next to the bundled components, so this path is relative to the package's dist/.
+ */
+@import "./theme.css";
+@source "./*.js";

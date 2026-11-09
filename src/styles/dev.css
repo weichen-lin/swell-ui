@@ -1,0 +1,5 @@
+/* Storybook, tests and lint entry: the published styles plus a scan of the sources */
+@import "tailwindcss";
+@import "./styles.css";
+@source "../";
+@source "../../stories";
