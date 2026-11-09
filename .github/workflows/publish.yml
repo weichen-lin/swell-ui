@@ -20,7 +20,7 @@ env:
 jobs:
   # Fail fast, before the full CI run: tag vs package.json, and not already on npm.
   verify:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v5
@@ -44,7 +44,7 @@ jobs:
 
   publish:
     needs: check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     timeout-minutes: 10
     environment: npm
     permissions:
@@ -53,15 +53,15 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
         with:
           node-version-file: .node-version
-          cache: pnpm
           registry-url: https://registry.npmjs.org
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
 
       # pnpm pack rewrites catalog: specifiers; npm publish handles OIDC trusted publishing.
+      # The "./" matters: without it npm reads out/x.tgz as a GitHub owner/repo shorthand.
       - run: pnpm pack --pack-destination out
       - name: Tarball version must match tag
         run: |
@@ -72,7 +72,7 @@ jobs:
             exit 1
           fi
           echo "Publishing $tgz"
-      - run: npm publish out/*.tgz --access public
+      - run: npm publish ./out/*.tgz --access public
         env:
           # Leave the NPM_TOKEN secret unset when trusted publishing is configured.
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
