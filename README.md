@@ -12,21 +12,21 @@ Tailwind v4, so the design tokens become your utilities too (`bg-primary`, `text
 Peer dependencies: `react` and `react-dom` 19, `tailwindcss` 4.3+, `lucide-react`.
 
 ```sh
-pnpm add swell-ui@file:../swell-ui   # or link:, until it is published
+pnpm add @weichenlin/swell-ui
 ```
 
 In the CSS file that imports Tailwind:
 
 ```css
 @import 'tailwindcss';
-@import 'swell-ui/styles.css';
+@import '@weichenlin/swell-ui/styles.css';
 ```
 
 `styles.css` brings the tokens (`theme.css`) and an `@source` that points Tailwind at the bundled
 components, so their classes are generated even though Tailwind skips `node_modules` by default.
 
 ```tsx
-import { Button, toast, Toaster } from 'swell-ui'
+import { Button, toast, Toaster } from '@weichenlin/swell-ui'
 
 export function App() {
   return (
@@ -45,7 +45,7 @@ blocks `theme.css` uses:
 
 ```css
 @import 'tailwindcss';
-@import 'swell-ui/styles.css';
+@import '@weichenlin/swell-ui/styles.css';
 
 @theme {
   --color-primary: #2563eb;
@@ -72,7 +72,7 @@ instead:
 
 ```css
 @import 'tailwindcss';
-@import 'swell-ui/theme.css';
+@import '@weichenlin/swell-ui/theme.css';
 ```
 
 ### `cn`
@@ -89,7 +89,7 @@ same rule.
 `useTheme` persists the choice and sets the attribute; `ThemeSwitcher` is the toggle button:
 
 ```tsx
-import { ThemeSwitcher, useTheme } from 'swell-ui'
+import { ThemeSwitcher, useTheme } from '@weichenlin/swell-ui'
 
 function Header() {
   const { theme, setTheme } = useTheme({ storageKey: 'my-app-theme' }) // default 'swell-ui-theme'
@@ -116,7 +116,6 @@ sets `href` and `aria-current="page"`; the current item is styled from that attr
 
 ```tsx
 import { Link } from '@tanstack/react-router' // any router's Link
-import { Box } from 'lucide-react'
 import {
   Sidebar,
   SidebarBadge,
@@ -126,7 +125,8 @@ import {
   SidebarItem,
   SidebarProvider,
   SidebarTrigger,
-} from 'swell-ui'
+} from '@weichenlin/swell-ui'
+import { Box } from 'lucide-react'
 
 function Nav() {
   return (
