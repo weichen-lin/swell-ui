@@ -36,7 +36,7 @@ export const OnBadge: Story = {
     content: 'Finished 21h ago',
     children: (
       // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- the tooltip is the only place the time shows, so the badge must be a tab stop
-      <span tabIndex={0} className="rounded-sm focus-visible:outline-2 focus-visible:outline-focus">
+      <span tabIndex={0} className="rounded-md focus-visible:outline-2 focus-visible:outline-focus">
         <Badge tone="success" icon={<Check />} size="sm">
           Succeeded
         </Badge>
@@ -52,7 +52,7 @@ export const OnBadge: Story = {
 export const InScrollContainer: Story = {
   args: { content: 'Finished 21h ago · 10/21/2026, 11:14:02 PM' },
   render: (args) => (
-    <div className="ml-auto flex h-16 w-64 items-center justify-end overflow-auto rounded-md border border-border-strong bg-surface px-3">
+    <div className="ml-auto flex h-16 w-64 items-center justify-end overflow-auto rounded-lg border border-border-strong bg-surface px-3">
       <Tooltip {...args}>
         <Button intent="secondary" size="sm">
           Last sync

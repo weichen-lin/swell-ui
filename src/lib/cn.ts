@@ -50,7 +50,6 @@ const twMerge = extendTailwindMerge({
         'dialog-backdrop',
         ...['success', 'warning', 'danger', 'info', 'neutral'].flatMap(tone),
       ],
-      radius: ['sharp', 'sm', 'md', 'lg', 'xl', '2xl', '3xl'],
       shadow: ['input', 'input-lift', 'switch-thumb', 'popover', 'dialog', 'whisper'],
       container: ['page'],
       font: ['sans', 'serif', 'mono'],

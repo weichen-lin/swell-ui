@@ -27,7 +27,7 @@ const meta = {
   },
   decorators: [
     (Story) => (
-      <div className="max-w-md rounded-lg bg-bg p-6">
+      <div className="max-w-md rounded-xl bg-bg p-6">
         <Story />
       </div>
     ),
@@ -123,7 +123,7 @@ export const SettingsRows: Story = {
     const [values, setValues] = useState({ autoSync: true, selfHeal: false, prune: true })
     const [saving, setSaving] = useState(false)
     return (
-      <div className="flex w-md max-w-full flex-col divide-y divide-border-strong rounded-lg border border-border-strong bg-surface-raised">
+      <div className="flex w-md max-w-full flex-col divide-y divide-border-strong rounded-xl border border-border-strong bg-surface-raised">
         {settings.map(({ key, label, description }) => (
           <div key={key} className="px-4 py-3">
             <Switch

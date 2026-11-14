@@ -36,7 +36,7 @@ export function Card({ as: Comp = 'div', className, ...props }: CardProps) {
         aria-labelledby={landmark && titled && !props['aria-label'] ? titleId : undefined}
         {...props}
         data-slot="card"
-        className={cn('rounded-lg border border-border-strong bg-surface', className)}
+        className={cn('rounded-xl border border-border-strong bg-surface', className)}
       />
     </CardContext>
   )

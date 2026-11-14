@@ -38,7 +38,7 @@ const listVariant: Record<TabsVariant, string[]> = {
     'before:transition-[translate,width]',
     'forced-colors:before:bg-[Highlight] forced-colors:before:[forced-color-adjust:none]',
     // Hover pill: fg at 7% so it reads on any surface (page, card, dialog) and stays warm
-    'after:pointer-events-none after:absolute after:top-0 after:left-0 after:-z-1 after:rounded-md',
+    'after:pointer-events-none after:absolute after:top-0 after:left-0 after:-z-1 after:rounded-lg',
     'after:bg-fg/7 after:opacity-0 data-hover:after:opacity-100',
     'after:h-(--tabs-hover-h) after:w-(--tabs-hover-w)',
     'after:[translate:var(--tabs-hover-x)_var(--tabs-hover-y)]',
@@ -50,8 +50,8 @@ const listVariant: Record<TabsVariant, string[]> = {
   segmented: [
     // Geist Switch: hairline frame, 4px inset, a soft knob under the selected item. The frame is
     // an inset shadow: the overflow fade's mask would clip one drawn outside the box.
-    'inline-flex w-fit rounded-sm p-1 shadow-[inset_0_0_0_1px_var(--color-ring)]',
-    'before:top-0 before:h-(--tabs-indicator-h) before:rounded-sharp before:bg-fg/8',
+    'inline-flex w-fit rounded-md p-1 shadow-[inset_0_0_0_1px_var(--color-ring)]',
+    'before:top-0 before:h-(--tabs-indicator-h) before:rounded-sm before:bg-fg/8',
     'before:[translate:var(--tabs-indicator-x)_var(--tabs-indicator-y)]',
     'before:transition-[translate,width,height]',
     'forced-colors:before:border-2 forced-colors:before:border-[Highlight]',
@@ -91,8 +91,8 @@ const itemBase = [
 
 const itemVariant: Record<TabsVariant, string[]> = {
   // No gap between items: the pill glides edge to edge, and px-3 x2 spaces labels 24px apart
-  line: ['rounded-md data-selected:font-medium aria-[current=page]:font-medium'],
-  segmented: ['h-full rounded-sharp font-medium'],
+  line: ['rounded-lg data-selected:font-medium aria-[current=page]:font-medium'],
+  segmented: ['h-full rounded-sm font-medium'],
 }
 
 const itemSize: Record<TabsVariant, Record<TabsSize, string>> = {

@@ -204,7 +204,7 @@ const many = [
 /** More tabs than fit: the bar scrolls, edges fade, and the focused or selected tab scrolls in. */
 export const Overflow: Story = {
   render: () => (
-    <div className="w-[320px] rounded-lg border border-border-strong p-3">
+    <div className="w-[320px] rounded-xl border border-border-strong p-3">
       <Tabs aria-label="Application" defaultValue="Overview">
         <TabList>
           {many.map((name) => (
@@ -260,7 +260,7 @@ export const InDialog: Story = {
               </TabList>
               {Object.entries(views).map(([value, text]) => (
                 <TabPanel key={value} value={value} className="mt-3">
-                  <pre className="m-0 overflow-x-auto rounded-md bg-input-bg p-3 font-mono text-xs/5">
+                  <pre className="m-0 overflow-x-auto rounded-lg bg-input-bg p-3 font-mono text-xs/5">
                     {text}
                   </pre>
                 </TabPanel>

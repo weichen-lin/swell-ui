@@ -26,7 +26,7 @@ const meta = {
   },
   decorators: [
     (Story) => (
-      <div className="rounded-lg bg-bg p-6 pt-12">
+      <div className="rounded-xl bg-bg p-6 pt-12">
         <Story />
       </div>
     ),

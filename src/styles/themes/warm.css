@@ -1,0 +1,63 @@
+/*
+ * Warm theme: parchment surfaces, warm grays and a brown primary (swell-ui's original look).
+ * Import after swell-ui's styles.css (or theme.css); add typography.css for the serif headings.
+ * Overrides the color tokens only; input focus and checked controls still derive from primary.
+ */
+@theme {
+  /* Warm Brown; Warm Tan on dark, where the brown is too dark against the page */
+  --color-primary: light-dark(#8b5e3c, #c49a6c);
+  --color-primary-fg: light-dark(#faf9f5, #141413);
+  --color-accent: #c49a6c; /* Warm Tan */
+
+  --color-bg: light-dark(#f5f4ed, #141413); /* Parchment */
+  --color-surface: light-dark(#faf9f5, #30302e); /* Ivory / Dark Surface */
+  --color-surface-raised: light-dark(#ffffff, #30302e);
+  --color-surface-muted: light-dark(#e8e6dc, #262625); /* Warm Sand */
+  --color-fg: light-dark(#141413, #faf9f5);
+  --color-fg-strong: light-dark(#4d4c48, #b0aea5);
+  --color-fg-muted: light-dark(#5e5d59, #b0aea5);
+  --color-fg-subtle: light-dark(#686761, #a8a79e);
+  --color-border: light-dark(#f0eee6, #383836);
+  --color-border-strong: light-dark(#e8e6dc, #3d3d3a);
+  --color-ring: light-dark(#d1cfc5, #3d3d3a);
+  --color-ring-deep: light-dark(#c2c0b6, #4d4c48);
+  --color-inverse: light-dark(#30302e, #141413);
+  --color-inverse-fg: light-dark(#faf9f5, #b0aea5);
+  --color-danger: light-dark(#b53333, #ee8a80); /* Error Crimson */
+  --color-danger-fg: light-dark(#faf9f5, #141413);
+
+  --color-input-bg: light-dark(#ebeae3, #1f1f1e);
+  --color-input-border: light-dark(#7f7e7b, #81817e);
+  --color-input-placeholder: light-dark(#6a6964, #9a998f);
+  --color-input-border-hover: light-dark(#4d4c48, #b0aea5);
+  --color-input-bg-hover: light-dark(#f3f2ec, #262625);
+
+  --color-popover-bg: light-dark(#ffffff, #30302e);
+  --color-popover-border: light-dark(#e0ded4, #3d3d3a);
+  --color-popover-highlight: light-dark(#efede5, #3d3d3a);
+  --color-dialog-backdrop: light-dark(rgb(20 20 19 / 0.4), rgb(0 0 0 / 0.6));
+
+  --color-success: light-dark(#394d00, #758e48);
+  --color-success-fg: light-dark(#faf9f5, #141413);
+  --color-success-subtle-bg: light-dark(#d8dbcc, #22251c);
+  --color-success-subtle-fg: light-dark(#3a4c0e, #98b070);
+  --color-success-border: light-dark(#aeb79b, #384128);
+  --color-warning: light-dark(#a5761d, #e6b463);
+  --color-warning-fg: #141413;
+  --color-warning-subtle-bg: light-dark(#eae2d1, #302a20);
+  --color-warning-subtle-fg: light-dark(#7e5600, #e2b56e);
+  --color-warning-border: light-dark(#d9c7a9, #5f4e33);
+  --color-danger-subtle-bg: light-dark(#f0dad2, #322522);
+  --color-danger-subtle-fg: light-dark(#a2302f, #f0958c);
+  --color-danger-border: light-dark(#e5b3aa, #63403b);
+  --color-info: light-dark(#3e7087, #74a6bf);
+  --color-info-fg: light-dark(#faf9f5, #141413);
+  --color-info-subtle-bg: light-dark(#dbe1de, #22282a);
+  --color-info-subtle-fg: light-dark(#356075, #87b4cb);
+  --color-info-border: light-dark(#b4c4c9, #384951);
+  --color-neutral: light-dark(#66635c, #b0aea5);
+  --color-neutral-fg: light-dark(#faf9f5, #141413);
+  --color-neutral-subtle-bg: light-dark(#e0ded7, #292927);
+  --color-neutral-subtle-fg: light-dark(#5e5b55, #b4b2aa);
+  --color-neutral-border: light-dark(#c0bfb8, #4c4c48);
+}

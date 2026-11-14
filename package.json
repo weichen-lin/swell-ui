@@ -16,6 +16,8 @@
     },
     "./theme.css": "./dist/theme.css",
     "./styles.css": "./dist/styles.css",
+    "./typography.css": "./dist/typography.css",
+    "./themes/warm.css": "./dist/themes/warm.css",
     "./package.json": "./package.json"
   },
   "publishConfig": {

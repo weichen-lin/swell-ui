@@ -69,7 +69,7 @@ const meta = {
   // Grid stories opt out of the narrow column via `parameters.wide`
   decorators: [
     (Story, { parameters }) => (
-      <div className={cn('rounded-lg bg-bg p-6', parameters.wide ? 'w-max' : 'max-w-sm')}>
+      <div className={cn('rounded-xl bg-bg p-6', parameters.wide ? 'w-max' : 'max-w-sm')}>
         <Story />
       </div>
     ),
@@ -284,7 +284,7 @@ function DeployForm(args: StoryArgs) {
           Reset
         </Button>
       </div>
-      <output className="block min-h-16 rounded-md bg-surface-muted p-3 font-mono text-xs whitespace-pre text-fg">
+      <output className="block min-h-16 rounded-lg bg-surface-muted p-3 font-mono text-xs whitespace-pre text-fg">
         {submitted ?? 'Submit to see FormData'}
       </output>
     </form>

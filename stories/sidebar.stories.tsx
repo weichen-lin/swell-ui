@@ -117,7 +117,7 @@ function PagePlaceholder({ title }: { title: string }) {
     <div className="flex flex-col gap-3">
       <h1 className="m-0 font-serif text-2xl/tight font-medium text-fg">{title}</h1>
       <p className="m-0 text-sm text-fg-muted">Page content for {title.toLowerCase()}.</p>
-      <div className="h-40 rounded-lg border border-dashed border-ring" />
+      <div className="h-40 rounded-xl border border-dashed border-ring" />
     </div>
   )
 }
@@ -125,7 +125,7 @@ function PagePlaceholder({ title }: { title: string }) {
 function Brand() {
   return (
     <span className="flex items-center gap-2 px-2 font-serif text-lg/6 text-fg">
-      <span aria-hidden className="size-5 rounded-sm bg-primary" />
+      <span aria-hidden className="size-5 rounded-md bg-primary" />
       Acme
     </span>
   )
@@ -176,7 +176,7 @@ function AppFrame({ groups, badges, height = 'h-[560px]', narrow = false }: AppF
     <SidebarProvider>
       <div
         className={cn(
-          'flex overflow-hidden rounded-lg border border-border-strong bg-bg text-fg',
+          'flex overflow-hidden rounded-xl border border-border-strong bg-bg text-fg',
           narrow ? 'w-97.5' : 'w-220 max-w-full',
           height,
         )}

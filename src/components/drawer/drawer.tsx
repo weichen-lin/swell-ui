@@ -151,7 +151,7 @@ export function DrawerHeader({ title, description, className, ...props }: Drawer
       className={cn('flex shrink-0 items-start gap-4 px-6 pt-6 pb-4', className)}
     >
       <div className="min-w-0 flex-1">
-        <h2 id={context.titleId} className="m-0 text-xl/tight wrap-anywhere text-fg">
+        <h2 id={context.titleId} className="m-0 text-xl/tight font-medium wrap-anywhere text-fg">
           {title}
         </h2>
         {hasDescription && (

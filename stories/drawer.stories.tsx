@@ -209,7 +209,7 @@ export const CustomHeader: Story = {
         </Button>
         <Drawer open={open} onOpenChange={setOpen} side="left" size="sm" aria-labelledby={titleId}>
           <div className="flex h-14 shrink-0 items-center gap-2 px-3">
-            <span aria-hidden className="size-5 rounded-sm bg-primary" />
+            <span aria-hidden className="size-5 rounded-md bg-primary" />
             <span id={titleId} className="font-serif text-lg/6 text-fg">
               Acme
             </span>

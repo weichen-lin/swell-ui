@@ -8,15 +8,15 @@ const tokens = (namespace: string) =>
 
 describe('cn', () => {
   it('dedupes custom radius, shadow and container tokens', () => {
-    expect(cn('rounded-sharp', 'rounded-md')).toBe('rounded-md')
-    expect(cn('rounded-md', 'rounded-sharp')).toBe('rounded-sharp')
+    expect(cn('rounded-sm', 'rounded-lg')).toBe('rounded-lg')
+    expect(cn('rounded-lg', 'rounded-sm')).toBe('rounded-sm')
     expect(cn('shadow-popover', 'shadow-none')).toBe('shadow-none')
     expect(cn('shadow-input', 'shadow-dialog')).toBe('shadow-dialog')
     expect(cn('max-w-page', 'max-w-sm')).toBe('max-w-sm')
   })
 
   it('keeps a custom token apart from other groups', () => {
-    expect(cn('rounded-sharp', 'rounded-t-md')).toBe('rounded-sharp rounded-t-md')
+    expect(cn('rounded-sm', 'rounded-t-lg')).toBe('rounded-sm rounded-t-lg')
     expect(cn('shadow-popover', 'shadow-fg')).toBe('shadow-popover shadow-fg')
     expect(cn('text-fg', 'text-sm')).toBe('text-fg text-sm')
     expect(cn('text-fg-muted', 'text-danger')).toBe('text-danger')

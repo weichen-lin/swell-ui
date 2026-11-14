@@ -25,18 +25,18 @@ const buttonVariants = cva(
   {
     variants: {
       intent: {
-        // Warm Brown: the only chromatic button
+        // Brand color: the one primary call to action
         primary:
-          'bg-primary text-primary-fg rounded-md shadow-[0_0_0_1px_var(--color-primary)] hover:not-aria-disabled:opacity-90',
-        // Warm Sand: the workhorse
+          'bg-primary text-primary-fg rounded-lg shadow-[0_0_0_1px_var(--color-primary)] hover:not-aria-disabled:opacity-90',
+        // Muted surface: the workhorse
         secondary:
-          'bg-surface-muted text-fg-strong rounded-md shadow-[0_0_0_1px_var(--color-ring)] hover:not-aria-disabled:bg-ring',
-        // White Surface: shifts to secondary background on hover
-        surface: 'bg-surface-raised text-fg rounded-lg hover:not-aria-disabled:bg-surface-muted',
-        // Dark Charcoal: inverted emphasis
-        dark: 'bg-inverse text-inverse-fg rounded-md shadow-[0_0_0_1px_var(--color-ring)] hover:not-aria-disabled:opacity-90',
+          'bg-surface-muted text-fg-strong rounded-lg shadow-[0_0_0_1px_var(--color-ring)] hover:not-aria-disabled:bg-ring',
+        // Raised surface: shifts to secondary background on hover
+        surface: 'bg-surface-raised text-fg rounded-xl hover:not-aria-disabled:bg-surface-muted',
+        // Inverse: strong emphasis without the brand color
+        dark: 'bg-inverse text-inverse-fg rounded-lg shadow-[0_0_0_1px_var(--color-ring)] hover:not-aria-disabled:opacity-90',
         // No chrome until hover: toolbars, table rows
-        ghost: 'bg-transparent text-fg rounded-md hover:not-aria-disabled:bg-surface-muted',
+        ghost: 'bg-transparent text-fg rounded-lg hover:not-aria-disabled:bg-surface-muted',
       },
       size: {
         // Supabase-like scale: compact height, 14px text

@@ -211,7 +211,7 @@ export function Tooltip({
             <span
               ref={bubbleRef}
               className={cn(
-                'block w-max max-w-xs rounded-sm border border-border-strong bg-inverse px-2 py-1',
+                'block w-max max-w-xs rounded-md border border-border-strong bg-inverse px-2 py-1',
                 'text-xs/snug font-medium text-inverse-fg shadow-whisper',
                 'transition-[opacity,translate] duration-150 ease-out starting:opacity-0',
                 {

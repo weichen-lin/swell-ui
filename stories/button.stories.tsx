@@ -98,7 +98,7 @@ export const AsyncAction: Story = {
 
 export const Sizes: Story = {
   render: (args) => (
-    <div className="flex items-center gap-4 rounded-lg bg-bg p-6">
+    <div className="flex items-center gap-4 rounded-xl bg-bg p-6">
       {sizes.map((size) => (
         <Button key={size} {...textArgs(args)} size={size}>
           {size}
@@ -110,7 +110,7 @@ export const Sizes: Story = {
 
 export const IconSlots: Story = {
   render: (args) => (
-    <div className="grid grid-cols-[repeat(3,max-content)] items-center gap-4 rounded-lg bg-bg p-6">
+    <div className="grid grid-cols-[repeat(3,max-content)] items-center gap-4 rounded-xl bg-bg p-6">
       {sizes.map((size) => (
         <div key={size} className="contents">
           <Button {...textArgs(args)} size={size} iconLeft={<GitBranch />}>
@@ -138,7 +138,7 @@ const rows = [
 export const AllVariants: Story = {
   parameters: { layout: 'padded' },
   render: (args) => (
-    <div className="grid grid-cols-[auto_repeat(3,max-content)] items-center gap-4 rounded-lg bg-bg p-6">
+    <div className="grid grid-cols-[auto_repeat(3,max-content)] items-center gap-4 rounded-xl bg-bg p-6">
       {rows.map(({ intent, state, tone }) => (
         <div key={`${intent}-${state}-${tone}`} className="contents">
           <span className="text-sm text-fg-muted">
@@ -203,7 +203,7 @@ export const IconOnlyAllVariants: Story = {
   }) => {
     const shared = { disabled, disabledReason, loading, loadingText, ripple, tooltip, tooltipSide }
     return (
-      <div className="grid grid-cols-[auto_repeat(3,max-content)] items-center gap-4 rounded-lg bg-bg p-6">
+      <div className="grid grid-cols-[auto_repeat(3,max-content)] items-center gap-4 rounded-xl bg-bg p-6">
         {iconIntents.map((intent) => (
           <div key={intent} className="contents">
             <span className="text-sm text-fg-muted">{intent}</span>

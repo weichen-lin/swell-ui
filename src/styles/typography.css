@@ -1,0 +1,12 @@
+/*
+ * Opt-in editorial headings: h1-h3 in the serif stack at weight 500.
+ * Import after swell-ui's styles.css (or theme.css). Layered, so utilities on a heading still win.
+ */
+@layer base {
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-serif);
+    font-weight: 500;
+  }
+}

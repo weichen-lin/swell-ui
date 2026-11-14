@@ -41,7 +41,7 @@ const meta = {
   parameters: { layout: 'padded' },
   decorators: [
     (Story) => (
-      <div className="w-max max-w-full rounded-lg bg-bg p-6">
+      <div className="w-max max-w-full rounded-xl bg-bg p-6">
         <Story />
       </div>
     ),
@@ -181,7 +181,7 @@ export const Environments: Story = {
 export const InTableRow: Story = {
   parameters: { wide: true },
   render: () => (
-    <div className="flex w-160 items-center gap-4 rounded-lg border border-border-strong bg-surface-raised px-4 py-3">
+    <div className="flex w-160 items-center gap-4 rounded-xl border border-border-strong bg-surface-raised px-4 py-3">
       <span className="w-40 truncate text-sm font-medium text-fg">payments-api</span>
       <Badge tone="neutral" variant="solid" size="sm">
         prod
@@ -196,7 +196,7 @@ export const InTableRow: Story = {
         <span
           // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- the tooltip needs a focusable trigger; the badge itself stays static
           tabIndex={0}
-          className="inline-flex rounded-sm outline-offset-2 focus-visible:outline-2 focus-visible:outline-focus"
+          className="inline-flex rounded-md outline-offset-2 focus-visible:outline-2 focus-visible:outline-focus"
         >
           <Badge tone="neutral" variant="outline" size="sm" className="max-w-28 font-mono">
             release-2026.10.15-rc.3+sha.3f9c2a1e8b7d

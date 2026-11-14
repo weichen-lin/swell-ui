@@ -120,7 +120,7 @@ export function Dialog({ size = 'md', className, children, ...props }: DialogPro
       <div
         data-slot="dialog-panel"
         className={cn(
-          'flex max-h-[inherit] flex-col rounded-lg border border-popover-border bg-popover-bg shadow-dialog',
+          'flex max-h-[inherit] flex-col rounded-xl border border-popover-border bg-popover-bg shadow-dialog',
           // Forced colors drops the shadow; the border then carries the edge
           'forced-colors:border-[CanvasText]',
           'max-sm:rounded-b-none max-sm:border-b-0 max-sm:pb-[env(safe-area-inset-bottom)]',
@@ -158,8 +158,7 @@ export function DialogHeader({
       className={cn('flex shrink-0 items-start gap-4 px-6 pt-6 pb-4', className)}
     >
       <div className="min-w-0 flex-1">
-        {/* h2 is serif 500 globally: a dialog title is a headline, not UI chrome */}
-        <h2 id={context.titleId} className="m-0 text-xl/tight text-fg">
+        <h2 id={context.titleId} className="m-0 text-xl/tight font-medium text-fg">
           {title}
         </h2>
         {hasDescription && (

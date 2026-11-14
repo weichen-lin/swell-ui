@@ -78,7 +78,7 @@ export function Badge({
       {...props}
       data-slot="badge"
       className={cn(
-        'inline-flex items-center gap-1 rounded-sm border text-xs leading-none font-medium whitespace-nowrap',
+        'inline-flex items-center gap-1 rounded-md border text-xs leading-none font-medium whitespace-nowrap',
         // Forced-colors drops author backgrounds, so the border is what keeps the badge's edge visible
         'forced-colors:border-[CanvasText]',
         sizeClasses[size].base,

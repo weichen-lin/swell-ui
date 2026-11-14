@@ -32,7 +32,7 @@ const meta = {
   // Grid stories opt out of the narrow column via `parameters.wide`
   decorators: [
     (Story, { parameters }) => (
-      <div className={cn('rounded-lg bg-bg p-6', parameters.wide ? 'w-max' : 'max-w-sm')}>
+      <div className={cn('rounded-xl bg-bg p-6', parameters.wide ? 'w-max' : 'max-w-sm')}>
         <Story />
       </div>
     ),
@@ -97,7 +97,7 @@ export const Floating: Story = {
 export const FloatingOnCard: Story = {
   args: { floating: true },
   render: (args) => (
-    <div className="flex flex-col gap-6 rounded-lg bg-surface-raised p-6 shadow-whisper">
+    <div className="flex flex-col gap-6 rounded-xl bg-surface-raised p-6 shadow-whisper">
       <Input {...args} label="Namespace" defaultValue="payments" />
       <Input
         {...args}
