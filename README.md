@@ -1,6 +1,6 @@
 # swell-ui
 
-Hand-built React 19 components styled with Tailwind CSS v4: Badge, Button, Card, Checkbox,
+Hand-built React 19 components styled with Tailwind CSS v4: Accordion, Badge, Button, Card, Checkbox,
 CheckboxGroup, Dialog, Drawer, Input (plus Search, Password and Copy), Meter, Select, Sidebar,
 Switch, Table, Tabs, TabNav, ThemeSwitcher, Toast and Tooltip.
 
@@ -37,6 +37,33 @@ export function App() {
   )
 }
 ```
+
+### Accordion
+
+Compose `Accordion`, `AccordionItem`, `AccordionTrigger`, and `AccordionContent`. Item values must
+be unique and non-empty; triggers contain non-interactive content and include their own heading.
+
+```tsx
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@weichenlin/swell-ui'
+
+;<Accordion defaultValue="project" variant="line" headingLevel={3}>
+  <AccordionItem value="project">
+    <AccordionTrigger description="Name and identity">Project</AccordionTrigger>
+    <AccordionContent>Project settings</AccordionContent>
+  </AccordionItem>
+</Accordion>
+```
+
+Single mode uses `string | null`; `type="multiple"` uses `readonly string[]`. Use `value` with
+`onValueChange` for controlled state, or `defaultValue` for uncontrolled state. Single mode allows
+all panels to close by default; `collapsible={false}` prevents closing the open item. Change mode
+with a new React key. `variant="outline"` adds individual borders and a surface background.
+
+Content stays mounted while closed. `keepMounted={false}` unmounts children after the closing
+animation; `region` opts in to a named landmark. Hidden mounted fields still participate in native
+validation and FormData: expand the first invalid section before focusing its field. Storybook's
+**UI / Accordion / Form Validation** demonstrates that flow. Arrow keys move header focus without
+expanding, Enter/Space toggles, and reduced motion disables transitions.
 
 ### Table
 
