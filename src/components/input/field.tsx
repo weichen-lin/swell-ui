@@ -86,9 +86,9 @@ const labelStart = { sm: 'start-2', md: 'start-2', lg: 'start-3' } as const
  */
 // Moves the label's center onto the top border (half the field height)
 const floatShift = {
-  sm: '[[data-slot=input-control]:is([data-start],:has(input:focus),:has(input:not(:placeholder-shown)),:has(input:autofill),:has(input:-webkit-autofill),:has(select:focus),:has(select:open),:has(select):not(:has(option[value=""]:checked)))_&]:-translate-y-[calc(50%+17px)]',
-  md: '[[data-slot=input-control]:is([data-start],:has(input:focus),:has(input:not(:placeholder-shown)),:has(input:autofill),:has(input:-webkit-autofill),:has(select:focus),:has(select:open),:has(select):not(:has(option[value=""]:checked)))_&]:-translate-y-[calc(50%+19px)]',
-  lg: '[[data-slot=input-control]:is([data-start],:has(input:focus),:has(input:not(:placeholder-shown)),:has(input:autofill),:has(input:-webkit-autofill),:has(select:focus),:has(select:open),:has(select):not(:has(option[value=""]:checked)))_&]:-translate-y-[calc(50%+21px)]',
+  sm: '[[data-slot=input-control]:is([data-start],:has(input:focus),:has(textarea:focus),:has(textarea:not(:placeholder-shown)),:has(input:not(:placeholder-shown)),:has(input:autofill),:has(input:-webkit-autofill),:has(select:focus),:has(select:open),:has(select):not(:has(option[value=""]:checked)))_&]:-translate-y-[calc(50%+var(--field-label-shift,17px))]',
+  md: '[[data-slot=input-control]:is([data-start],:has(input:focus),:has(textarea:focus),:has(textarea:not(:placeholder-shown)),:has(input:not(:placeholder-shown)),:has(input:autofill),:has(input:-webkit-autofill),:has(select:focus),:has(select:open),:has(select):not(:has(option[value=""]:checked)))_&]:-translate-y-[calc(50%+var(--field-label-shift,19px))]',
+  lg: '[[data-slot=input-control]:is([data-start],:has(input:focus),:has(textarea:focus),:has(textarea:not(:placeholder-shown)),:has(input:not(:placeholder-shown)),:has(input:autofill),:has(input:-webkit-autofill),:has(select:focus),:has(select:open),:has(select):not(:has(option[value=""]:checked)))_&]:-translate-y-[calc(50%+var(--field-label-shift,21px))]',
 } as const
 
 const isText = (node: ReactNode) => typeof node === 'string' || typeof node === 'number'
@@ -156,7 +156,7 @@ function Notch({
           ? [
               '-inset-1 rounded-[calc(var(--radius-lg)+3px)] border-[3px] border-(--field-halo)',
               // Forced colors would paint the idle ring; show it only on focus, as the focus indicator
-              'forced-colors:invisible forced-colors:group-has-[:is(input,select):is(:focus,:open)]/control:visible forced-colors:border-[Highlight]',
+              'forced-colors:invisible forced-colors:group-has-[:is(input,select,textarea):is(:focus,:open)]/control:visible forced-colors:border-[Highlight]',
             ]
           : [
               '-inset-px rounded-[inherit] border border-(--field-border)',
@@ -170,9 +170,9 @@ function Notch({
           halo ? 'h-0.75' : 'h-px',
           // Snap closed, open slightly after the label starts moving (MUI timing)
           'transition-[max-width] duration-50 ease-out motion-reduce:transition-none',
-          '[[data-slot=input-control]:is([data-start],:has(input:focus),:has(input:not(:placeholder-shown)),:has(input:autofill),:has(input:-webkit-autofill),:has(select:focus),:has(select:open),:has(select):not(:has(option[value=""]:checked)))_&]:max-w-full',
-          '[[data-slot=input-control]:is([data-start],:has(input:focus),:has(input:not(:placeholder-shown)),:has(input:autofill),:has(input:-webkit-autofill),:has(select:focus),:has(select:open),:has(select):not(:has(option[value=""]:checked)))_&]:delay-50',
-          '[[data-slot=input-control]:is([data-start],:has(input:focus),:has(input:not(:placeholder-shown)),:has(input:autofill),:has(input:-webkit-autofill),:has(select:focus),:has(select:open),:has(select):not(:has(option[value=""]:checked)))_&]:duration-100',
+          '[[data-slot=input-control]:is([data-start],:has(input:focus),:has(textarea:focus),:has(textarea:not(:placeholder-shown)),:has(input:not(:placeholder-shown)),:has(input:autofill),:has(input:-webkit-autofill),:has(select:focus),:has(select:open),:has(select):not(:has(option[value=""]:checked)))_&]:max-w-full',
+          '[[data-slot=input-control]:is([data-start],:has(input:focus),:has(textarea:focus),:has(textarea:not(:placeholder-shown)),:has(input:not(:placeholder-shown)),:has(input:autofill),:has(input:-webkit-autofill),:has(select:focus),:has(select:open),:has(select):not(:has(option[value=""]:checked)))_&]:delay-50',
+          '[[data-slot=input-control]:is([data-start],:has(input:focus),:has(textarea:focus),:has(textarea:not(:placeholder-shown)),:has(input:not(:placeholder-shown)),:has(input:autofill),:has(input:-webkit-autofill),:has(select:focus),:has(select:open),:has(select):not(:has(option[value=""]:checked)))_&]:duration-100',
         )}
       >
         <span className="px-1">{children}</span>
@@ -224,6 +224,10 @@ export type FieldShellProps<T extends HTMLElement> = {
   'aria-describedby'?: string
   /** A leading adornment keeps the floating label floated, so it never rests on top of it. */
   hasStart?: boolean
+  /** Multiline controls grow naturally; their label rests on the first line. */
+  multiline?: boolean
+  /** Optional trailing content beside the description, e.g. a character count. */
+  footer?: ReactNode
   className?: string
   /** Polite announcement (validating, "Copied"). */
   status?: string
@@ -239,7 +243,7 @@ const focusControl = (control: HTMLElement) => control.focus()
 /**
  * The frame every field shares (input family, Select): label above or floating with a notched
  * outline, the bordered control with its border/halo/hover states, description and live region.
- * State selectors match `input` or `select`, never the inner buttons, so a focused clear or copy
+ * State selectors match `input`, `textarea` or `select`, never the inner buttons, so a focused clear or copy
  * button shows only its own ring. `:open` too: an open base-select picker moves focus onto its
  * options, and the select then matches neither `:focus` nor `:focus-within`. Inside `:is()` an
  * unsupported `:open` is dropped alone instead of invalidating the rule.
@@ -256,6 +260,8 @@ export function FieldShell<T extends HTMLElement>({
   readOnly,
   'aria-describedby': describedByProp,
   hasStart = false,
+  multiline = false,
+  footer,
   className,
   status = '',
   controlRef,
@@ -299,18 +305,19 @@ export function FieldShell<T extends HTMLElement>({
           // Floated label outranks helper text and placeholder
           'text-fg-muted pointer-coarse:text-base',
           'transition-[translate,font-size,color] duration-150 ease-out motion-reduce:transition-none',
+          multiline && { sm: 'top-[18px]', md: 'top-5', lg: 'top-6' }[size],
           labelStart[size],
           textSize[size],
           // Resting: stop before whatever sits at the end
           restingWidth,
           floatShift[size],
-          '[[data-slot=input-control]:is([data-start],:has(input:focus),:has(input:not(:placeholder-shown)),:has(input:autofill),:has(input:-webkit-autofill),:has(select:focus),:has(select:open),:has(select):not(:has(option[value=""]:checked)))_&]:max-w-[calc(100%-1rem)]',
-          '[[data-slot=input-control]:is([data-start],:has(input:focus),:has(input:not(:placeholder-shown)),:has(input:autofill),:has(input:-webkit-autofill),:has(select:focus),:has(select:open),:has(select):not(:has(option[value=""]:checked)))_&]:text-xs',
+          '[[data-slot=input-control]:is([data-start],:has(input:focus),:has(textarea:focus),:has(textarea:not(:placeholder-shown)),:has(input:not(:placeholder-shown)),:has(input:autofill),:has(input:-webkit-autofill),:has(select:focus),:has(select:open),:has(select):not(:has(option[value=""]:checked)))_&]:max-w-[calc(100%-1rem)]',
+          '[[data-slot=input-control]:is([data-start],:has(input:focus),:has(textarea:focus),:has(textarea:not(:placeholder-shown)),:has(input:not(:placeholder-shown)),:has(input:autofill),:has(input:-webkit-autofill),:has(select:focus),:has(select:open),:has(select):not(:has(option[value=""]:checked)))_&]:text-xs',
           invalid
             ? 'text-danger'
             : [
-                '[[data-slot=input-control]:is([data-start],:has(input:focus),:has(input:not(:placeholder-shown)),:has(input:autofill),:has(input:-webkit-autofill),:has(select:focus),:has(select:open),:has(select):not(:has(option[value=""]:checked)))_&]:group-has-[:is(input,select):not(:is(:focus,:open))]/control:text-fg-strong',
-                'group-has-[:is(input,select):is(:focus,:open)]/control:text-input-focus',
+                '[[data-slot=input-control]:is([data-start],:has(input:focus),:has(textarea:focus),:has(textarea:not(:placeholder-shown)),:has(input:not(:placeholder-shown)),:has(input:autofill),:has(input:-webkit-autofill),:has(select:focus),:has(select:open),:has(select):not(:has(option[value=""]:checked)))_&]:group-has-[:is(input,select,textarea):not(:is(:focus,:open))]/control:text-fg-strong',
+                'group-has-[:is(input,select,textarea):is(:focus,:open)]/control:text-input-focus',
               ],
         )}
       >
@@ -340,27 +347,33 @@ export function FieldShell<T extends HTMLElement>({
           // Floating is outlined (MUI): transparent, so the label straddling the border sits on one color
           floatingLabel ? 'bg-transparent' : '[--field-bg:var(--color-input-bg)] bg-(--field-bg)',
           'transition-[border-color,box-shadow,background-color] duration-200 ease-in-out motion-reduce:transition-none',
-          controlHeight[size],
+          multiline
+            ? {
+                sm: '[--field-label-shift:19px]',
+                md: '[--field-label-shift:21px]',
+                lg: '[--field-label-shift:25px]',
+              }[size]
+            : controlHeight[size],
           // State lives in two vars so the plain border/halo and the notched fieldsets share it.
           // Neutral border step + soft halo instead of Button's blue ring; only the control's own focus
           // counts, so focused inner buttons show just their ring.
           invalid
             ? [
                 '[--field-border:var(--color-danger)] [--field-halo:var(--color-input-halo-invalid)]',
-                'has-[:is(input,select):is(:focus,:open)]:[--field-halo:var(--color-input-halo-invalid-focus)]',
+                'has-[:is(input,select,textarea):is(:focus,:open)]:[--field-halo:var(--color-input-halo-invalid-focus)]',
               ]
             : [
                 '[--field-border:var(--color-input-border)] [--field-halo:transparent]',
-                'has-[:is(input,select):is(:focus,:open)]:[--field-border:var(--color-input-focus)] has-[:is(input,select):is(:focus,:open)]:[--field-halo:var(--color-input-halo)]',
+                'has-[:is(input,select,textarea):is(:focus,:open)]:[--field-border:var(--color-input-focus)] has-[:is(input,select,textarea):is(:focus,:open)]:[--field-halo:var(--color-input-halo)]',
               ],
           '[--field-lift:0_0_#0000]',
           !invalid &&
             !disabled &&
             !readOnly && [
-              'hover:not-has-[:is(input,select):is(:focus,:open)]:[--field-border:var(--color-input-border-hover)]',
+              'hover:not-has-[:is(input,select,textarea):is(:focus,:open)]:[--field-border:var(--color-input-border-hover)]',
               !floatingLabel &&
-                'hover:not-has-[:is(input,select):is(:focus,:open)]:[--field-bg:var(--color-input-bg-hover)]',
-              'hover:not-has-[:is(input,select):is(:focus,:open)]:[--field-lift:var(--shadow-input-lift)]',
+                'hover:not-has-[:is(input,select,textarea):is(:focus,:open)]:[--field-bg:var(--color-input-bg-hover)]',
+              'hover:not-has-[:is(input,select,textarea):is(:focus,:open)]:[--field-lift:var(--shadow-input-lift)]',
             ],
           floatingLabel
             ? // The fieldsets draw border and halo with a gap for the label. No inset highlight: it would
@@ -375,7 +388,7 @@ export function FieldShell<T extends HTMLElement>({
                   ? '[box-shadow:0_0_0_3px_var(--field-halo)]'
                   : '[box-shadow:var(--shadow-input),var(--field-lift),0_0_0_3px_var(--field-halo)]',
                 // Forced colors drop box-shadow and paint this transparent outline instead
-                'has-[:is(input,select):is(:focus,:open)]:outline-hidden',
+                'has-[:is(input,select,textarea):is(:focus,:open)]:outline-hidden',
                 disabled && 'forced-colors:border-[GrayText]',
               ],
           // Flatter: no tint, highlight or hover reveal, so it reads as "not editable" next to editable fields
@@ -406,17 +419,22 @@ export function FieldShell<T extends HTMLElement>({
           floatingLabel: renderFloatingLabel,
         })}
       </div>
-      {hasDescription && (
-        <p
-          id={descriptionId}
-          className={cn(
-            'm-0 flex items-start gap-1 text-xs/snug',
-            invalid ? 'text-danger' : 'text-fg-muted',
+      {(hasDescription || isPresent(footer)) && (
+        <div className="flex items-start justify-between gap-3">
+          {hasDescription && (
+            <p
+              id={descriptionId}
+              className={cn(
+                'm-0 flex min-w-0 flex-1 items-start gap-1 text-xs/snug',
+                invalid ? 'text-danger' : 'text-fg-muted',
+              )}
+            >
+              {invalid && <CircleAlert aria-hidden className="mt-px size-3.5 shrink-0" />}
+              <span>{description}</span>
+            </p>
           )}
-        >
-          {invalid && <CircleAlert aria-hidden className="mt-px size-3.5 shrink-0" />}
-          <span>{description}</span>
-        </p>
+          {footer}
+        </div>
       )}
       {/* Outside label/description so it never joins the name; present up front so changes are announced */}
       <span aria-live="polite" aria-atomic className="sr-only">
@@ -515,7 +533,7 @@ export function FieldFrame({
                 // A real placeholder would collide with the resting label, so it waits for the float
                 field.floating && [
                   'placeholder:opacity-0',
-                  '[[data-slot=input-control]:is([data-start],:has(input:focus),:has(input:not(:placeholder-shown)),:has(input:autofill),:has(input:-webkit-autofill),:has(select:focus),:has(select:open),:has(select):not(:has(option[value=""]:checked)))_&]:placeholder:opacity-100',
+                  '[[data-slot=input-control]:is([data-start],:has(input:focus),:has(textarea:focus),:has(textarea:not(:placeholder-shown)),:has(input:not(:placeholder-shown)),:has(input:autofill),:has(input:-webkit-autofill),:has(select:focus),:has(select:open),:has(select):not(:has(option[value=""]:checked)))_&]:placeholder:opacity-100',
                 ],
                 inputClassName,
               )}
