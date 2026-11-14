@@ -2,7 +2,7 @@
 
 Hand-built React 19 components styled with Tailwind CSS v4: Accordion, Badge, Button, Card, Checkbox,
 CheckboxGroup, Dialog, Drawer, Input (plus Search, Password and Copy), Meter, Select, Sidebar,
-Switch, Table, Tabs, TabNav, ThemeSwitcher, Toast and Tooltip.
+Slider, RangeSlider, Switch, Table, Tabs, TabNav, ThemeSwitcher, Toast and Tooltip.
 
 The package ships ESM, type declarations and two CSS files. Your app compiles the CSS with its own
 Tailwind v4, so the design tokens become your utilities too (`bg-primary`, `text-fg`, ...).
@@ -64,6 +64,45 @@ animation; `region` opts in to a named landmark. Hidden mounted fields still par
 validation and FormData: expand the first invalid section before focusing its field. Storybook's
 **UI / Accordion / Form Validation** demonstrates that flow. Arrow keys move header focus without
 expanding, Enter/Space toggles, and reduced motion disables transitions.
+
+### Slider
+
+`Slider` uses a number; `RangeSlider` uses a `readonly [number, number]` and requires a name for
+each thumb. Both use native range inputs for accessibility and form submission.
+
+```tsx
+import { Slider, RangeSlider } from '@weichenlin/swell-ui'
+
+;<Slider label="Volume" defaultValue={40} formatValue={(value) => `${value}%`} />
+
+;<RangeSlider
+  label="Price range"
+  thumbLabels={['Minimum price', 'Maximum price']}
+  defaultValue={[200, 800]}
+  min={0}
+  max={1000}
+  step={50}
+  minStepsBetweenThumbs={2}
+  name={['priceMin', 'priceMax']}
+/>
+```
+
+Use `value` and `onValueChange` for controlled state, or `defaultValue` for uncontrolled state.
+Controlled owners must accept preview changes immediately. `onValueCommit` runs once after a
+changed pointer or keyboard gesture ends; put expensive work there. Cancellation restores the
+starting value with `onValueChange` reason `cancel`, without committing. Thumbs never swap or push.
+
+Defaults are `min=0`, `max=100`, `step=1`, `showValue=true`, and `minStepsBetweenThumbs=0`. Without
+an initial value, single starts at `min` and range starts at `[min,max]`. Bounds must be finite,
+`min < max`, and `(max-min)` must be a whole number of positive steps. External values must be on
+that grid, ordered, and satisfy the gap. `marks` are visual only, not a restricted list of values.
+
+`formatValue` formats both the visible and spoken value; `getValueText` overrides only the spoken
+text. Use `aria-label` when omitting a visible `label`. `className` and `ref` target the outer div.
+`name` enables native FormData; range accepts two explicit names. `form` supports an external
+form. Native reset restores uncontrolled defaults; controlled reset remains the owner's choice.
+Keyboard, RTL, cancellation, forms, exact input composition and theme examples live in
+**UI / Slider** in Storybook. Touch screen reader interaction requires device acceptance.
 
 ### Table
 
