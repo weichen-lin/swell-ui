@@ -33,11 +33,11 @@ const listVariant: Record<TabsVariant, string[]> = {
     // 1px divider as an inset shadow: the 2px bar paints over it instead of adding height
     'flex items-center shadow-[inset_0_-1px_0_var(--color-border-strong)]',
     // fg rather than primary: brand color is kept for primary CTAs, and fg already
-    // flips for dark, where Warm Brown would sink into the page
+    // flips for dark, where a dark brand color would sink into the page
     'before:bottom-0 before:h-0.5 before:bg-fg before:[translate:var(--tabs-indicator-x)_0]',
     'before:transition-[translate,width]',
     'forced-colors:before:bg-[Highlight] forced-colors:before:[forced-color-adjust:none]',
-    // Hover pill: fg at 7% so it reads on any surface (page, card, dialog) and stays warm
+    // Hover pill: fg at 7% so it reads on any surface (page, card, dialog) and follows the palette
     'after:pointer-events-none after:absolute after:top-0 after:left-0 after:-z-1 after:rounded-lg',
     'after:bg-fg/7 after:opacity-0 data-hover:after:opacity-100',
     'after:h-(--tabs-hover-h) after:w-(--tabs-hover-w)',

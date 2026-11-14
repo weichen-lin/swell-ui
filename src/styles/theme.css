@@ -1,54 +1,101 @@
 /*
- * swell-ui design tokens and base styles. Neutral grays; brand color is one knob (--color-primary).
+ * swell-ui design tokens and base styles.
  * Import right after tailwindcss. Contains no utilities and no @source:
  * use styles.css to also have Tailwind scan the components.
  *
- * Every color is written once as light-dark(<light>, <dark>). Which side applies follows
- * `color-scheme` on the root: the system by default, forced by data-theme="light" / "dark".
- * Tailwind's build polyfills light-dark() for browsers that lack it.
+ * Colors come in two layers:
+ * - Base colors (the palette): page, surfaces, text, brand, status. The only literal colors here;
+ *   these are what an app overrides.
+ * - Everything else is computed from them at runtime with var() and color-mix(), so overriding a
+ *   base color carries through. The mix percentages reproduce the tuned values for the default
+ *   palette and a warm parchment one, contrast-checked (text >=4.5:1, field borders >=3:1). A palette far from
+ *   these can still fall short: check contrast after changing bg, surface or fg.
+ *
+ * Light/dark pairs are written once as light-dark(<light>, <dark>), following `color-scheme` on
+ * the root: the system by default, forced by data-theme="light" / "dark". Tailwind's build
+ * polyfills light-dark() for browsers that lack it.
  */
 
 @theme {
-  /*
-   * Brand. The only two tokens to override for a rebrand: input focus, checked controls and
-   * their halos derive from these at runtime (plain var() references, no baked copies).
-   * Default is neutral: near-black on light, near-white on dark.
-   */
-  --color-primary: light-dark(#141414, #f9f9f9);
-  --color-primary-fg: light-dark(#f9f9f9, #141414);
-  /* Secondary brand color; no component uses it, so it just follows primary unless set */
+  /* ---- Base colors ---- */
+
+  --color-bg: light-dark(#f4f4f4, #141414); /* page */
+  --color-surface: light-dark(#f9f9f9, #303030); /* cards, panels, text fields */
+  --color-surface-raised: light-dark(#ffffff, #303030); /* popovers, dialogs */
+  --color-fg: light-dark(#141414, #f9f9f9); /* text */
+  /* Brand: defaults to the text color (neutral). A rebrand sets these two. */
+  --color-primary: var(--color-fg);
+  --color-primary-fg: light-dark(var(--color-surface), var(--color-bg));
+  --color-focus: #3898ec; /* keyboard focus outline */
+  /* Status. Light red on dark: one danger can't pass 4.5:1 both as a fill and as text. */
+  --color-danger: light-dark(#b53333, #ee8a80);
+  --color-success: light-dark(
+    #394d00,
+    #758e48
+  ); /* olive; deepest, so it parts from danger by lightness (CVD) */
+  --color-warning: light-dark(#a5761d, #e6b463); /* amber */
+  --color-info: light-dark(#3e7087, #74a6bf); /* muted teal-blue */
+
+  /* ---- Computed: fg mixed into bg (in oklab) unless noted ---- */
+
+  /* Secondary brand color; no component uses it */
   --color-accent: var(--color-primary);
 
-  /* Surfaces and text: pure grays, contrast-checked (fg-subtle >=4.5:1 on every surface) */
-  --color-bg: light-dark(#f4f4f4, #141414);
-  --color-surface: light-dark(#f9f9f9, #303030);
-  --color-surface-raised: light-dark(#ffffff, #303030);
-  --color-surface-muted: light-dark(#e6e6e6, #262626); /* dark: sunk below surface */
-  --color-fg: light-dark(#141414, #f9f9f9);
-  --color-fg-strong: light-dark(#4c4c4c, #aeaeae);
-  --color-fg-muted: light-dark(#5d5d5d, #aeaeae);
-  --color-fg-subtle: light-dark(#676767, #aaaaaa);
-  --color-border: light-dark(#eeeeee, #383838); /* row dividers */
-  --color-border-strong: light-dark(#e6e6e6, #3d3d3d);
-  --color-ring: light-dark(#cfcfcf, #3d3d3d);
-  --color-ring-deep: light-dark(#c0c0c0, #4c4c4c);
-  --color-inverse: light-dark(#303030, #141414);
-  --color-inverse-fg: light-dark(#f9f9f9, #aeaeae);
-  /* Light red + dark text on dark: one danger token can't pass 4.5:1 both as fill and as text */
-  --color-danger: light-dark(#b53333, #ee8a80);
-  --color-danger-fg: light-dark(#f9f9f9, #141414);
-  --color-focus: #3898ec; /* Focus Blue */
+  --color-surface-muted: light-dark(
+    color-mix(in oklab, var(--color-fg) 5%, var(--color-bg)),
+    color-mix(in oklab, var(--color-fg) 10%, var(--color-bg))
+  ); /* hover fills, secondary button; sunk below surface on dark */
+  --color-fg-strong: color-mix(in oklab, var(--color-fg) 71%, var(--color-bg));
+  --color-fg-muted: light-dark(
+    color-mix(in oklab, var(--color-fg) 63%, var(--color-bg)),
+    color-mix(in oklab, var(--color-fg) 71%, var(--color-bg))
+  );
+  /* >=4.5:1 on every surface, including surface-muted and the popover highlight */
+  --color-fg-subtle: light-dark(
+    color-mix(in oklab, var(--color-fg) 58%, var(--color-bg)),
+    color-mix(in oklab, var(--color-fg) 69%, var(--color-bg))
+  );
+  --color-border: light-dark(
+    color-mix(in oklab, var(--color-fg) 2%, var(--color-bg)),
+    color-mix(in oklab, var(--color-fg) 19%, var(--color-bg))
+  ); /* row dividers */
+  --color-border-strong: light-dark(
+    color-mix(in oklab, var(--color-fg) 5%, var(--color-bg)),
+    color-mix(in oklab, var(--color-fg) 22%, var(--color-bg))
+  );
+  --color-ring: light-dark(
+    color-mix(in oklab, var(--color-fg) 14%, var(--color-bg)),
+    color-mix(in oklab, var(--color-fg) 22%, var(--color-bg))
+  );
+  --color-ring-deep: light-dark(
+    color-mix(in oklab, var(--color-fg) 20%, var(--color-bg)),
+    color-mix(in oklab, var(--color-fg) 29%, var(--color-bg))
+  );
+  /* Tooltips and the `dark` button: near-fg on light, the page itself on dark */
+  --color-inverse: light-dark(
+    color-mix(in oklab, var(--color-fg) 85%, var(--color-bg)),
+    var(--color-bg)
+  );
+  --color-inverse-fg: light-dark(var(--color-surface), var(--color-fg-muted));
+  --color-danger-fg: light-dark(var(--color-surface), var(--color-bg));
 
   /*
-   * Text fields: a slightly sunk solid fill (fg 4% over bg in oklab, light; white 6%, dark).
-   * Borders are kept >=3:1 against both the page and the fill (WCAG 1.4.11).
-   * Hover stacks cues (stronger border, lifted fill, faint drop shadow): a border step alone is too subtle.
+   * Text fields sit on the container color (as Ant Design, Primer and Fluent do): lighter than the
+   * page, the same as a card. Read-only drops to the page color, so it reads flatter than editable.
+   * Borders are kept >=3:1 against the page, the card and the fill (WCAG 1.4.11).
+   * Hover changes the border and adds a faint drop shadow; the fill stays.
    */
-  --color-input-bg: light-dark(#eaeaea, #1f1f1f);
-  --color-input-border: light-dark(#7e7e7e, #818181);
-  --color-input-placeholder: light-dark(#696969, #989898);
-  --color-input-border-hover: light-dark(#4c4c4c, #aeaeae);
-  --color-input-bg-hover: light-dark(#f2f2f2, #262626);
+  --color-input-bg: var(--color-surface);
+  --color-input-bg-hover: var(--color-input-bg);
+  --color-input-border: light-dark(
+    color-mix(in oklab, var(--color-fg) 48%, var(--color-bg)),
+    color-mix(in oklab, var(--color-fg) 52%, var(--color-bg))
+  );
+  --color-input-placeholder: light-dark(
+    color-mix(in oklab, var(--color-fg) 57%, var(--color-bg)),
+    color-mix(in oklab, var(--color-fg) 62%, var(--color-bg))
+  );
+  --color-input-border-hover: var(--color-fg-strong);
   --color-input-focus: var(--color-primary);
   --color-input-highlight: light-dark(rgb(0 0 0 / 0.03), rgb(255 255 255 / 0.04));
   --shadow-input: inset 0 1px 0 var(--color-input-highlight);
@@ -69,13 +116,19 @@
   --shadow-switch-thumb: 0 0 0 0.5px rgb(0 0 0 / 0.08), 0 1px 2px rgb(0 0 0 / 0.2);
 
   /*
-   * Popovers (the Select picker): raised above the page with a hairline and a soft shadow.
-   * Highlight is the hovered/keyboard-active row; same fill for both so they never disagree.
+   * Popovers (the Select picker): the raised surface with a hairline and a soft shadow; fg is mixed
+   * into the raised surface here. Highlight is the hovered/keyboard-active row.
    * Dark shadows are darker and denser: the surface itself already separates from near-black.
    */
-  --color-popover-bg: light-dark(#ffffff, #303030);
-  --color-popover-border: light-dark(#dedede, #3d3d3d);
-  --color-popover-highlight: light-dark(#ededed, #3d3d3d);
+  --color-popover-bg: var(--color-surface-raised);
+  --color-popover-border: light-dark(
+    color-mix(in oklab, var(--color-fg) 12%, var(--color-surface-raised)),
+    color-mix(in oklab, var(--color-fg) 8%, var(--color-surface-raised))
+  );
+  --color-popover-highlight: light-dark(
+    color-mix(in oklab, var(--color-fg) 7%, var(--color-surface-raised)),
+    color-mix(in oklab, var(--color-fg) 8%, var(--color-surface-raised))
+  );
   --shadow-popover:
     0 8px 24px light-dark(rgb(0 0 0 / 0.08), rgb(0 0 0 / 0.4)),
     0 1px 3px light-dark(rgb(0 0 0 / 0.06), rgb(0 0 0 / 0.3));
@@ -86,43 +139,88 @@
   --shadow-dialog:
     0 16px 48px light-dark(rgb(0 0 0 / 0.12), rgb(0 0 0 / 0.5)),
     0 2px 6px light-dark(rgb(0 0 0 / 0.06), rgb(0 0 0 / 0.3));
-  --color-dialog-backdrop: light-dark(rgb(20 20 20 / 0.4), rgb(0 0 0 / 0.6));
+  --color-dialog-backdrop: light-dark(
+    color-mix(in oklab, var(--color-fg) 40%, transparent),
+    rgb(0 0 0 / 0.6)
+  );
 
   /*
    * Status tones (Badge, Toast, ...). Per tone: main = solid fill / standalone icon,
    * -fg = text on a solid fill, -subtle-bg/-subtle-fg = tinted badge, -border = its hairline.
-   * subtle-bg is main mixed over bg in oklab (14% light / 16% dark), border likewise (35% / 40%),
-   * baked to hex; subtle-fg is >=5:1 on subtle-bg. Meaning is carried by text + icon; hue and
-   * lightness are spaced so success vs danger also survives red-green CVD.
+   * subtle-bg is main mixed into bg (14% light / 16% dark), border likewise (35% / 40%);
+   * subtle-fg is main pushed toward fg until >=5:1 on subtle-bg (the % differs per tone).
+   * Meaning is carried by text + icon, not color alone.
    */
-  /* success: olive; deepest tone so it separates from danger by lightness */
-  --color-success: light-dark(#394d00, #758e48);
-  --color-success-fg: light-dark(#f9f9f9, #141414);
-  --color-success-subtle-bg: light-dark(#d7dbd2, #22251d);
-  --color-success-subtle-fg: light-dark(#3a4c0e, #98b070);
-  --color-success-border: light-dark(#adb79f, #384129);
-  /* warning: amber; dark solid-fg because light text on amber fails 4.5:1 */
-  --color-warning: light-dark(#a5761d, #e6b463);
-  --color-warning-fg: #141414;
-  --color-warning-subtle-bg: light-dark(#e9e2d8, #302a21);
-  --color-warning-subtle-fg: light-dark(#7e5600, #e2b56e);
-  --color-warning-border: light-dark(#d9c7ad, #5f4e34);
-  /* danger: main/-fg are above */
-  --color-danger-subtle-bg: light-dark(#efdad8, #322523);
-  --color-danger-subtle-fg: light-dark(#a2302f, #f0958c);
-  --color-danger-border: light-dark(#e5b3ae, #63403c);
-  /* info: muted teal-blue */
-  --color-info: light-dark(#3e7087, #74a6bf);
-  --color-info-fg: light-dark(#f9f9f9, #141414);
-  --color-info-subtle-bg: light-dark(#dae1e4, #22282b);
-  --color-info-subtle-fg: light-dark(#356075, #87b4cb);
-  --color-info-border: light-dark(#b3c4cd, #384952);
-  /* neutral: gray */
-  --color-neutral: light-dark(#636363, #aeaeae);
-  --color-neutral-fg: light-dark(#f9f9f9, #141414);
-  --color-neutral-subtle-bg: light-dark(#dedede, #292929);
-  --color-neutral-subtle-fg: light-dark(#5b5b5b, #b2b2b2);
-  --color-neutral-border: light-dark(#bfbfbf, #4c4c4c);
+  --color-success-fg: light-dark(var(--color-surface), var(--color-bg));
+  --color-success-subtle-bg: light-dark(
+    color-mix(in oklab, var(--color-success) 14%, var(--color-bg)),
+    color-mix(in oklab, var(--color-success) 16%, var(--color-bg))
+  );
+  --color-success-subtle-fg: light-dark(
+    color-mix(in oklab, var(--color-fg) 2%, var(--color-success)),
+    color-mix(in oklab, var(--color-fg) 14%, var(--color-success))
+  );
+  --color-success-border: light-dark(
+    color-mix(in oklab, var(--color-success) 35%, var(--color-bg)),
+    color-mix(in oklab, var(--color-success) 40%, var(--color-bg))
+  );
+  /* Dark text on amber in both schemes: light text on it fails 4.5:1 */
+  --color-warning-fg: light-dark(var(--color-fg), var(--color-bg));
+  --color-warning-subtle-bg: light-dark(
+    color-mix(in oklab, var(--color-warning) 14%, var(--color-bg)),
+    color-mix(in oklab, var(--color-warning) 16%, var(--color-bg))
+  );
+  --color-warning-subtle-fg: light-dark(
+    color-mix(in oklab, var(--color-fg) 30%, var(--color-warning)),
+    color-mix(in oklab, var(--color-fg) 2%, var(--color-warning))
+  );
+  --color-warning-border: light-dark(
+    color-mix(in oklab, var(--color-warning) 35%, var(--color-bg)),
+    color-mix(in oklab, var(--color-warning) 40%, var(--color-bg))
+  );
+  --color-danger-subtle-bg: light-dark(
+    color-mix(in oklab, var(--color-danger) 14%, var(--color-bg)),
+    color-mix(in oklab, var(--color-danger) 16%, var(--color-bg))
+  );
+  --color-danger-subtle-fg: light-dark(
+    color-mix(in oklab, var(--color-fg) 11%, var(--color-danger)),
+    color-mix(in oklab, var(--color-fg) 2%, var(--color-danger))
+  );
+  --color-danger-border: light-dark(
+    color-mix(in oklab, var(--color-danger) 35%, var(--color-bg)),
+    color-mix(in oklab, var(--color-danger) 40%, var(--color-bg))
+  );
+  --color-info-fg: light-dark(var(--color-surface), var(--color-bg));
+  --color-info-subtle-bg: light-dark(
+    color-mix(in oklab, var(--color-info) 14%, var(--color-bg)),
+    color-mix(in oklab, var(--color-info) 16%, var(--color-bg))
+  );
+  --color-info-subtle-fg: light-dark(
+    color-mix(in oklab, var(--color-fg) 17%, var(--color-info)),
+    color-mix(in oklab, var(--color-fg) 2%, var(--color-info))
+  );
+  --color-info-border: light-dark(
+    color-mix(in oklab, var(--color-info) 35%, var(--color-bg)),
+    color-mix(in oklab, var(--color-info) 40%, var(--color-bg))
+  );
+  /* neutral: a gray between fg and bg */
+  --color-neutral: light-dark(
+    color-mix(in oklab, var(--color-fg) 60%, var(--color-bg)),
+    color-mix(in oklab, var(--color-fg) 71%, var(--color-bg))
+  );
+  --color-neutral-fg: light-dark(var(--color-surface), var(--color-bg));
+  --color-neutral-subtle-bg: light-dark(
+    color-mix(in oklab, var(--color-neutral) 14%, var(--color-bg)),
+    color-mix(in oklab, var(--color-neutral) 16%, var(--color-bg))
+  );
+  --color-neutral-subtle-fg: light-dark(
+    color-mix(in oklab, var(--color-fg) 11%, var(--color-neutral)),
+    color-mix(in oklab, var(--color-fg) 2%, var(--color-neutral))
+  );
+  --color-neutral-border: light-dark(
+    color-mix(in oklab, var(--color-neutral) 35%, var(--color-bg)),
+    color-mix(in oklab, var(--color-neutral) 40%, var(--color-bg))
+  );
 
   /* Fonts and radii are Tailwind's defaults; see the README to change them */
   --shadow-whisper: rgba(0, 0, 0, 0.05) 0 4px 24px;
