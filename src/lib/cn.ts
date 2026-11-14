@@ -44,6 +44,8 @@ const twMerge = extendTailwindMerge({
         'input-halo-invalid-focus',
         'control-checked',
         'control-checked-fg',
+        'switch-handle',
+        'switch-handle-checked',
         'popover-bg',
         'popover-border',
         'popover-highlight',

@@ -107,11 +107,21 @@
   --color-input-halo-invalid-focus: color-mix(in oklab, var(--color-danger) 22%, transparent);
 
   /*
-   * Selection controls (Switch, Checkbox): the checked fill and the mark drawn on it (thumb, check, dash).
+   * Selection controls (Switch, Checkbox): the checked fill, and the check/dash drawn on it.
    * The off track/box reuses the input border, which is already >=3:1 on the page and the fill.
    */
   --color-control-checked: var(--color-primary);
   --color-control-checked-fg: var(--color-primary-fg);
+  /*
+   * Switch handle (the thumb). Off: the raised surface (white) on light, the text color on dark.
+   * On: white, unless the checked track is very light (oklch L > 0.9, e.g. the default brand on
+   * dark), then black. That is what CSS contrast-color() does, written with relative color syntax
+   * for wider support.
+   */
+  --color-switch-handle: light-dark(var(--color-surface-raised), var(--color-fg));
+  --color-switch-handle-checked: oklch(
+    from var(--color-control-checked) clamp(0, (0.9 - l) * 1000, 1) 0 0
+  );
   /* Thumb: a hairline plus a soft drop straight down (a sideways offset makes the small thumb look shifted) */
   --shadow-switch-thumb: 0 0 0 0.5px rgb(0 0 0 / 0.08), 0 1px 2px rgb(0 0 0 / 0.2);
 

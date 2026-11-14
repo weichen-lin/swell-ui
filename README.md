@@ -120,25 +120,26 @@ tokens are also Tailwind utilities (`bg-surface`, `text-fg-muted`, `border-input
 
 **Computed** (from the base colors; override only to fine-tune)
 
-| Token                                                         | Used for                                                         | Computed from                   |
-| ------------------------------------------------------------- | ---------------------------------------------------------------- | ------------------------------- |
-| `--color-accent`                                              | Secondary brand color; unused by components                      | `primary`                       |
-| `--color-surface-muted`                                       | Hover fills, secondary button                                    | fg into bg                      |
-| `--color-fg-strong`, `-fg-muted`, `-fg-subtle`                | Text from strong to quiet (`fg-subtle` >=4.5:1 on every surface) | fg into bg                      |
-| `--color-border`, `-border-strong`, `-ring`, `-ring-deep`     | Dividers, hairlines, 1px button and tab-list rings               | fg into bg                      |
-| `--color-inverse`, `-inverse-fg`                              | `dark` button, tooltips                                          | fg into bg; the page on dark    |
-| `--color-input-bg`, `-input-bg-hover`                         | Text field fill (read-only fields use `bg`)                      | `surface`                       |
-| `--color-input-border`, `-input-border-hover`                 | Field border; also the off track of Switch and box of Checkbox   | fg into bg; `fg-strong`         |
-| `--color-input-placeholder`                                   | Placeholder text                                                 | fg into bg                      |
-| `--color-input-focus`, `-input-halo`                          | Focused field border and its 3px ring                            | `primary`; input-focus at 14%   |
-| `--color-input-halo-invalid`, `-invalid-focus`                | Same ring for invalid fields                                     | danger at 12% / 22%             |
-| `--color-control-checked`, `-control-checked-fg`              | Checked Switch/Checkbox fill and its mark                        | `primary` / `primary-fg`        |
-| `--color-popover-bg`, `-popover-border`, `-popover-highlight` | Select picker and dialogs; highlight is the active row           | `surface-raised`, fg into it    |
-| `--color-dialog-backdrop`                                     | Dimmed page behind Dialog and Drawer                             | fg at 40%; black at 60% on dark |
-| `--color-neutral`                                             | Neutral status tone                                              | fg into bg                      |
-| `--color-{tone}-fg`                                           | Text on a solid status fill                                      | `surface` / `bg`                |
-| `--color-{tone}-subtle-bg`, `-border`                         | Tinted badge and its hairline                                    | tone into bg                    |
-| `--color-{tone}-subtle-fg`                                    | Text on the tinted badge (>=5:1)                                 | tone pushed toward fg           |
+| Token                                                         | Used for                                                         | Computed from                                                            |
+| ------------------------------------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `--color-accent`                                              | Secondary brand color; unused by components                      | `primary`                                                                |
+| `--color-surface-muted`                                       | Hover fills, secondary button                                    | fg into bg                                                               |
+| `--color-fg-strong`, `-fg-muted`, `-fg-subtle`                | Text from strong to quiet (`fg-subtle` >=4.5:1 on every surface) | fg into bg                                                               |
+| `--color-border`, `-border-strong`, `-ring`, `-ring-deep`     | Dividers, hairlines, 1px button and tab-list rings               | fg into bg                                                               |
+| `--color-inverse`, `-inverse-fg`                              | `dark` button, tooltips                                          | fg into bg; the page on dark                                             |
+| `--color-input-bg`, `-input-bg-hover`                         | Text field fill (read-only fields use `bg`)                      | `surface`                                                                |
+| `--color-input-border`, `-input-border-hover`                 | Field border; also the off track of Switch and box of Checkbox   | fg into bg; `fg-strong`                                                  |
+| `--color-input-placeholder`                                   | Placeholder text                                                 | fg into bg                                                               |
+| `--color-input-focus`, `-input-halo`                          | Focused field border and its 3px ring                            | `primary`; input-focus at 14%                                            |
+| `--color-input-halo-invalid`, `-invalid-focus`                | Same ring for invalid fields                                     | danger at 12% / 22%                                                      |
+| `--color-control-checked`, `-control-checked-fg`              | Checked Switch/Checkbox fill and the check on it                 | `primary` / `primary-fg`                                                 |
+| `--color-switch-handle`, `-switch-handle-checked`             | Switch thumb, off / on                                           | off: `surface-raised` / dark `fg`; on: white or black by track lightness |
+| `--color-popover-bg`, `-popover-border`, `-popover-highlight` | Select picker and dialogs; highlight is the active row           | `surface-raised`, fg into it                                             |
+| `--color-dialog-backdrop`                                     | Dimmed page behind Dialog and Drawer                             | fg at 40%; black at 60% on dark                                          |
+| `--color-neutral`                                             | Neutral status tone                                              | fg into bg                                                               |
+| `--color-{tone}-fg`                                           | Text on a solid status fill                                      | `surface` / `bg`                                                         |
+| `--color-{tone}-subtle-bg`, `-border`                         | Tinted badge and its hairline                                    | tone into bg                                                             |
+| `--color-{tone}-subtle-fg`                                    | Text on the tinted badge (>=5:1)                                 | tone pushed toward fg                                                    |
 
 Shadows (`--shadow-input`, `-input-lift`, `-switch-thumb`, `-popover`, `-dialog`, `-whisper`) and
 the input highlight are black or white at low opacity: they shade, so they have no palette color.

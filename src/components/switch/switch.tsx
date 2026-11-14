@@ -140,7 +140,7 @@ export function Switch({
             aria-hidden
             className={cn(
               'pointer-events-none absolute inset-s-0.5 top-0.5 grid place-items-center rounded-full',
-              'h-(--switch-thumb) w-(--switch-thumb-w) bg-control-checked-fg text-control-checked shadow-switch-thumb',
+              'h-(--switch-thumb) w-(--switch-thumb-w) bg-switch-handle peer-checked:bg-switch-handle-checked text-control-checked shadow-switch-thumb',
               // translate (not left) so the slide stays on the compositor; mirrored in RTL
               '[--switch-dir:1] rtl:[--switch-dir:-1] [translate:calc(var(--switch-x)*var(--switch-dir))_0]',
               '[--switch-x:0px] [--switch-thumb-w:var(--switch-thumb)] peer-checked:[--switch-x:var(--switch-travel)]',
