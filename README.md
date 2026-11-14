@@ -266,6 +266,23 @@ links do) closes it.
 </TabNav>
 ```
 
+`Button` takes `asChild` too, for a navigation that should look like a button. It keeps the
+button's look, icons and ripple, and stays a real link (open in a new tab, copy the URL):
+
+```tsx
+<Button asChild intent="secondary" iconLeft={<Plus />}>
+  <Link to="/apps/new">New app</Link>
+</Button>
+
+<Button asChild icon={<Settings />} aria-label="Settings">
+  <Link to="/settings" />
+</Button>
+```
+
+`disabled` (with or without `disabledReason`) works as on the button: the link stays focusable with
+`aria-disabled`, and clicks are stopped before your Link sees them, so it never navigates. `loading`
+and `type` are button-only.
+
 ## Develop
 
 Node 26.11.1 (`.node-version`, via fnm) and pnpm 12.

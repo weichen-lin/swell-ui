@@ -46,7 +46,13 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 // Story args span both Button shapes; drop the icon-only keys before rendering text buttons
-function textArgs({ icon: _icon, tooltip: _tooltip, tooltipSide: _side, ...args }: ButtonProps) {
+function textArgs({
+  icon: _icon,
+  tooltip: _tooltip,
+  tooltipSide: _side,
+  asChild: _asChild,
+  ...args
+}: ButtonProps) {
   return args
 }
 
@@ -235,4 +241,26 @@ export const IconOnlyAllVariants: Story = {
       </div>
     )
   },
+}
+
+/** `asChild`: a link (here a plain `<a>`; in an app, your router's Link) styled as a button. */
+export const AsLink: Story = {
+  parameters: { controls: { disable: true } },
+  render: () => (
+    <div className="flex items-center gap-3">
+      <Button asChild iconLeft={<GitBranch />}>
+        <a href="#branches">View branches</a>
+      </Button>
+      <Button asChild intent="secondary">
+        <a href="#settings">Settings</a>
+      </Button>
+      <Button asChild intent="secondary" disabled disabledReason="You need admin access">
+        <a href="#danger-zone">Danger zone</a>
+      </Button>
+      <Button asChild intent="ghost" icon={<Settings />} aria-label="Open settings">
+        {/* oxlint-disable-next-line jsx-a11y/anchor-has-content, jsx-a11y/control-has-associated-label -- Button puts the icon and aria-label on it */}
+        <a href="#settings" />
+      </Button>
+    </div>
+  ),
 }

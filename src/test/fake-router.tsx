@@ -51,7 +51,8 @@ export function FakeLink({
       {...props}
       href={disabled ? undefined : to}
       aria-current={path === to ? 'page' : undefined}
-      aria-disabled={disabled || undefined}
+      // Only when disabled itself, so an aria-disabled passed in (e.g. by Button asChild) is kept
+      aria-disabled={disabled || props['aria-disabled']}
       onClick={(e) => {
         onClick?.(e)
         if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return

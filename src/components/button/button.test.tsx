@@ -1,7 +1,9 @@
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { GitBranch, Trash2 } from 'lucide-react'
+import { createRef } from 'react'
 import { afterEach, beforeEach, expect, test, vi } from 'vite-plus/test'
+import { FakeLink, FakeOutlet, FakeRouter } from '../../test/fake-router'
 import { Button } from './button'
 
 const proto = Element.prototype as { animate?: unknown }
@@ -333,4 +335,122 @@ test('text Button rejects icon-only tooltip props', () => {
   render(<Button tooltip={false}>Save</Button>)
   // @ts-expect-error tooltipSide is icon-only
   render(<Button tooltipSide="bottom">Save</Button>)
+})
+
+const pages = { '/': 'Home', '/apps/new': 'New app page' }
+
+test('asChild renders the link styled as a button, with props, classes and ref merged in', () => {
+  const ref = createRef<HTMLElement>()
+  render(
+    <FakeRouter initialPath="/">
+      <Button
+        asChild
+        ref={ref as never}
+        intent="secondary"
+        className="extra"
+        title="Create"
+        iconLeft={<GitBranch data-testid="icon" />}
+      >
+        <FakeLink to="/apps/new" className="own">
+          New app
+        </FakeLink>
+      </Button>
+    </FakeRouter>,
+  )
+  expect(screen.queryByRole('button')).toBeNull()
+  const link = screen.getByRole('link', { name: 'New app' })
+  expect(ref.current).toBe(link)
+  expect(link).toHaveAttribute('href', '/apps/new')
+  expect(link).toHaveAttribute('data-slot', 'button')
+  expect(link).toHaveAttribute('title', 'Create')
+  expect(link).not.toHaveAttribute('type')
+  expect(link).not.toHaveAttribute('aria-disabled')
+  expect(link).toHaveClass('bg-surface-muted', 'h-9.5', 'ps-3', 'extra', 'own')
+  // Ripple layer and icon live inside the link, not around it
+  expect(link.querySelector('[data-ripple]')).not.toBeNull()
+  expect(link).toContainElement(screen.getByTestId('icon'))
+})
+
+test('asChild link navigates through the router and runs both click handlers', async () => {
+  const user = userEvent.setup()
+  const onButtonClick = vi.fn()
+  const onLinkClick = vi.fn()
+  render(
+    <FakeRouter initialPath="/">
+      <Button asChild onClick={onButtonClick}>
+        <FakeLink to="/apps/new" onClick={onLinkClick}>
+          New app
+        </FakeLink>
+      </Button>
+      <FakeOutlet pages={pages} />
+    </FakeRouter>,
+  )
+  await user.click(screen.getByRole('link', { name: 'New app' }))
+  expect(onLinkClick).toHaveBeenCalledOnce()
+  expect(onButtonClick).toHaveBeenCalledOnce()
+  expect(screen.getByText('New app page')).toBeInTheDocument()
+})
+
+test('disabled asChild link stays focusable but does not navigate or call handlers', async () => {
+  const user = userEvent.setup()
+  const onButtonClick = vi.fn()
+  const onLinkClick = vi.fn()
+  const onNavigate = vi.fn()
+  render(
+    <FakeRouter initialPath="/" onNavigate={onNavigate}>
+      <Button asChild disabled onClick={onButtonClick}>
+        <FakeLink to="/apps/new" onClick={onLinkClick}>
+          New app
+        </FakeLink>
+      </Button>
+      <FakeOutlet pages={pages} />
+    </FakeRouter>,
+  )
+  const link = screen.getByRole('link', { name: 'New app' })
+  expect(link).toHaveAttribute('aria-disabled', 'true')
+  expect(link).toHaveClass('cursor-not-allowed', 'opacity-50')
+
+  await user.click(link)
+  expect(link).toHaveFocus()
+  await user.keyboard('{Enter}')
+  // A bare <a> would follow its href on click; the capture handler cancels that too
+  expect(fireEvent.click(link)).toBe(false)
+  expect(
+    fireEvent(link, new MouseEvent('auxclick', { bubbles: true, cancelable: true, button: 1 })),
+  ).toBe(false)
+
+  expect(onLinkClick).not.toHaveBeenCalled()
+  expect(onButtonClick).not.toHaveBeenCalled()
+  expect(onNavigate).not.toHaveBeenCalled()
+  expect(screen.getByText('Home')).toBeInTheDocument()
+})
+
+test('disabledReason on an asChild link describes it with a tooltip', async () => {
+  const user = userEvent.setup()
+  render(
+    <FakeRouter initialPath="/">
+      <Button asChild disabled disabledReason="You need admin access">
+        <FakeLink to="/apps/new">New app</FakeLink>
+      </Button>
+    </FakeRouter>,
+  )
+  const link = screen.getByRole('link', { name: 'New app' })
+  await user.tab()
+  expect(link).toHaveFocus()
+  const tip = await screen.findByRole('tooltip')
+  expect(tip).toHaveTextContent('You need admin access')
+  expect(link.getAttribute('aria-describedby')).toContain(tip.id)
+})
+
+test('icon-only asChild puts the icon inside the link, named by aria-label', () => {
+  render(
+    <FakeRouter initialPath="/">
+      <Button asChild icon={<Trash2 data-testid="icon" />} aria-label="Delete app" tooltip={false}>
+        <FakeLink to="/apps/1/delete" />
+      </Button>
+    </FakeRouter>,
+  )
+  const link = screen.getByRole('link', { name: 'Delete app' })
+  expect(link).toHaveClass('aspect-square')
+  expect(link).toContainElement(screen.getByTestId('icon'))
 })

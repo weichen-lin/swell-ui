@@ -1,8 +1,17 @@
 import { cva, type VariantProps } from 'class-variance-authority'
 import { LoaderCircle } from 'lucide-react'
-import type { ComponentProps, ReactNode } from 'react'
+import {
+  Children,
+  cloneElement,
+  type ComponentProps,
+  isValidElement,
+  type MouseEvent,
+  type ReactElement,
+  type ReactNode,
+} from 'react'
 import { usePressFeedback } from '../../hooks/use-press-feedback'
 import { cn } from '../../lib/cn'
+import { Slot, type SlotProps, wrapChildren } from '../../lib/slot'
 import { Tooltip, type TooltipProps } from '../tooltip'
 
 const buttonVariants = cva(
@@ -185,14 +194,26 @@ type BaseProps = Omit<ComponentProps<'button'>, 'children'> &
     ripple?: boolean
   }
 
+/** With `asChild` the host is your element (a router Link): loading and `type` are button-only. */
+type AsChildProps = {
+  /**
+   * Render the only child (e.g. a router Link) instead of a `<button>`, with the button's props,
+   * classes, ref and content merged into it.
+   */
+  asChild: true
+  children: ReactElement
+  loading?: never
+  loadingText?: never
+  type?: never
+}
+
 type TextButtonProps = BaseProps & {
   icon?: never
   iconLeft?: ReactNode
   iconRight?: ReactNode
-  children?: ReactNode
   tooltip?: never
   tooltipSide?: never
-}
+} & ({ asChild?: false; children?: ReactNode } | AsChildProps)
 
 type IconOnlyButtonProps = Omit<BaseProps, 'aria-label' | 'fullWidth'> & {
   /** Renders a square icon-only button. */
@@ -203,14 +224,14 @@ type IconOnlyButtonProps = Omit<BaseProps, 'aria-label' | 'fullWidth'> & {
   tooltip?: boolean
   tooltipSide?: TooltipProps['side']
   fullWidth?: never
-  children?: never
   iconLeft?: never
   iconRight?: never
-}
+} & ({ asChild?: false; children?: never } | AsChildProps)
 
 export type ButtonProps = TextButtonProps | IconOnlyButtonProps
 
 type ImplProps = Omit<BaseProps, 'disabledReason'> & {
+  asChild?: boolean
   iconLeft?: ReactNode
   iconRight?: ReactNode
   children?: ReactNode
@@ -218,7 +239,15 @@ type ImplProps = Omit<BaseProps, 'disabledReason'> & {
   square?: boolean
 }
 
+// A disabled link must not navigate. Capture runs before the Link's own click handler, and stopping
+// the event there keeps the router (and the caller's onClick) from ever seeing it.
+function blockActivation(e: MouseEvent) {
+  e.preventDefault()
+  e.stopPropagation()
+}
+
 function ButtonImpl({
+  asChild = false,
   className,
   intent,
   size,
@@ -234,11 +263,61 @@ function ButtonImpl({
   tooltip,
   type = 'button',
   onClick,
+  onClickCapture,
+  onAuxClickCapture,
   children,
   ...props
 }: ImplProps) {
   const s = size ?? 'md'
   const inert = disabled || loading
+  const classes = cn(
+    buttonVariants({ intent, size, tone, fullWidth, square }),
+    iconPadding(s, iconLeft, iconRight),
+    stateClass(disabled, loading),
+    className,
+  )
+  const content = (inner: ReactNode) => (
+    <ButtonContent
+      size={s}
+      ripple={ripple ?? true}
+      loading={loading}
+      iconLeft={iconLeft}
+      iconRight={iconRight}
+    >
+      {inner}
+    </ButtonContent>
+  )
+
+  if (asChild) {
+    const child = Children.only(children)
+    if (!isValidElement<{ children?: unknown }>(child)) return null
+    // Same as the <button>: aria-disabled keeps it focusable, activation is blocked instead
+    const link = (
+      <Slot
+        {...(props as SlotProps)}
+        data-slot="button"
+        aria-disabled={disabled || undefined}
+        className={classes}
+        onClick={onClick as SlotProps['onClick']}
+        onClickCapture={disabled ? blockActivation : (onClickCapture as SlotProps['onClick'])}
+        // Middle click opens a new tab without a click event
+        onAuxClickCapture={
+          disabled ? blockActivation : (onAuxClickCapture as SlotProps['onAuxClickCapture'])
+        }
+      >
+        {cloneElement(child, {
+          children: wrapChildren(child.props.children, content),
+        })}
+      </Slot>
+    )
+    return tooltip ? (
+      <Tooltip {...tooltip} className={fullWidth ? 'flex w-full' : undefined}>
+        {link}
+      </Tooltip>
+    ) : (
+      link
+    )
+  }
 
   // Never native `disabled`: it drops focus, so keyboard and screen reader users lose their place.
   // aria-disabled keeps it focusable; activation (incl. form submit) is blocked here instead.
@@ -249,12 +328,9 @@ function ButtonImpl({
       data-slot="button"
       aria-disabled={inert || undefined}
       aria-busy={loading || undefined}
-      className={cn(
-        buttonVariants({ intent, size, tone, fullWidth, square }),
-        iconPadding(s, iconLeft, iconRight),
-        stateClass(disabled, loading),
-        className,
-      )}
+      className={classes}
+      onClickCapture={onClickCapture}
+      onAuxClickCapture={onAuxClickCapture}
       onClick={(e) => {
         if (inert) {
           e.preventDefault()
@@ -263,15 +339,7 @@ function ButtonImpl({
         onClick?.(e)
       }}
     >
-      <ButtonContent
-        size={s}
-        ripple={ripple ?? true}
-        loading={loading}
-        iconLeft={iconLeft}
-        iconRight={iconRight}
-      >
-        {children}
-      </ButtonContent>
+      {content(children)}
     </button>
   )
 
@@ -299,6 +367,7 @@ function IconOnlyButton({
   disabledReason,
   className,
   size,
+  children,
   ...props
 }: IconOnlyButtonProps) {
   const reason = props.disabled ? disabledReason : undefined
@@ -311,10 +380,11 @@ function IconOnlyButton({
         ? { content: undefined }
         : undefined
 
-  // Explicit children win over any stray `children` in the spread
+  // The icon is the content: inside the asChild element, or the <button>'s own children
+  const child = Children.toArray(children)[0]
   return (
     <ButtonImpl {...props} size={size} tooltip={tip} square className={className}>
-      {icon}
+      {props.asChild && isValidElement(child) ? cloneElement(child, undefined, icon) : icon}
     </ButtonImpl>
   )
 }
