@@ -2,7 +2,7 @@
 
 Hand-built React 19 components styled with Tailwind CSS v4: Badge, Button, Card, Checkbox,
 CheckboxGroup, Dialog, Drawer, Input (plus Search, Password and Copy), Meter, Select, Sidebar,
-Switch, Tabs, TabNav, ThemeSwitcher, Toast and Tooltip.
+Switch, Table, Tabs, TabNav, ThemeSwitcher, Toast and Tooltip.
 
 The package ships ESM, type declarations and two CSS files. Your app compiles the CSS with its own
 Tailwind v4, so the design tokens become your utilities too (`bg-primary`, `text-fg`, ...).
@@ -36,6 +36,28 @@ export function App() {
     </>
   )
 }
+```
+
+### Table
+
+Pass the current rows, column definitions, and a stable row ID. Add `search`, `sorting`, `pagination`,
+or `selection` to show controlled UI. The caller handles filtering, sorting, and fetching or slicing
+rows. The pagination `rowCount` is the total after filtering, before paging.
+
+```tsx
+import { Table } from '@weichenlin/swell-ui'
+
+;<Table
+  title="Deployments"
+  data={deployments}
+  getRowId={(row) => row.id}
+  columns={[
+    { id: 'service', header: 'Service', rowHeader: true, cell: (row) => row.service },
+    { id: 'duration', header: 'Duration', numeric: true, cell: (row) => row.duration },
+  ]}
+  emptyState="No deployments yet"
+  noResults="No matching deployments"
+/>
 ```
 
 ### Change the brand
