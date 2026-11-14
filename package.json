@@ -1,6 +1,6 @@
 {
   "name": "@weichenlin/swell-ui",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Hand-built React components styled with Tailwind CSS v4.",
   "files": [
     "dist"
