@@ -1,0 +1,34 @@
+---
+title: Dark Mode
+description: Follow the system theme or force light or dark with one attribute.
+---
+
+Without a `data-theme` attribute the theme follows the system (`prefers-color-scheme`).
+`data-theme="light"` or `data-theme="dark"` on `<html>` forces one. The `dark:` variant follows the
+same rule.
+
+Under the hood the root's `color-scheme` is `light dark`, `light` or `dark` accordingly, and every
+color token picks its side with `light-dark()`. Browsers support it natively from Chrome 123,
+Safari 17.5 and Firefox 120; Tailwind's production build rewrites it for older targets.
+
+`useTheme` persists the choice and sets the attribute; `ThemeSwitcher` is the toggle button:
+
+```tsx
+import { ThemeSwitcher, useTheme } from '@weichenlin/swell-ui'
+
+function Header() {
+  const { theme, setTheme } = useTheme({ storageKey: 'my-app-theme' }) // default 'swell-ui-theme'
+  return <ThemeSwitcher value={theme} onChange={setTheme} />
+}
+```
+
+To avoid a flash of the wrong theme before React mounts, apply the saved value in `<head>`:
+
+```html
+<script>
+  try {
+    const t = localStorage.getItem('my-app-theme')
+    if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t
+  } catch {}
+</script>
+```

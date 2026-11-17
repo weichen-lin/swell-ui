@@ -1,0 +1,100 @@
+---
+title: Table
+description: A data table with optional search, sorting, selection and pagination controls.
+---
+
+<ComponentPreview name="table-demo" />
+
+## Usage
+
+```tsx
+import { Table, type TableColumn } from '@weichenlin/swell-ui'
+
+type Invoice = { id: string; customer: string; amount: number }
+
+const columns: TableColumn<Invoice>[] = [
+  { id: 'id', header: 'Invoice', cell: (row) => row.id, rowHeader: true },
+  { id: 'customer', header: 'Customer', cell: (row) => row.customer },
+  { id: 'amount', header: 'Amount', cell: (row) => `$${row.amount}`, numeric: true },
+]
+
+export function Example({ invoices }: { invoices: Invoice[] }) {
+  return <Table data={invoices} columns={columns} getRowId={(row) => row.id} title="Invoices" />
+}
+```
+
+`Table` is controlled UI: search, sorting, selection and pagination only render controls and report
+changes. You supply the already filtered, sorted and paged `data`.
+
+## Examples
+
+### Sorting
+
+Clicking a sortable header cycles ascending, descending, then no sort.
+
+<ComponentPreview name="table-sorting" />
+
+### Search
+
+<ComponentPreview name="table-search" />
+
+### Selection
+
+<ComponentPreview name="table-selection" />
+
+### Pagination
+
+<ComponentPreview name="table-pagination" />
+
+## API
+
+### Table
+
+Native `<table>` props are forwarded to the table element, except `title`, `children` and
+`className`.
+
+| Prop             | Type                                                                                                     | Default              | Description                                                                           |
+| ---------------- | -------------------------------------------------------------------------------------------------------- | -------------------- | ------------------------------------------------------------------------------------- |
+| `data`           | `readonly T[]`                                                                                           | -                    | Rows to render on the current page, in display order.                                 |
+| `columns`        | `readonly TableColumn<T>[]`                                                                              | -                    | Column definitions.                                                                   |
+| `getRowId`       | `(row: T) => string`                                                                                     | -                    | Returns a stable unique ID for each row.                                              |
+| `title`          | `ReactNode`                                                                                              | -                    | Toolbar title; also names the table.                                                  |
+| `emptyState`     | `ReactNode`                                                                                              | `'No rows yet'`      | Shown when there is no data and no active filter.                                     |
+| `noResults`      | `ReactNode`                                                                                              | `'No matching rows'` | Shown when filters leave no rows.                                                     |
+| `filtered`       | `boolean`                                                                                                | `false`              | Indicates filtering when the caller filters outside the search field.                 |
+| `search`         | `{ value: string; onChange: (value: string) => void }`                                                   | -                    | Shows a search field in the toolbar.                                                  |
+| `sorting`        | `{ value: TableSort \| null; onChange: (value: TableSort \| null) => void }`                             | -                    | Enables sort buttons on columns marked `sortable`.                                    |
+| `pagination`     | `{ pageIndex: number; pageSize: number; rowCount: number; onPageChange: (pageIndex: number) => void }`   | -                    | Shows a pagination footer. `pageIndex` is zero-based.                                 |
+| `selection`      | `{ ids: ReadonlySet<string>; onChange: (ids: Set<string>) => void; canSelectRow?: (row: T) => boolean }` | -                    | Adds row checkboxes and a select-all-on-page checkbox.                                |
+| `className`      | `string`                                                                                                 | -                    | Root element classes.                                                                 |
+| `tableClassName` | `string`                                                                                                 | -                    | Classes for the `<table>`; use for column layout or a minimum width.                  |
+| `labels`         | `Partial<Labels>`                                                                                        | English defaults     | Overrides built-in text such as `search`, `previousPage`, `nextPage` and `noResults`. |
+
+### TableColumn
+
+| Field             | Type                           | Description                                              |
+| ----------------- | ------------------------------ | -------------------------------------------------------- |
+| `id`              | `string`                       | Unique column ID; also the `TableSort` ID.               |
+| `header`          | `ReactNode`                    | Header content.                                          |
+| `cell`            | `(row: T) => ReactNode`        | Renders the cell for a row.                              |
+| `sortable`        | `boolean`                      | Shows a sort button when `sorting` is set.               |
+| `align`           | `'start' \| 'center' \| 'end'` | Text alignment. Defaults to `'end'` for numeric columns. |
+| `numeric`         | `boolean`                      | Right-aligns and uses tabular numerals.                  |
+| `rowHeader`       | `boolean`                      | Renders the cell as a row header (`<th scope="row">`).   |
+| `className`       | `string`                       | Classes for body cells.                                  |
+| `headerClassName` | `string`                       | Classes for the header cell.                             |
+
+### TableSort
+
+| Field       | Type              | Description     |
+| ----------- | ----------------- | --------------- |
+| `id`        | `string`          | Column ID.      |
+| `direction` | `'asc' \| 'desc'` | Sort direction. |
+
+## Accessibility
+
+- Sorted headers expose `aria-sort`, and sort controls are real buttons.
+- The scroll region is focusable so keyboard users can scroll wide tables.
+- Selection checkboxes have row-specific names; the selected count is announced through an
+  `output` element.
+- All built-in text can be localized with `labels`.

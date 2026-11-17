@@ -1,0 +1,101 @@
+---
+title: Slider
+description: A native range input for choosing a number, with a RangeSlider for two thumbs.
+---
+
+<ComponentPreview name="slider-demo" />
+
+## Usage
+
+```tsx
+import { RangeSlider, Slider } from '@weichenlin/swell-ui'
+
+export function Example() {
+  return (
+    <>
+      <Slider label="Volume" defaultValue={40} />
+      <RangeSlider
+        label="Price range"
+        thumbLabels={['Minimum price', 'Maximum price']}
+        defaultValue={[200, 800]}
+        min={0}
+        max={1000}
+        step={50}
+      />
+    </>
+  )
+}
+```
+
+## Examples
+
+### Controlled
+
+Use `value` and `onValueChange` for controlled state. `onValueCommit` runs once after a changed
+pointer or keyboard gesture ends.
+
+<ComponentPreview name="slider-controlled" />
+
+### Marks
+
+<ComponentPreview name="slider-marks" />
+
+### Disabled and invalid
+
+<ComponentPreview name="slider-states" />
+
+### RangeSlider
+
+<ComponentPreview name="range-slider-demo" />
+
+## API
+
+### Slider
+
+Extends native `<div>` props, except `defaultValue`, `onChange`, `children`, `aria-label` and `role`.
+
+| Prop            | Type                                                    | Default | Description                                                     |
+| --------------- | ------------------------------------------------------- | ------- | --------------------------------------------------------------- |
+| `label`         | `ReactNode`                                             | -       | Visible label. Required unless `aria-label` is set.             |
+| `aria-label`    | `string`                                                | -       | Accessible name when there is no visible `label`.               |
+| `value`         | `number`                                                | -       | Controlled value.                                               |
+| `defaultValue`  | `number`                                                | `min`   | Uncontrolled initial value.                                     |
+| `onValueChange` | `(value: number, details: SliderChangeDetails) => void` | -       | Called on every change, including previews while dragging.      |
+| `onValueCommit` | `(value: number, details: SliderCommitDetails) => void` | -       | Called once after a changed pointer or keyboard gesture ends.   |
+| `min`           | `number`                                                | `0`     | Lower bound.                                                    |
+| `max`           | `number`                                                | `100`   | Upper bound.                                                    |
+| `step`          | `number`                                                | `1`     | Positive step; `max - min` must be a whole number of steps.     |
+| `disabled`      | `boolean`                                               | -       | Disables the slider.                                            |
+| `helperText`    | `ReactNode`                                             | -       | Helper text under the slider.                                   |
+| `error`         | `ReactNode`                                             | -       | Error message and invalid state.                                |
+| `showValue`     | `boolean`                                               | `true`  | Shows the current value.                                        |
+| `formatValue`   | `(value: number) => string`                             | -       | Formats both the visible output and the spoken value.           |
+| `getValueText`  | `(value: number, thumbIndex: 0 \| 1) => string`         | -       | Overrides only the spoken value text.                           |
+| `marks`         | `readonly { value: number; label?: ReactNode }[]`       | -       | Visual markers only; all step-aligned values remain selectable. |
+| `name`          | `string`                                                | -       | Field name for native form submission.                          |
+| `form`          | `string`                                                | -       | Id of an external form.                                         |
+
+### RangeSlider
+
+Accepts the same props as `Slider`, with these differences.
+
+| Prop                    | Type                        | Default      | Description                                            |
+| ----------------------- | --------------------------- | ------------ | ------------------------------------------------------ |
+| `value`                 | `readonly [number, number]` | -            | Controlled value.                                      |
+| `defaultValue`          | `readonly [number, number]` | `[min, max]` | Uncontrolled initial value.                            |
+| `thumbLabels`           | `readonly [string, string]` | -            | Required accessible name for each thumb.               |
+| `name`                  | `readonly [string, string]` | -            | Two field names for native form submission.            |
+| `minStepsBetweenThumbs` | `number`                    | `0`          | Thumbs stop at this distance; they never swap or push. |
+
+`SliderChangeDetails` is `{ thumbIndex: 0 | 1; reason: 'pointer' | 'keyboard' | 'input' | 'cancel' }`.
+`SliderCommitDetails` is the same without the `cancel` reason.
+
+## Notes
+
+- Both components use native range inputs for accessibility and form submission.
+- `min` and `max` must be finite with `min < max`. External values must be on the step grid,
+  ordered, and satisfy the thumb gap.
+- Controlled owners must accept preview changes immediately. Cancelling a gesture restores the
+  starting value through `onValueChange` with reason `cancel`, without committing.
+- Use `aria-label` when omitting a visible `label`. `className` and `ref` target the outer `div`.
+- Native reset restores uncontrolled defaults; controlled reset remains the owner's choice.

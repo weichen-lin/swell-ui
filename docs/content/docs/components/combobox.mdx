@@ -1,0 +1,108 @@
+---
+title: Combobox
+description: A searchable single-select with filtering, groups, clearing and async results.
+---
+
+<ComponentPreview name="combobox-demo" />
+
+## Usage
+
+```tsx
+import { Combobox } from '@weichenlin/swell-ui'
+
+export function Example() {
+  return (
+    <Combobox
+      label="Project"
+      placeholder="Search projects"
+      options={[
+        { value: 'payment-api', label: 'Payment API' },
+        { value: 'analytics', label: 'Analytics' },
+      ]}
+    />
+  )
+}
+```
+
+Selection is by option `value` (a stable ID), not by the typed text. Use `value` with
+`onValueChange` for controlled state, or `defaultValue` for uncontrolled state.
+
+## Examples
+
+### Controlled
+
+<ComponentPreview name="combobox-controlled" />
+
+### Groups, icons and disabled options
+
+<ComponentPreview name="combobox-groups" />
+
+### Async search
+
+Set `filter={false}` when results are filtered externally, and only issue a request for
+`reason === 'input'`.
+
+<ComponentPreview name="combobox-async" />
+
+## API
+
+Native `<input>` props are forwarded, except `size`, `type`, `value`, `defaultValue`, `onChange` and
+the ARIA combobox attributes, which the component manages.
+
+| Prop                                      | Type                                                                   | Default                                                    | Description                                                                          |
+| ----------------------------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `options`                                 | `readonly (ComboboxOption \| ComboboxGroup)[]`                         | -                                                          | Options and option groups.                                                           |
+| `label`                                   | `string`                                                               | -                                                          | Visible label. Omit it only when `aria-label` is provided.                           |
+| `floating`                                | `boolean`                                                              | `false`                                                    | Outlined floating label. Needs a visible `label`.                                    |
+| `value`                                   | `string \| null`                                                       | -                                                          | Controlled selected value.                                                           |
+| `defaultValue`                            | `string \| null`                                                       | -                                                          | Initial selected value when uncontrolled.                                            |
+| `onValueChange`                           | `(value: string \| null, details: ComboboxValueChangeDetails) => void` | -                                                          | Called on select or clear.                                                           |
+| `inputValue`                              | `string`                                                               | -                                                          | Controlled text in the input.                                                        |
+| `onInputValueChange`                      | `(text: string, details: ComboboxInputChangeDetails) => void`          | -                                                          | Called when the text changes. Only `reason="input"` should issue a search request.   |
+| `open`                                    | `boolean`                                                              | -                                                          | Controlled open state.                                                               |
+| `defaultOpen`                             | `boolean`                                                              | `false`                                                    | Initial open state when uncontrolled.                                                |
+| `onOpenChange`                            | `(open: boolean, details: ComboboxOpenChangeDetails) => void`          | -                                                          | Called when the list opens or closes.                                                |
+| `filter`                                  | `false \| ((option, query) => boolean)`                                | label + keywords                                           | `false` for externally filtered results. The default is case and accent insensitive. |
+| `selectedOption`                          | `ComboboxOption \| null`                                               | -                                                          | Supplies a label when the selected ID is not in the current results.                 |
+| `loading`                                 | `boolean`                                                              | `false`                                                    | Shows the loading state.                                                             |
+| `loadingText`                             | `string`                                                               | `'Loading…'`                                               | Loading message.                                                                     |
+| `searchError`                             | `ReactNode`                                                            | -                                                          | Error shown when a search fails.                                                     |
+| `onRetry`                                 | `() => void`                                                           | -                                                          | Called by the retry action shown with `searchError`.                                 |
+| `retryText`                               | `string`                                                               | `'Retry'`                                                  | Retry action label.                                                                  |
+| `emptyText`                               | `ReactNode`                                                            | `'No matching options.'`                                   | Shown when nothing matches.                                                          |
+| `clearable`                               | `boolean`                                                              | `true`                                                     | Shows a clear button when a value is selected.                                       |
+| `openOnFocus`                             | `boolean`                                                              | `false`                                                    | Opens the list when the input receives focus.                                        |
+| `clearLabel` / `openLabel` / `closeLabel` | `string`                                                               | `'Clear selection'` / `'Open options'` / `'Close options'` | Accessible names of the buttons.                                                     |
+| `requiredText`                            | `string`                                                               | -                                                          | Native validation message: a selection is required, not just typed text.             |
+| `unresolvedText`                          | `string`                                                               | -                                                          | Native validation message for text that matches no option.                           |
+| `getResultsText`                          | `(count: number) => string`                                            | -                                                          | Localizes the polite result-count announcement.                                      |
+| `helperText`                              | `ReactNode`                                                            | -                                                          | Supporting text below the field.                                                     |
+| `error`                                   | `ReactNode`                                                            | -                                                          | A truthy value puts the field in the error state; the text replaces `helperText`.    |
+| `size`                                    | `'sm' \| 'md' \| 'lg'`                                                 | `'md'`                                                     | Field size.                                                                          |
+| `start`                                   | `ReactNode`                                                            | -                                                          | Decorative leading icon.                                                             |
+| `mono`                                    | `boolean`                                                              | -                                                          | Monospace text.                                                                      |
+| `inputClassName`                          | `string`                                                               | -                                                          | Classes for the `<input>`.                                                           |
+| `contentClassName`                        | `string`                                                               | -                                                          | Classes for the options panel.                                                       |
+
+### ComboboxOption
+
+| Field         | Type                | Description                                                        |
+| ------------- | ------------------- | ------------------------------------------------------------------ |
+| `value`       | `string`            | Stable, unique, non-empty submitted ID. Labels need not be unique. |
+| `label`       | `string`            | Display text.                                                      |
+| `description` | `ReactNode`         | Secondary text.                                                    |
+| `icon`        | `ReactNode`         | Decorative; hidden from assistive technology.                      |
+| `keywords`    | `readonly string[]` | Extra terms matched by the default filter.                         |
+| `disabled`    | `boolean`           | Prevents selecting the option.                                     |
+
+### ComboboxGroup
+
+| Field     | Type                        | Description           |
+| --------- | --------------------------- | --------------------- |
+| `label`   | `string`                    | Group title.          |
+| `options` | `readonly ComboboxOption[]` | Options in the group. |
+
+## Accessibility
+
+The combobox keeps DOM focus on the text input and addresses options with `aria-activedescendant`.
+Result counts are announced politely, and all button labels can be localized through props.

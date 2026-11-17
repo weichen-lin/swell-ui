@@ -1,0 +1,83 @@
+---
+title: Drawer
+description: A modal side panel that slides in from the left or right edge.
+---
+
+<ComponentPreview name="drawer-demo" />
+
+## Usage
+
+`Drawer` is controlled through `open` and `onOpenChange`. It needs an accessible name: a
+`DrawerHeader` title, `aria-label`, or `aria-labelledby`.
+
+```tsx
+import { Button, Drawer, DrawerBody, DrawerHeader } from '@weichenlin/swell-ui'
+import { useState } from 'react'
+
+export function Example() {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>Open</Button>
+      <Drawer open={open} onOpenChange={setOpen}>
+        <DrawerHeader title="Filters" />
+        <DrawerBody>Content</DrawerBody>
+      </Drawer>
+    </>
+  )
+}
+```
+
+## Examples
+
+### Side
+
+<ComponentPreview name="drawer-left" />
+
+### Sizes
+
+<ComponentPreview name="drawer-sizes" />
+
+## API
+
+### Drawer
+
+Also accepts the props of the native `dialog` element, except `open`.
+
+| Prop           | Type                                                 | Default   | Description                                                |
+| -------------- | ---------------------------------------------------- | --------- | ---------------------------------------------------------- |
+| `open`         | `boolean`                                            | -         | Whether the drawer is open.                                |
+| `onOpenChange` | `(open: boolean, reason: DrawerCloseReason) => void` | -         | Called for Esc, backdrop, close button, and `DrawerClose`. |
+| `side`         | `'left' \| 'right'`                                  | `'right'` | Edge it slides out of.                                     |
+| `size`         | `'sm' \| 'md' \| 'lg'`                               | `'md'`    | Width: sm 280px, md 384px, lg 480px.                       |
+
+`DrawerCloseReason` is `'escape' | 'backdrop' | 'close-button' | 'programmatic'`.
+
+### DrawerHeader
+
+| Prop          | Type        | Default | Description                     |
+| ------------- | ----------- | ------- | ------------------------------- |
+| `title`       | `ReactNode` | -       | Heading; also names the drawer. |
+| `description` | `ReactNode` | -       | Supporting text.                |
+
+### DrawerBody and DrawerFooter
+
+Plain `div` wrappers. `DrawerBody` fills the space between header and footer and scrolls on its
+own. `DrawerFooter` right-aligns actions.
+
+### DrawerClose
+
+A ghost icon button that closes the drawer, for custom headers.
+
+| Prop         | Type                   | Default | Description                              |
+| ------------ | ---------------------- | ------- | ---------------------------------------- |
+| `aria-label` | `string`               | -       | Required: the button shows only an icon. |
+| `size`       | `'sm' \| 'md' \| 'lg'` | `'sm'`  | Button size.                             |
+| `icon`       | `ReactNode`            | `X`     | Icon to show.                            |
+
+## Accessibility
+
+- Built on the native `dialog` with `showModal()`: the page is inert, focus is contained and
+  restored on close, and Esc closes it.
+- A missing accessible name logs a warning in development.
+- With reduced motion, the panel fades instead of sliding.

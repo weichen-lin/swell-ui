@@ -1,0 +1,48 @@
+---
+title: Theme Switcher
+description: A one-click button that toggles between light and dark themes.
+---
+
+<ComponentPreview name="theme-switcher-demo" />
+
+## Usage
+
+`ThemeSwitcher` is a controlled icon button. It toggles the visible theme in one click, including
+when the current value is `'system'`. Pair it with the `useTheme` hook, which persists the choice
+and sets `data-theme` on the root element (`'system'` clears it so `prefers-color-scheme` decides).
+
+```tsx
+import { ThemeSwitcher, useTheme } from '@weichenlin/swell-ui'
+
+export function Header() {
+  const { theme, setTheme } = useTheme()
+  return <ThemeSwitcher value={theme} onChange={setTheme} />
+}
+```
+
+The demo above uses plain state so it does not change this site's theme.
+
+## API
+
+### ThemeSwitcher
+
+Also accepts `button` props, except `children`, `value`, `defaultValue` and `onChange`.
+
+| Prop         | Type                            | Default                        | Description                         |
+| ------------ | ------------------------------- | ------------------------------ | ----------------------------------- |
+| `value`      | `'system' \| 'light' \| 'dark'` | -                              | Current theme.                      |
+| `onChange`   | `(value: Theme) => void`        | -                              | Called with the theme to switch to. |
+| `aria-label` | `string`                        | `'Switch to light/dark theme'` | Defaults to the action it performs. |
+
+### useTheme(options?)
+
+Returns `{ theme, setTheme }`.
+
+| Option       | Type     | Default            | Description                        |
+| ------------ | -------- | ------------------ | ---------------------------------- |
+| `storageKey` | `string` | `'swell-ui-theme'` | `localStorage` key for the choice. |
+
+## Accessibility
+
+The button's label describes the action (for example "Switch to dark theme") and updates with the
+current theme.

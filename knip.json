@@ -1,5 +1,10 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
-  "entry": ["src/index.ts", "src/styles/typography.css"],
+  "workspaces": {
+    ".": {
+      "entry": ["src/index.ts", "src/styles/typography.css"]
+    },
+    "docs": {}
+  },
   "ignoreExportsUsedInFile": { "type": true, "interface": true }
 }

@@ -1,0 +1,14 @@
+---
+title: Accordion
+description: Vertically stacked sections that expand and collapse.
+---
+
+<ComponentPreview name="accordion-demo" />
+
+## Usage
+
+Compose `Accordion`, `AccordionItem`, `AccordionTrigger`, and `AccordionContent`. Item values must
+be unique and non-empty; triggers contain non-interactive content and include their own heading.
+
+Single mode uses `string | null`; `type="multiple"` uses `readonly string[]`. Use `value` with
+`onValueChange` for controlled state, or `defaultValue` for uncontrolled state.

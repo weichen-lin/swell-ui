@@ -8,7 +8,7 @@ export default defineConfig({
     singleQuote: true,
     semi: false,
     sortImports: { newlinesBetween: false },
-    ignorePatterns: ['dist', 'storybook-static'],
+    ignorePatterns: ['dist', 'storybook-static', 'docs/.next', 'docs/out', 'docs/.source'],
     overrides: [{ files: ['*.css'], options: { singleQuote: false } }],
   },
   lint: {

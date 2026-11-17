@@ -1,0 +1,85 @@
+---
+title: Toast
+description: Imperative notifications shown in a stack by a single Toaster.
+---
+
+<ComponentPreview name="toast-demo" />
+
+## Usage
+
+Mount one `<Toaster />` at the root of your app, then call `toast` from anywhere (event handlers,
+mutations, loaders). Every call returns the toast's id.
+
+```tsx
+import { Toaster } from '@weichenlin/swell-ui'
+
+export function App({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      {children}
+      <Toaster />
+    </>
+  )
+}
+```
+
+```tsx
+import { toast } from '@weichenlin/swell-ui'
+
+toast({ title: 'Changes saved', description: 'Your settings are up to date.' })
+toast.success('Synced')
+```
+
+## Examples
+
+### Types
+
+<ComponentPreview name="toast-types" />
+
+### Action
+
+<ComponentPreview name="toast-action" />
+
+### Promise
+
+<ComponentPreview name="toast-promise" />
+
+## API
+
+### toast(options)
+
+| Option        | Type                                                                     | Default     | Description                                                                                                                                         |
+| ------------- | ------------------------------------------------------------------------ | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `title`       | `ReactNode`                                                              | -           | Main text.                                                                                                                                          |
+| `description` | `ReactNode`                                                              | -           | Secondary text.                                                                                                                                     |
+| `type`        | `'neutral' \| 'success' \| 'info' \| 'warning' \| 'danger' \| 'loading'` | `'neutral'` | Toast type.                                                                                                                                         |
+| `id`          | `string`                                                                 | -           | Reusing the id of a visible toast updates it in place.                                                                                              |
+| `action`      | `{ label: string; onClick?: (e) => void } \| ReactNode`                  | -           | A `{ label, onClick }` renders a small button that dismisses the toast unless `onClick` calls `preventDefault()`. Any other node is rendered as-is. |
+| `duration`    | `number`                                                                 | 5000        | Milliseconds on screen; `Infinity` keeps it. 10000 with an action; `danger` and `loading` never expire.                                             |
+| `dismissible` | `boolean`                                                                | `true`      | `false` hides the close button and disables swipe and Esc.                                                                                          |
+| `toasterId`   | `string`                                                                 | -           | The `<Toaster id>` that shows it; without one it goes to the Toaster without an id.                                                                 |
+
+### Helpers
+
+| Function                         | Description                                                            |
+| -------------------------------- | ---------------------------------------------------------------------- |
+| `toast.success(title, options?)` | Success toast.                                                         |
+| `toast.info(title, options?)`    | Info toast.                                                            |
+| `toast.warning(title, options?)` | Warning toast.                                                         |
+| `toast.error(title, options?)`   | Renders as the `danger` type; stays until dismissed.                   |
+| `toast.loading(title, options?)` | Spinner; stays until updated or dismissed.                             |
+| `toast.update(id, patch)`        | Merges into a toast still on screen and restarts its timer.            |
+| `toast.dismiss(id?)`             | Dismisses one toast, or all without an id.                             |
+| `toast.promise(promise, steps)`  | Loading toast that becomes success or danger when the promise settles. |
+
+`toast.promise` takes a promise (or a function returning one) and `{ loading, success, error }`
+steps. Each step is a title or full options; `success` and `error` may be functions of the result
+or error.
+
+### Toaster
+
+| Prop            | Type                                                                                              | Default          | Description                                               |
+| --------------- | ------------------------------------------------------------------------------------------------- | ---------------- | --------------------------------------------------------- |
+| `position`      | `'bottom-right' \| 'bottom-left' \| 'bottom-center' \| 'top-right' \| 'top-left' \| 'top-center'` | `'bottom-right'` | Corner or edge center the stack grows from.               |
+| `visibleToasts` | `number`                                                                                          | `3`              | Cards shown in the collapsed stack (at most 2 on phones). |
+| `id`            | `string`                                                                                          | -                | Shows only toasts created with this `toasterId`.          |

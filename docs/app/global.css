@@ -1,0 +1,25 @@
+@import "tailwindcss";
+@import "fumadocs-ui/css/neutral.css";
+@import "fumadocs-ui/css/preset.css";
+/* swell-ui tokens + an @source over the bundled components, same setup a consumer app uses */
+@import "@weichenlin/swell-ui/styles.css";
+
+/* Demo files use swell-ui utilities directly */
+@source "../examples";
+
+html {
+  scrollbar-gutter: stable;
+}
+
+/*
+ * Fumadocs caps the layout at 97rem and centers it, leaving a gutter left of the sidebar on wide
+ * screens. Lift the cap so the sidebar sits flush left; the article keeps its own max width.
+ */
+#nd-docs-layout {
+  --fd-layout-width: 100vw;
+}
+
+html > body[data-scroll-locked] {
+  margin-right: 0px !important;
+  --removed-body-scroll-bar-size: 0px !important;
+}

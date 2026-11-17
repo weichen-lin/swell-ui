@@ -1,0 +1,54 @@
+---
+title: Tooltip
+description: A hover and focus tooltip that wraps any element.
+---
+
+<ComponentPreview name="tooltip-demo" />
+
+## Usage
+
+```tsx
+import { Button, Tooltip } from '@weichenlin/swell-ui'
+
+export function Example() {
+  return (
+    <Tooltip content="Pull the latest manifests from Git">
+      <Button intent="secondary">Sync</Button>
+    </Tooltip>
+  )
+}
+```
+
+## Examples
+
+### Sides
+
+<ComponentPreview name="tooltip-sides" />
+
+### Non-interactive trigger
+
+A non-interactive trigger needs `tabIndex` so keyboard users can reach it.
+
+<ComponentPreview name="tooltip-badge" />
+
+### Disabled button
+
+`aria-disabled` buttons still receive hover and focus, so the reason stays reachable.
+
+<ComponentPreview name="tooltip-disabled" />
+
+## API
+
+| Prop        | Type                                     | Default | Description                                                                                                          |
+| ----------- | ---------------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------- |
+| `content`   | `ReactNode`                              | -       | Tooltip content. Nothing renders (and no `aria-describedby` is added) when empty.                                    |
+| `side`      | `'top' \| 'bottom' \| 'left' \| 'right'` | `'top'` | Preferred side; flips to the opposite one when it doesn't fit the viewport.                                          |
+| `describe`  | `boolean`                                | `true`  | Link the tooltip to the trigger via `aria-describedby`. Turn off when it only repeats the trigger's accessible name. |
+| `className` | `string`                                 | -       | Classes for the wrapper that anchors the tooltip.                                                                    |
+| `children`  | `ReactElement`                           | -       | The trigger element (required).                                                                                      |
+
+## Notes
+
+The bubble is portaled to `<body>` with fixed positioning, so scroll containers such as tables and
+drawers never clip it, and it is pulled back from the viewport edge instead of overflowing. It
+opens after a short delay on hover and immediately on keyboard focus, and closes on `Escape`.

@@ -1,0 +1,48 @@
+---
+title: Alert
+description: An inline message that stays visible while its condition applies.
+---
+
+<ComponentPreview name="alert-demo" />
+
+## Usage
+
+```tsx
+import { Alert } from '@weichenlin/swell-ui'
+
+export function Example() {
+  return (
+    <Alert tone="info" title="Next sync at 11:00">
+      The order count refreshes after the sync completes.
+    </Alert>
+  )
+}
+```
+
+## Examples
+
+### Tones
+
+<ComponentPreview name="alert-tones" />
+
+### Action and dismiss
+
+<ComponentPreview name="alert-action-dismiss" />
+
+## API
+
+`Alert` also accepts the standard `div` props except `title`.
+
+| Prop           | Type                                                        | Default           | Description                                                             |
+| -------------- | ----------------------------------------------------------- | ----------------- | ----------------------------------------------------------------------- |
+| `tone`         | `'neutral' \| 'info' \| 'success' \| 'warning' \| 'danger'` | `'neutral'`       | Color and icon of the alert.                                            |
+| `title`        | `ReactNode`                                                 | -                 | Heading line. `children` render as the description.                     |
+| `action`       | `ReactNode`                                                 | -                 | An action such as a retry button or a link to settings.                 |
+| `onDismiss`    | `MouseEventHandler<HTMLButtonElement>`                      | -                 | Shows the dismiss button. The caller controls whether it stays mounted. |
+| `dismissLabel` | `string`                                                    | `'Dismiss alert'` | Accessible name of the dismiss button.                                  |
+
+## Notes
+
+An alert is a persistent message shown next to the content it describes. It is not a live region;
+for updates that need announcing, put the message text in a live region. The caller controls
+visibility and can localize `dismissLabel`.

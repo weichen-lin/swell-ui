@@ -1,0 +1,64 @@
+---
+title: Card
+description: A bordered surface for a group of related content.
+---
+
+<ComponentPreview name="card-demo" />
+
+## Usage
+
+Card has no padding of its own. `CardHeader` and `CardContent` add it, so lists and tables can run
+edge to edge.
+
+```tsx
+import { Card, CardContent, CardHeader } from '@weichenlin/swell-ui'
+
+export function Example() {
+  return (
+    <Card as="section">
+      <CardHeader title="Resources" description="Managed in shop-prod" />
+      <CardContent>Any content goes here.</CardContent>
+    </Card>
+  )
+}
+```
+
+## Examples
+
+### Header action
+
+<ComponentPreview name="card-action" />
+
+### Full-bleed list
+
+<ComponentPreview name="card-full-bleed" />
+
+## API
+
+### Card
+
+Also accepts the standard `div` props.
+
+| Prop | Type                              | Default | Description                                                                       |
+| ---- | --------------------------------- | ------- | --------------------------------------------------------------------------------- |
+| `as` | `'div' \| 'section' \| 'article'` | `'div'` | Element to render. `section` and `article` are named by their `CardHeader` title. |
+
+### CardHeader
+
+Also accepts the standard `div` props except `title` and `children`.
+
+| Prop           | Type        | Default | Description                               |
+| -------------- | ----------- | ------- | ----------------------------------------- |
+| `title`        | `ReactNode` | -       | Heading text (required).                  |
+| `description`  | `ReactNode` | -       | Secondary text below the title.           |
+| `action`       | `ReactNode` | -       | Trailing control, e.g. a "View all" link. |
+| `headingLevel` | `2 \| 3`    | `2`     | Heading element rendered for the title.   |
+
+### CardContent
+
+Padded body of the card. Accepts the standard `div` props.
+
+## Accessibility
+
+With `as="section"` or `as="article"`, the card is a region named by its `CardHeader` title. An
+explicit `aria-label` on the card takes precedence over the title.

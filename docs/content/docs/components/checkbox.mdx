@@ -1,0 +1,80 @@
+---
+title: Checkbox
+description: A native checkbox with label, description, error and indeterminate states.
+---
+
+<ComponentPreview name="checkbox-demo" />
+
+## Usage
+
+```tsx
+import { Checkbox, CheckboxGroup } from '@weichenlin/swell-ui'
+
+export function Example() {
+  return (
+    <CheckboxGroup legend="Options">
+      <Checkbox name="options" value="a" label="Option A" />
+      <Checkbox name="options" value="b" label="Option B" />
+    </CheckboxGroup>
+  )
+}
+```
+
+## Examples
+
+### States
+
+<ComponentPreview name="checkbox-states" />
+
+### Indeterminate
+
+Derive `indeterminate` from the children's state, so it stays correct after every change.
+
+<ComponentPreview name="checkbox-indeterminate" />
+
+### CheckboxGroup
+
+<ComponentPreview name="checkbox-group" />
+
+### Horizontal group with error
+
+<ComponentPreview name="checkbox-group-horizontal" />
+
+## API
+
+### Checkbox
+
+Extends native `<input type="checkbox">` props, except `type`, `size`, `children` and `aria-label`.
+
+| Prop             | Type        | Default | Description                                                                      |
+| ---------------- | ----------- | ------- | -------------------------------------------------------------------------------- |
+| `label`          | `ReactNode` | -       | Visible label. Required unless `aria-label` is set.                              |
+| `aria-label`     | `string`    | -       | Accessible name when there is no visible `label`.                                |
+| `description`    | `ReactNode` | -       | One muted line under the label, linked with `aria-describedby`.                  |
+| `error`          | `ReactNode` | -       | Truthy sets `aria-invalid`; text is shown under the label.                       |
+| `indeterminate`  | `boolean`   | `false` | Draws a dash and announces mixed. Visual only; the form still submits `checked`. |
+| `className`      | `string`    | -       | Classes for the row.                                                             |
+| `inputClassName` | `string`    | -       | Classes for the `<input>`.                                                       |
+
+### CheckboxGroup
+
+Extends native `<fieldset>` props.
+
+| Prop          | Type                         | Default      | Description                                                         |
+| ------------- | ---------------------------- | ------------ | ------------------------------------------------------------------- |
+| `legend`      | `ReactNode`                  | -            | Names the group. Title case noun, no trailing colon.                |
+| `description` | `ReactNode`                  | -            | Muted line under the legend, linked with `aria-describedby`.        |
+| `error`       | `ReactNode`                  | -            | Group-level message, linked with `aria-describedby`.                |
+| `orientation` | `'vertical' \| 'horizontal'` | `'vertical'` | Layout of the rows.                                                 |
+| `disabled`    | `boolean`                    | -            | Reaches every checkbox through the native fieldset.                 |
+| `children`    | `ReactNode`                  | -            | Checkbox (or Switch) rows; each keeps its own `name` and `checked`. |
+
+## Notes
+
+- `CheckboxGroup` holds no value. Each checkbox keeps its own `name` and `checked`, so native form
+  submission and `FormData` work as usual.
+- `CheckboxGroup` does not set `aria-invalid`, because ARIA 1.2 does not support it on the group
+  role. Native `required` cannot express "at least one", so validate in your submit handler and pass
+  the message as `error`.
+- `indeterminate` is a DOM-only property. The browser clears it on click, so Checkbox re-applies it
+  whenever `checked` changes.

@@ -1,0 +1,89 @@
+---
+title: Select
+description: A single-choice select built on the native select element.
+---
+
+<ComponentPreview name="select-demo" />
+
+## Usage
+
+```tsx
+import { Select } from '@weichenlin/swell-ui'
+
+export function Example() {
+  return (
+    <Select
+      label="Region"
+      placeholder="Choose a region"
+      options={[
+        { value: 'us-east', label: 'US East' },
+        { value: 'eu-west', label: 'EU West' },
+      ]}
+    />
+  )
+}
+```
+
+`Select` renders a real `<select>`, so native keyboard support, typeahead, forms, validation and
+autofill all work. Where supported, the picker is customized with `appearance: base-select`;
+elsewhere the native picker is used. It shares its frame with `Input`.
+
+## Examples
+
+### Controlled
+
+<ComponentPreview name="select-controlled" />
+
+### Groups and disabled options
+
+<ComponentPreview name="select-groups" />
+
+### With icons
+
+<ComponentPreview name="select-icons" />
+
+### Invalid and disabled
+
+<ComponentPreview name="select-states" />
+
+## API
+
+All native `<select>` props are forwarded, except `size`, `children`, `multiple` and `readOnly`.
+
+| Prop              | Type                                    | Default | Description                                                                       |
+| ----------------- | --------------------------------------- | ------- | --------------------------------------------------------------------------------- |
+| `options`         | `(SelectOption \| SelectGroup)[]`       | -       | Options and option groups.                                                        |
+| `label`           | `string`                                | -       | Visible label. Omit it only when `aria-label` is provided.                        |
+| `floating`        | `boolean`                               | `false` | Outlined floating label. Needs a visible `label`; replaces `placeholder`.         |
+| `value`           | `string`                                | -       | Controlled value. `''` means nothing chosen.                                      |
+| `defaultValue`    | `string`                                | -       | Initial value when uncontrolled.                                                  |
+| `onChange`        | `ChangeEventHandler<HTMLSelectElement>` | -       | Native change handler.                                                            |
+| `placeholder`     | `string`                                | -       | Shown while nothing is chosen.                                                    |
+| `helperText`      | `ReactNode`                             | -       | Supporting text below the field.                                                  |
+| `error`           | `ReactNode`                             | -       | A truthy value puts the field in the error state; the text replaces `helperText`. |
+| `size`            | `'sm' \| 'md' \| 'lg'`                  | `'md'`  | Field size.                                                                       |
+| `start`           | `ReactNode`                             | -       | Fixed decorative leading icon; the selected option's own icon wins.               |
+| `mono`            | `boolean`                               | `false` | Monospace text.                                                                   |
+| `selectClassName` | `string`                                | -       | Classes for the `<select>`. `className` goes to the outer wrapper.                |
+
+### SelectOption
+
+| Field      | Type        | Description                                                        |
+| ---------- | ----------- | ------------------------------------------------------------------ |
+| `value`    | `string`    | Must be non-empty; `''` is reserved for "nothing chosen".          |
+| `label`    | `string`    | Option text, also used by typeahead and screen readers.            |
+| `icon`     | `ReactNode` | Decorative; shown in the picker and on the trigger while selected. |
+| `disabled` | `boolean`   | Prevents selecting the option.                                     |
+
+### SelectGroup
+
+| Field     | Type             | Description           |
+| --------- | ---------------- | --------------------- |
+| `label`   | `string`         | Group title.          |
+| `options` | `SelectOption[]` | Options in the group. |
+
+## Notes
+
+- Single choice only: `multiple` is not supported.
+- A native select cannot be read-only; use `disabled` or a read-only `Input`.
+- The customized picker applies to fine pointers only; touch devices keep the OS picker.

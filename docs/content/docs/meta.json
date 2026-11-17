@@ -1,0 +1,12 @@
+{
+  "pages": [
+    "index",
+    "installation",
+    "---Guides---",
+    "theming",
+    "dark-mode",
+    "router-links",
+    "---Components---",
+    "...components"
+  ]
+}

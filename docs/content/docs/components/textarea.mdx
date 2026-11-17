@@ -1,0 +1,61 @@
+---
+title: Textarea
+description: A multi-line text field with label, helper text, error and character count.
+---
+
+<ComponentPreview name="textarea-demo" />
+
+## Usage
+
+```tsx
+import { Textarea } from '@weichenlin/swell-ui'
+
+export function Example() {
+  return <Textarea label="Message" name="message" />
+}
+```
+
+## Examples
+
+### Character count
+
+`showCount` counts UTF-16 length like native `maxLength`, and turns red past the limit. It never
+truncates controlled values.
+
+<ComponentPreview name="textarea-count" />
+
+### Auto resize
+
+<ComponentPreview name="textarea-auto-resize" />
+
+### Floating label, disabled, invalid and mono
+
+<ComponentPreview name="textarea-states" />
+
+## API
+
+Extends native `<textarea>` props, except `children` and `rows`.
+
+| Prop                | Type                   | Default      | Description                                                                       |
+| ------------------- | ---------------------- | ------------ | --------------------------------------------------------------------------------- |
+| `label`             | `string`               | -            | Visible label. Required unless `aria-label` is set.                               |
+| `aria-label`        | `string`               | -            | Accessible name when there is no visible `label`.                                 |
+| `floating`          | `boolean`              | `false`      | Outlined floating label that rests inside the field.                              |
+| `helperText`        | `ReactNode`            | -            | Helper text under the field.                                                      |
+| `error`             | `ReactNode`            | -            | Replaces `helperText` and marks the field invalid. `true` shows only the outline. |
+| `size`              | `'sm' \| 'md' \| 'lg'` | `'md'`       | Field size.                                                                       |
+| `rows`              | `number`               | `3`          | Visible rows. Not allowed with `autoResize`.                                      |
+| `resize`            | `'vertical' \| 'none'` | `'vertical'` | Manual resize handle. Not allowed with `autoResize`.                              |
+| `autoResize`        | `boolean`              | `false`      | Grows with content.                                                               |
+| `minRows`           | `number`               | `3`          | Minimum rows; only with `autoResize`.                                             |
+| `maxRows`           | `number`               | -            | Maximum rows, at least `minRows`; only with `autoResize`.                         |
+| `showCount`         | `boolean`              | `false`      | Shows the character count (and `/ maxLength` when set).                           |
+| `mono`              | `boolean`              | `false`      | Monospace font; disables spellcheck, autocorrect and autocapitalize.              |
+| `className`         | `string`               | -            | Classes for the outer field.                                                      |
+| `textareaClassName` | `string`               | -            | Classes for the `<textarea>`.                                                     |
+
+## Notes
+
+- `rows` and `minRows` / `maxRows` must be positive integers, or Textarea throws a `RangeError`.
+- Going over `maxLength` (possible with controlled values) shows the error state.
+- Native form reset updates the count and height.

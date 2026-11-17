@@ -1,0 +1,77 @@
+---
+title: Router Links
+description: Render your router's Link with asChild on SidebarItem, TabNavLink and Button.
+---
+
+`SidebarItem` and `TabNavLink` render a plain `<a>`. With `asChild` they render their only child
+instead (your router's Link) and merge their props, classes, ref and handlers into it. The link
+sets `href` and `aria-current="page"`; the current item is styled from that attribute.
+
+```tsx
+import { Link } from '@tanstack/react-router' // any router's Link
+import {
+  Sidebar,
+  SidebarBadge,
+  SidebarBody,
+  SidebarGroup,
+  SidebarIcon,
+  SidebarItem,
+  SidebarProvider,
+  SidebarTrigger,
+} from '@weichenlin/swell-ui'
+import { Box } from 'lucide-react'
+
+function Nav() {
+  return (
+    <SidebarProvider>
+      <SidebarTrigger />
+      <Sidebar aria-label="Main">
+        <SidebarBody>
+          <SidebarGroup>
+            <SidebarItem asChild>
+              <Link to="/projects">
+                <SidebarIcon>
+                  <Box />
+                </SidebarIcon>
+                Projects
+                <SidebarBadge>8</SidebarBadge>
+              </Link>
+            </SidebarItem>
+          </SidebarGroup>
+        </SidebarBody>
+      </Sidebar>
+    </SidebarProvider>
+  )
+}
+```
+
+The accessible name is "Projects 8". Plain text children become the truncating label. Below 960px
+the sidebar is a drawer; a click the link handles in place (it calls `preventDefault`, as router
+links do) closes it.
+
+`TabNavLink` works the same way and takes `icon` and `badge` props like `Tab`:
+
+```tsx
+<TabNav aria-label="Sections">
+  <TabNavLink asChild icon={<Boxes />} badge={<Badge size="sm">12</Badge>}>
+    <Link to="/resources">Resources</Link>
+  </TabNavLink>
+</TabNav>
+```
+
+`Button` takes `asChild` too, for a navigation that should look like a button. It keeps the
+button's look, icons and ripple, and stays a real link (open in a new tab, copy the URL):
+
+```tsx
+<Button asChild intent="secondary" iconLeft={<Plus />}>
+  <Link to="/apps/new">New app</Link>
+</Button>
+
+<Button asChild icon={<Settings />} aria-label="Settings">
+  <Link to="/settings" />
+</Button>
+```
+
+`disabled` (with or without `disabledReason`) works as on the button: the link stays focusable with
+`aria-disabled`, and clicks are stopped before your Link sees them, so it never navigates. `loading`
+and `type` are button-only.

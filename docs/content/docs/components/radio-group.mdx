@@ -1,0 +1,76 @@
+---
+title: Radio Group
+description: A group of native radio inputs with legend, description and error.
+---
+
+<ComponentPreview name="radio-group-demo" />
+
+## Usage
+
+```tsx
+import { Radio, RadioGroup } from '@weichenlin/swell-ui'
+
+export function Example() {
+  return (
+    <RadioGroup name="plan" legend="Plan" defaultValue="pro">
+      <Radio value="free" label="Free" />
+      <Radio value="pro" label="Pro" />
+    </RadioGroup>
+  )
+}
+```
+
+## Examples
+
+### Card variant
+
+<ComponentPreview name="radio-group-card" />
+
+### Controlled
+
+<ComponentPreview name="radio-group-controlled" />
+
+### Disabled and invalid
+
+<ComponentPreview name="radio-group-states" />
+
+## API
+
+### RadioGroup
+
+Extends native `<fieldset>` props, except `name`, `onChange`, `defaultValue` and `children`.
+
+| Prop             | Type                                                            | Default      | Description                                                                     |
+| ---------------- | --------------------------------------------------------------- | ------------ | ------------------------------------------------------------------------------- |
+| `name`           | `string`                                                        | -            | Native group and submitted field name. Independent groups need different names. |
+| `legend`         | `ReactNode`                                                     | -            | Names the group.                                                                |
+| `description`    | `ReactNode`                                                     | -            | Muted line under the legend.                                                    |
+| `error`          | `ReactNode`                                                     | -            | Shows one group message and marks the group invalid. `true` omits the message.  |
+| `required`       | `boolean`                                                       | -            | Marks the group required.                                                       |
+| `value`          | `string \| null`                                                | -            | Controlled selection.                                                           |
+| `defaultValue`   | `string`                                                        | -            | Uncontrolled initial selection.                                                 |
+| `onValueChange`  | `(value: string, event: ChangeEvent<HTMLInputElement>) => void` | -            | Called when the selection changes.                                              |
+| `variant`        | `'default' \| 'card'`                                           | `'default'`  | Plain rows or bordered cards.                                                   |
+| `orientation`    | `'vertical' \| 'horizontal'`                                    | `'vertical'` | Layout only; both keep native radio keyboard behavior.                          |
+| `disabled`       | `boolean`                                                       | -            | Disables every radio.                                                           |
+| `itemsClassName` | `string`                                                        | -            | Classes for the items container.                                                |
+
+### Radio
+
+Extends native `<input>` props, except `type`, `size`, `children`, `name`, `checked`, `required`,
+`form` and `aria-invalid`.
+
+| Prop             | Type        | Default | Description                                         |
+| ---------------- | ----------- | ------- | --------------------------------------------------- |
+| `value`          | `string`    | -       | A unique, non-empty value within the parent group.  |
+| `label`          | `ReactNode` | -       | Visible label. Required unless `aria-label` is set. |
+| `aria-label`     | `string`    | -       | Accessible name when there is no visible `label`.   |
+| `description`    | `ReactNode` | -       | Muted line under the label.                         |
+| `disabled`       | `boolean`   | -       | Disables this radio.                                |
+| `inputClassName` | `string`    | -       | Classes for the native input.                       |
+
+## Notes
+
+- `Radio` must be rendered inside `RadioGroup`; values must be unique and non-empty or it throws.
+- The selected value is submitted under the group `name` in `FormData`.
+- Native form reset restores the uncontrolled default value.

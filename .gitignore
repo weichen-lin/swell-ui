@@ -7,3 +7,8 @@ coverage
 *.log
 .DS_Store
 .pnpm-store
+# docs site (Next.js static export)
+docs/.next
+docs/out
+docs/.source
+docs/next-env.d.ts

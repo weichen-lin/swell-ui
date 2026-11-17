@@ -1,0 +1,109 @@
+---
+title: Tabs
+description: In-page tabs that switch panels, plus TabNav for tabs that navigate between routes.
+---
+
+<ComponentPreview name="tabs-demo" />
+
+## Usage
+
+`Tabs` switches panels without changing the URL. A tablist needs a name: pass `aria-label` or
+`aria-labelledby`. Use `defaultValue` (uncontrolled) or `value` with `onValueChange` (controlled).
+
+```tsx
+import { Tab, TabList, TabPanel, Tabs } from '@weichenlin/swell-ui'
+
+export function Example() {
+  return (
+    <Tabs defaultValue="a" aria-label="Sections">
+      <TabList>
+        <Tab value="a">A</Tab>
+        <Tab value="b">B</Tab>
+      </TabList>
+      <TabPanel value="a">First</TabPanel>
+      <TabPanel value="b">Second</TabPanel>
+    </Tabs>
+  )
+}
+```
+
+## Examples
+
+### Segmented, controlled
+
+<ComponentPreview name="tabs-segmented" />
+
+### Icons and badges
+
+<ComponentPreview name="tabs-icons-badges" />
+
+### TabNav
+
+`TabNav` is for tabs that change the URL: a `nav` of links with the same look. Mark the current
+link with `aria-current="page"`. With a router, use `asChild` on `TabNavLink` to render your `Link`.
+
+<ComponentPreview name="tab-nav-demo" />
+
+## API
+
+### Tabs
+
+Also accepts `div` props. One of `aria-label` or `aria-labelledby` is required, and one of `value`
+or `defaultValue`.
+
+| Prop             | Type                      | Default       | Description                                               |
+| ---------------- | ------------------------- | ------------- | --------------------------------------------------------- |
+| `value`          | `string`                  | -             | Selected tab (controlled).                                |
+| `defaultValue`   | `string`                  | -             | Initially selected tab (uncontrolled).                    |
+| `onValueChange`  | `(value: string) => void` | -             | Called when the selection changes.                        |
+| `variant`        | `'line' \| 'segmented'`   | `'line'`      | Visual style.                                             |
+| `size`           | `'sm' \| 'md'`            | `'md'`        | Tab size.                                                 |
+| `activationMode` | `'automatic' \| 'manual'` | `'automatic'` | `manual`: arrows only move focus; Enter or Space selects. |
+
+### TabList
+
+Wraps the `Tab` elements (`div` props, except `role`).
+
+### Tab
+
+| Prop       | Type        | Default | Description                                                    |
+| ---------- | ----------- | ------- | -------------------------------------------------------------- |
+| `value`    | `string`    | -       | Identifies the tab and its panel.                              |
+| `icon`     | `ReactNode` | -       | Decorative leading icon.                                       |
+| `badge`    | `ReactNode` | -       | Trailing slot, usually a `Badge`; part of the accessible name. |
+| `disabled` | `boolean`   | `false` | Disables the tab.                                              |
+
+### TabPanel
+
+| Prop          | Type      | Default | Description                          |
+| ------------- | --------- | ------- | ------------------------------------ |
+| `value`       | `string`  | -       | The tab it belongs to.               |
+| `keepMounted` | `boolean` | `false` | Keep the panel mounted while hidden. |
+
+### TabNav
+
+Also accepts `nav` props. One of `aria-label` or `aria-labelledby` is required.
+
+| Prop            | Type                    | Default  | Description                                              |
+| --------------- | ----------------------- | -------- | -------------------------------------------------------- |
+| `variant`       | `'line' \| 'segmented'` | `'line'` | Visual style.                                            |
+| `size`          | `'sm' \| 'md'`          | `'md'`   | Tab size.                                                |
+| `listClassName` | `string`                | -        | Classes for the inner `ul`; `className` is on the `nav`. |
+
+### TabNavLink
+
+Also accepts `a` props.
+
+| Prop      | Type        | Default | Description                                                 |
+| --------- | ----------- | ------- | ----------------------------------------------------------- |
+| `icon`    | `ReactNode` | -       | Decorative leading icon.                                    |
+| `badge`   | `ReactNode` | -       | Trailing slot, usually a `Badge`.                           |
+| `asChild` | `boolean`   | `false` | Render the only child (usually a router `Link`) as the tab. |
+
+## Accessibility
+
+- `Tabs` follows the WAI-ARIA tabs pattern: roving tabindex, Arrow keys, Home and End move between
+  tabs, and Tab moves from the tablist into the panel. Right and Left arrows respect RTL.
+- Use `activationMode="manual"` when a panel loads data.
+- `TabNav` uses link semantics: Tab moves between links, Enter follows one, and each can open in a
+  new tab.

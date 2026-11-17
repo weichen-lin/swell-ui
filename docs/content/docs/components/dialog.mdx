@@ -1,0 +1,82 @@
+---
+title: Dialog
+description: A modal dialog built on the native dialog element.
+---
+
+<ComponentPreview name="dialog-demo" />
+
+## Usage
+
+`Dialog` is controlled: `open` drives it and every close request (Esc, backdrop, close button) goes
+through `onOpenChange`. Compose it with `DialogHeader`, `DialogBody`, and `DialogFooter`.
+
+```tsx
+import { Button, Dialog, DialogBody, DialogFooter, DialogHeader } from '@weichenlin/swell-ui'
+import { useState } from 'react'
+
+export function Example() {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>Open</Button>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogHeader title="Sync app" />
+        <DialogBody>Content</DialogBody>
+        <DialogFooter>
+          <Button onClick={() => setOpen(false)}>Done</Button>
+        </DialogFooter>
+      </Dialog>
+    </>
+  )
+}
+```
+
+## Examples
+
+### Destructive confirmation
+
+`alert` renders `role="alertdialog"`, hides the close button, and bounces instead of closing on a
+backdrop click. Put `autoFocus` on the least destructive button.
+
+<ComponentPreview name="dialog-alert" />
+
+### Sizes
+
+<ComponentPreview name="dialog-sizes" />
+
+## API
+
+### Dialog
+
+Also accepts the props of the native `dialog` element, except `open`.
+
+| Prop           | Type                                                 | Default | Description                                                                    |
+| -------------- | ---------------------------------------------------- | ------- | ------------------------------------------------------------------------------ |
+| `open`         | `boolean`                                            | -       | Whether the dialog is open.                                                    |
+| `onOpenChange` | `(open: boolean, reason: DialogCloseReason) => void` | -       | Called for every close request.                                                |
+| `size`         | `'sm' \| 'md' \| 'lg'`                               | `'md'`  | Max width: sm 384px, md 480px, lg 640px.                                       |
+| `alert`        | `boolean`                                            | -       | Destructive confirmation: alertdialog role, no close button, backdrop bounces. |
+| `dismissible`  | `boolean`                                            | -       | `false` blocks Esc, the backdrop and the close button (e.g. while pending).    |
+
+`DialogCloseReason` is `'escape' | 'backdrop' | 'close-button' | 'programmatic'`.
+
+### DialogHeader
+
+| Prop          | Type        | Default                   | Description                                |
+| ------------- | ----------- | ------------------------- | ------------------------------------------ |
+| `title`       | `ReactNode` | -                         | Heading; also names the dialog.            |
+| `description` | `ReactNode` | -                         | Supporting text, announced with the title. |
+| `closeButton` | `boolean`   | `true` (`false` if alert) | Show the top-right close button.           |
+
+### DialogBody and DialogFooter
+
+Plain `div` wrappers. `DialogBody` scrolls when content is taller than the available space;
+`DialogFooter` right-aligns actions (Cancel first, primary action last).
+
+## Accessibility
+
+- Built on the native `dialog` with `showModal()`: the page is inert, focus is contained and
+  restored on close, and Esc closes it.
+- `DialogHeader` supplies the accessible name and description.
+- With `alert`, focus the least destructive action with `autoFocus`.
+- Below 640px the dialog becomes a bottom sheet.

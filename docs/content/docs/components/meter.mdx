@@ -1,0 +1,64 @@
+---
+title: Meter
+description: A stacked proportion bar with a legend for counts that add up to a whole.
+---
+
+<ComponentPreview name="meter-demo" />
+
+## Usage
+
+```tsx
+import { Meter } from '@weichenlin/swell-ui'
+
+export function Example() {
+  return (
+    <Meter
+      label="Health"
+      summary="9 of 13 report health"
+      segments={[
+        { label: 'Healthy', value: 9, tone: 'success' },
+        { label: 'No health', value: 4, tone: 'neutral' },
+      ]}
+    />
+  )
+}
+```
+
+## Examples
+
+### Multiple tones
+
+<ComponentPreview name="meter-mixed" />
+
+### Small segment
+
+One small segment still shows: segments have a 4px minimum.
+
+<ComponentPreview name="meter-sliver" />
+
+### Empty
+
+<ComponentPreview name="meter-empty" />
+
+## API
+
+`Meter` also accepts the standard `div` props except `children`.
+
+| Prop       | Type             | Default | Description                                                              |
+| ---------- | ---------------- | ------- | ------------------------------------------------------------------------ |
+| `label`    | `ReactNode`      | -       | Label of the meter (required).                                           |
+| `summary`  | `ReactNode`      | -       | Short trailing text on the label row, e.g. "9 of 13 report health".      |
+| `segments` | `MeterSegment[]` | -       | Drawn in order; zero values are left out of both the bar and the legend. |
+
+### MeterSegment
+
+| Field   | Type                                                        | Description                       |
+| ------- | ----------------------------------------------------------- | --------------------------------- |
+| `label` | `string`                                                    | Legend text. Must be unique.      |
+| `value` | `number`                                                    | Size of the segment (its weight). |
+| `tone`  | `'neutral' \| 'info' \| 'success' \| 'warning' \| 'danger'` | Color of the segment.             |
+
+## Accessibility
+
+The bar is decorative. The legend list, labelled by `label`, carries the numbers for assistive
+tech, so nothing is conveyed by color alone.

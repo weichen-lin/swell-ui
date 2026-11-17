@@ -1,0 +1,107 @@
+---
+title: Dropdown Menu
+description: A single-level action menu that opens from a trigger.
+---
+
+<ComponentPreview name="dropdown-menu-demo" />
+
+## Usage
+
+```tsx
+import {
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@weichenlin/swell-ui'
+
+export function Example() {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button intent="secondary">Actions</Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem onSelect={() => console.log('edit')}>Edit</DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
+```
+
+Compose `DropdownMenu`, `DropdownMenuTrigger`, `DropdownMenuContent` and `DropdownMenuItem`. Use
+`asChild` to render the trigger or an item as your own element, such as a `Button` or a router
+link.
+
+## Examples
+
+### Groups, labels and disabled items
+
+<ComponentPreview name="dropdown-menu-groups" />
+
+### Controlled
+
+Call `event.preventDefault()` in `onSelect` to keep the menu open.
+
+<ComponentPreview name="dropdown-menu-controlled" />
+
+### Position
+
+<ComponentPreview name="dropdown-menu-position" />
+
+## API
+
+### DropdownMenu
+
+| Prop           | Type                                                        | Default | Description                                                                                                         |
+| -------------- | ----------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------- |
+| `open`         | `boolean`                                                   | -       | Controlled open state.                                                                                              |
+| `defaultOpen`  | `boolean`                                                   | `false` | Initial open state when uncontrolled.                                                                               |
+| `onOpenChange` | `(open: boolean, reason: DropdownMenuChangeReason) => void` | -       | Called when the menu opens or closes. `reason` is `'trigger'`, `'item-select'`, `'escape'`, `'outside'` or `'tab'`. |
+
+### DropdownMenuTrigger
+
+Renders a `<button>` and accepts its props.
+
+| Prop      | Type      | Default | Description                                                      |
+| --------- | --------- | ------- | ---------------------------------------------------------------- |
+| `asChild` | `boolean` | `false` | Render the child element as the trigger instead of a `<button>`. |
+
+### DropdownMenuContent
+
+Renders the menu panel and accepts `<div>` props.
+
+| Prop         | Type                                     | Default    | Description                                                         |
+| ------------ | ---------------------------------------- | ---------- | ------------------------------------------------------------------- |
+| `side`       | `'top' \| 'bottom' \| 'left' \| 'right'` | `'bottom'` | Preferred side of the trigger. Flips when there is not enough room. |
+| `align`      | `'start' \| 'center' \| 'end'`           | `'end'`    | Alignment against the trigger.                                      |
+| `sideOffset` | `number`                                 | `6`        | Gap to the trigger in pixels.                                       |
+
+### DropdownMenuItem
+
+Renders a `<button role="menuitem">` and accepts its props, except `onSelect`.
+
+| Prop        | Type                     | Default     | Description                                                                              |
+| ----------- | ------------------------ | ----------- | ---------------------------------------------------------------------------------------- |
+| `asChild`   | `boolean`                | `false`     | Render the child element (for example a link) as the item.                               |
+| `iconLeft`  | `ReactNode`              | -           | Decorative leading icon.                                                                 |
+| `tone`      | `'default' \| 'danger'`  | `'default'` | Visual tone for destructive actions.                                                     |
+| `textValue` | `string`                 | -           | Text used by typeahead when it differs from the content.                                 |
+| `disabled`  | `boolean`                | -           | Disabled items stay focusable but cannot be activated.                                   |
+| `onSelect`  | `(event: Event) => void` | -           | Runs for pointer and keyboard activation. Call `preventDefault()` to keep the menu open. |
+
+### DropdownMenuGroup, DropdownMenuLabel, DropdownMenuSeparator
+
+`DropdownMenuGroup` (`role="group"`) and `DropdownMenuLabel` accept `<div>` props;
+`DropdownMenuSeparator` accepts `<hr>` props.
+
+## Accessibility
+
+- Arrow Up and Arrow Down on the trigger open the menu on the first or last item.
+- Inside the menu: Arrow keys, Home and End move focus; typing a character jumps to a matching
+  item (typeahead); Escape closes and restores focus to the trigger; Tab closes the menu and moves
+  focus on.
+- Space and Enter activate the focused item.
+- The panel uses the native popover, so it stays above scroll containers, including inside a
+  dialog.

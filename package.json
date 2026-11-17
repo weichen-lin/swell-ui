@@ -35,7 +35,9 @@
     "test": "vp test run",
     "test:watch": "vp test watch",
     "storybook": "NODE_OPTIONS=--disable-warning=DEP0205 storybook dev -p 6006 --no-open",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "docs:dev": "pnpm build && pnpm --filter ./docs dev",
+    "docs:build": "pnpm build && pnpm --filter ./docs build"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",

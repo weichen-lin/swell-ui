@@ -1,0 +1,52 @@
+---
+title: Badge
+description: A compact, static label for status or metadata.
+---
+
+<ComponentPreview name="badge-demo" />
+
+## Usage
+
+```tsx
+import { Badge } from '@weichenlin/swell-ui'
+
+export function Example() {
+  return <Badge tone="success">Healthy</Badge>
+}
+```
+
+## Examples
+
+### Tones
+
+<ComponentPreview name="badge-tones" />
+
+### Variants
+
+<ComponentPreview name="badge-variants" />
+
+### Sizes
+
+<ComponentPreview name="badge-sizes" />
+
+### Busy
+
+<ComponentPreview name="badge-busy" />
+
+## API
+
+`Badge` also accepts the standard `span` props except `onClick`.
+
+| Prop      | Type                                                        | Default     | Description                                                                          |
+| --------- | ----------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------ |
+| `tone`    | `'neutral' \| 'info' \| 'success' \| 'warning' \| 'danger'` | `'neutral'` | Color of the badge.                                                                  |
+| `variant` | `'subtle' \| 'outline' \| 'solid'`                          | `'subtle'`  | Visual style. All variants share the same box size.                                  |
+| `size`    | `'sm' \| 'md'`                                              | `'md'`      | Height and padding.                                                                  |
+| `icon`    | `ReactNode`                                                 | -           | Leading, decorative glyph (hidden from assistive tech). Ignored while `busy`.        |
+| `busy`    | `boolean`                                                   | `false`     | In-progress state: swaps the icon for a spinning ring (static under reduced motion). |
+| `context` | `string`                                                    | -           | Visually-hidden prefix for screen readers, e.g. "Health" reads as "Health: Unknown". |
+
+## Accessibility
+
+A badge is static and not focusable, and `onClick` is omitted on purpose; use a `Button` or a link
+when it needs an action. Use `context` so screen readers announce what the status refers to.

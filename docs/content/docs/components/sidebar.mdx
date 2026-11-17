@@ -1,0 +1,100 @@
+---
+title: Sidebar
+description: App navigation that docks at wide widths and becomes a drawer on narrow ones.
+---
+
+<ComponentPreview name="sidebar-demo" />
+
+## Usage
+
+Wrap `Sidebar` and `SidebarTrigger` in a `SidebarProvider`, which shares the drawer's open state.
+From 960px up the sidebar is docked (240px wide, full height, sticky); below that it is hidden and
+`SidebarTrigger` opens the same content in a `Drawer`. The sidebar is `h-dvh` by default; pass a
+`className` such as `h-full` to size it to a container, as the demo does.
+
+```tsx
+import {
+  Sidebar,
+  SidebarBody,
+  SidebarGroup,
+  SidebarHeader,
+  SidebarItem,
+  SidebarProvider,
+  SidebarTrigger,
+} from '@weichenlin/swell-ui'
+
+export function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <SidebarProvider>
+      <div className="flex">
+        <Sidebar aria-label="Primary">
+          <SidebarHeader>Acme</SidebarHeader>
+          <SidebarBody>
+            <SidebarGroup label="Workspace">
+              <SidebarItem href="/" aria-current="page">
+                Overview
+              </SidebarItem>
+            </SidebarGroup>
+          </SidebarBody>
+        </Sidebar>
+        <main>
+          <SidebarTrigger />
+          {children}
+        </main>
+      </div>
+    </SidebarProvider>
+  )
+}
+```
+
+With a router, use `<SidebarItem asChild><Link href="/">Overview</Link></SidebarItem>`.
+
+## API
+
+### SidebarProvider
+
+Holds the drawer open state. Takes `children` only.
+
+### Sidebar
+
+Also accepts `nav` props. One of `aria-label` or `aria-labelledby` is required.
+
+| Prop              | Type     | Default | Description                    |
+| ----------------- | -------- | ------- | ------------------------------ |
+| `aria-label`      | `string` | -       | Names the navigation landmark. |
+| `aria-labelledby` | `string` | -       | Alternative to `aria-label`.   |
+
+### SidebarTrigger
+
+Menu button that opens the drawer; only shown below 960px. Focus returns to it on close.
+
+| Prop         | Type                   | Default             | Description   |
+| ------------ | ---------------------- | ------------------- | ------------- |
+| `aria-label` | `string`               | `'Open navigation'` | Button label. |
+| `size`       | `'sm' \| 'md' \| 'lg'` | -                   | Button size.  |
+
+### SidebarItem
+
+| Prop      | Type      | Default | Description                                                  |
+| --------- | --------- | ------- | ------------------------------------------------------------ |
+| `asChild` | `boolean` | `false` | Render the only child (usually a router `Link`) as the item. |
+
+Plain `a` props apply. Mark the current item with `aria-current="page"`. In the drawer, a click
+the link handles in place (`preventDefault`) closes the drawer.
+
+### Other parts
+
+| Part            | Description                                                               |
+| --------------- | ------------------------------------------------------------------------- |
+| `SidebarHeader` | Brand row pinned above the body; holds the close button in the drawer.    |
+| `SidebarBody`   | The groups; the only part that scrolls.                                   |
+| `SidebarFooter` | Pinned below the body.                                                    |
+| `SidebarGroup`  | List of items with an optional `label` (`ReactNode`) that names the list. |
+| `SidebarIcon`   | Decorative 16px leading icon for an item.                                 |
+| `SidebarBadge`  | Count at the end of an item, as a small `Badge`.                          |
+
+## Accessibility
+
+- Renders a `nav` landmark that needs a name; groups are lists announced with their item count.
+- The drawer provides modal focus containment, Esc, and focus restoration to the trigger.
+- Items are links: use `aria-current="page"` for the current one.

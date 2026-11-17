@@ -1,0 +1,104 @@
+---
+title: Input
+description: Text fields with labels, helper text and error states, plus search, password and copy variants.
+---
+
+<ComponentPreview name="input-demo" />
+
+## Usage
+
+```tsx
+import { Input } from '@weichenlin/swell-ui'
+
+export function Example() {
+  return <Input label="Project name" placeholder="payments-api" />
+}
+```
+
+Every input needs a visible `label`, or an `aria-label` when the surrounding context already names
+the field. `Input` supports `text`, `email`, `url` and `tel`; use `SearchInput`, `PasswordInput`
+and `CopyInput` for the other cases.
+
+## Examples
+
+### Floating label
+
+<ComponentPreview name="input-floating" />
+
+### Sizes
+
+<ComponentPreview name="input-sizes" />
+
+### States
+
+<ComponentPreview name="input-states" />
+
+### SearchInput
+
+<ComponentPreview name="input-search" />
+
+### PasswordInput
+
+<ComponentPreview name="input-password" />
+
+### CopyInput
+
+<ComponentPreview name="input-copy" />
+
+## API
+
+### Input
+
+All native `<input>` props are forwarded to the underlying element, except `size`.
+
+| Prop             | Type                                  | Default  | Description                                                                             |
+| ---------------- | ------------------------------------- | -------- | --------------------------------------------------------------------------------------- |
+| `label`          | `string`                              | -        | Visible label rendered as a real `<label>`. Omit it only when `aria-label` is provided. |
+| `aria-label`     | `string`                              | -        | Required when `label` is omitted.                                                       |
+| `floating`       | `boolean`                             | `false`  | Outlined floating label that rests inside the field. Needs a visible `label`.           |
+| `type`           | `'text' \| 'email' \| 'url' \| 'tel'` | `'text'` | Input type. There is no `number`; use `inputMode="numeric"` instead.                    |
+| `helperText`     | `ReactNode`                           | -        | Supporting text below the field.                                                        |
+| `error`          | `ReactNode`                           | -        | A truthy value puts the field in the error state; the text replaces `helperText`.       |
+| `size`           | `'sm' \| 'md' \| 'lg'`                | `'md'`   | Field size.                                                                             |
+| `start`          | `ReactNode`                           | -        | Decorative leading icon (aria-hidden) or plain text prefix such as `https://`.          |
+| `end`            | `ReactNode`                           | -        | Decorative trailing icon (aria-hidden) or plain text suffix.                            |
+| `mono`           | `boolean`                             | -        | Monospace with spellcheck and autocorrect off, for tags, SHAs and hostnames.            |
+| `validating`     | `boolean`                             | -        | Shows a spinner and announces `validatingText`; the field stays editable.               |
+| `validatingText` | `string`                              | -        | Text announced while `validating` is true.                                              |
+| `inputClassName` | `string`                              | -        | Classes for the `<input>`. `className` goes to the outer wrapper.                       |
+
+### SearchInput
+
+Takes the `Input` props except `type`, `label`, `floating` and `start`.
+
+| Prop         | Type         | Default | Description                                             |
+| ------------ | ------------ | ------- | ------------------------------------------------------- |
+| `aria-label` | `string`     | -       | Required: a search field has no visible label.          |
+| `onClear`    | `() => void` | -       | Called after the clear button or Esc empties the field. |
+
+### PasswordInput
+
+Takes the `Input` props except `type`. A toggle button shows or hides the password.
+
+| Prop           | Type     | Default              | Description                                      |
+| -------------- | -------- | -------------------- | ------------------------------------------------ |
+| `autoComplete` | `string` | `'current-password'` | Use `'new-password'` on sign-up and reset forms. |
+
+### CopyInput
+
+Read-only field with a copy button. Takes the `Input` props except `type`, `defaultValue`,
+`readOnly` and `onChange`.
+
+| Prop    | Type      | Default | Description                                           |
+| ------- | --------- | ------- | ----------------------------------------------------- |
+| `value` | `string`  | -       | Required. The text shown and copied to the clipboard. |
+| `mono`  | `boolean` | `true`  | Monospace display.                                    |
+
+## Accessibility
+
+- `SearchInput` pressing Esc clears a non-empty field; on an empty field Esc reaches outer
+  handlers, such as a dialog.
+- `PasswordInput` keeps a stable "Show password" button name and reflects state with
+  `aria-pressed`.
+- `CopyInput` selects its text on focus and announces "Copied" or "Copy failed" politely.
+- Buttons inside fields do not steal focus from the input on pointer press.

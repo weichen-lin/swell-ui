@@ -1,0 +1,57 @@
+---
+title: Switch
+description: A toggle for settings that take effect immediately.
+---
+
+<ComponentPreview name="switch-demo" />
+
+## Usage
+
+```tsx
+import { Switch } from '@weichenlin/swell-ui'
+
+export function Example() {
+  return <Switch name="notifications" label="Notifications" />
+}
+```
+
+## Examples
+
+### Sizes
+
+<ComponentPreview name="switch-sizes" />
+
+### Controlled
+
+<ComponentPreview name="switch-controlled" />
+
+### Loading
+
+<ComponentPreview name="switch-loading" />
+
+### Label position, disabled and invalid
+
+<ComponentPreview name="switch-label-position" />
+
+## API
+
+Extends native `<input type="checkbox">` props, except `type`, `size`, `children`, `role`,
+`aria-checked` and `aria-label`.
+
+| Prop             | Type               | Default | Description                                                            |
+| ---------------- | ------------------ | ------- | ---------------------------------------------------------------------- |
+| `label`          | `ReactNode`        | -       | Visible label. Required unless `aria-label` is set.                    |
+| `aria-label`     | `string`           | -       | Accessible name when there is no visible `label`.                      |
+| `description`    | `ReactNode`        | -       | One muted line under the label, linked with `aria-describedby`.        |
+| `error`          | `ReactNode`        | -       | Truthy sets `aria-invalid`; text is shown under the label.             |
+| `size`           | `'sm' \| 'md'`     | `'md'`  | `sm` (28x14) for dense rows and tables, `md` (36x20) for settings.     |
+| `loading`        | `boolean`          | `false` | Shows a spinner in the thumb and ignores toggles without losing focus. |
+| `labelPosition`  | `'end' \| 'start'` | `'end'` | `start` puts the label first and pushes the switch to the far end.     |
+| `className`      | `string`           | -       | Classes for the row.                                                   |
+| `inputClassName` | `string`           | -       | Classes for the `<input>` (the track).                                 |
+
+## Accessibility
+
+Switch is a native checkbox with `role="switch"`, so forms, `required`, reset and label clicks stay
+native. While `loading`, it sets `aria-busy` and swallows clicks and Space instead of using
+`disabled`, so keyboard focus stays put.
