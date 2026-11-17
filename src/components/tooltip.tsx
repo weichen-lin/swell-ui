@@ -8,6 +8,7 @@ import {
   useLayoutEffect,
   useRef,
   useState,
+  useSyncExternalStore,
 } from 'react'
 import { createPortal } from 'react-dom'
 import { cn } from '../lib/cn'
@@ -15,6 +16,17 @@ import { cn } from '../lib/cn'
 const OPEN_DELAY_MS = 300
 const GAP_PX = 6
 const VIEWPORT_PADDING_PX = 8
+
+const subscribeNever = () => () => {}
+
+/** False during SSR and hydration, true after: the portal target (document.body) only exists then. */
+function useIsClient() {
+  return useSyncExternalStore(
+    subscribeNever,
+    () => true,
+    () => false,
+  )
+}
 
 type Side = 'top' | 'bottom' | 'left' | 'right'
 type TriggerProps = { 'aria-describedby'?: string }
@@ -106,6 +118,7 @@ export function Tooltip({
   const bubbleRef = useRef<HTMLSpanElement>(null)
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
   const active = content != null && content !== false && content !== ''
+  const isClient = useIsClient()
 
   const clearTimer = () => clearTimeout(timer.current)
   const show = () => {
@@ -187,8 +200,9 @@ export function Tooltip({
       }}
     >
       {cloneElement(children, { 'aria-describedby': describedBy })}
-      {/* Kept in the DOM while hidden so aria-describedby always resolves */}
+      {/* Kept in the DOM while hidden so aria-describedby always resolves (client only: SSR has no body) */}
       {active &&
+        isClient &&
         createPortal(
           <span
             id={id}
