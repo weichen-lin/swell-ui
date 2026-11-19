@@ -38,7 +38,7 @@ test('caller className overrides via tailwind-merge', () => {
   render(<Button className="px-8">Go</Button>)
   const btn = screen.getByRole('button', { name: 'Go' })
   expect(btn).toHaveClass('px-8')
-  expect(btn).not.toHaveClass('px-4')
+  expect(btn).not.toHaveClass('px-3.75')
 })
 
 test('fires onClick', async () => {
@@ -187,7 +187,7 @@ test('icons render in aria-hidden slots and trim padding on their side', () => {
   const btn = screen.getByRole('button', { name: 'Branch' })
   expect(screen.getByTestId('left').closest('[aria-hidden="true"]')).not.toBeNull()
   expect(screen.getByTestId('right').closest('[aria-hidden="true"]')).not.toBeNull()
-  expect(btn).toHaveClass('ps-3', 'pe-3')
+  expect(btn).toHaveClass('ps-2.75', 'pe-2.75')
 })
 
 test('tone="danger" applies the compound classes', () => {
@@ -276,7 +276,7 @@ test('icon-only Button is square, named, and shows its label as a tooltip', asyn
     render(<Button icon={<GitBranch />} aria-label="Sync now" size="sm" />)
     const btn = screen.getByRole('button', { name: 'Sync now' })
     expect(btn).toHaveClass('h-8.5', 'aspect-square', 'px-0')
-    expect(btn).not.toHaveClass('px-3')
+    expect(btn).not.toHaveClass('px-2.75')
     // The label tooltip would only repeat the name, so it is not a description
     expect(btn).not.toHaveAttribute('aria-describedby')
 
@@ -365,7 +365,7 @@ test('asChild renders the link styled as a button, with props, classes and ref m
   expect(link).toHaveAttribute('title', 'Create')
   expect(link).not.toHaveAttribute('type')
   expect(link).not.toHaveAttribute('aria-disabled')
-  expect(link).toHaveClass('bg-surface-muted', 'h-9.5', 'ps-3', 'extra', 'own')
+  expect(link).toHaveClass('bg-surface-muted', 'h-9.5', 'ps-2.75', 'extra', 'own')
   // Ripple layer and icon live inside the link, not around it
   expect(link.querySelector('[data-ripple]')).not.toBeNull()
   expect(link).toContainElement(screen.getByTestId('icon'))

@@ -102,15 +102,16 @@ export function Switch({
             aria-invalid={row.invalid ? true : ariaInvalid}
             onChange={handleChange}
             className={cn(
-              'peer m-0 size-full cursor-pointer appearance-none rounded-full border border-transparent outline-hidden',
+              'peer m-0 size-full cursor-pointer appearance-none rounded-full border border-(--switch-ring) outline-hidden',
               'disabled:cursor-not-allowed aria-busy:cursor-progress',
-              'bg-(--switch-track) [box-shadow:0_0_0_1px_var(--switch-ring),0_0_0_4px_var(--switch-halo)]',
+              'bg-(--switch-track) [box-shadow:0_0_0_3px_var(--switch-halo)]',
               'transition-[background-color,border-color,box-shadow] duration-150 ease-out',
               // Off reuses the input border (>=3:1 on the page); state lives in custom properties so
               // forced colors can override the real properties once
               '[--switch-track:var(--color-input-border)] checked:[--switch-track:var(--color-control-checked)]',
               pressable && 'not-checked:hover:[--switch-track:var(--color-input-border-hover)]',
-              // Input's focus language on a borderless track: a 1px ring for the border step, then the halo
+              // Input's focus language: the border carries the state color (inside the box, so the track never
+              // grows), then the 3px halo outside it
               row.invalid
                 ? [
                     '[--switch-ring:var(--color-danger)] [--switch-halo:var(--color-input-halo-invalid)]',

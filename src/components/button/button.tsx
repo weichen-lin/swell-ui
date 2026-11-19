@@ -16,16 +16,17 @@ import { Tooltip, type TooltipProps } from '../tooltip'
 
 const buttonVariants = cva(
   [
-    'relative inline-flex cursor-pointer items-center justify-center font-medium whitespace-nowrap',
+    'relative inline-flex cursor-pointer items-center justify-center border font-medium whitespace-nowrap',
     'touch-manipulation select-none [-webkit-tap-highlight-color:transparent]',
-    'transition-[color,background-color,box-shadow,opacity,scale] duration-150 ease-out',
+    'transition-[color,background-color,border-color,opacity,scale] duration-150 ease-out',
     // Set by usePressFeedback; unlike :active it clears on pointercancel (touch scroll) and drag-off
     'data-pressed:scale-[0.97]',
     'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
-    // Invisible edge that forced-colors mode paints, so bg-only buttons keep a visible boundary.
-    // An overlay instead of a real border keeps the tuned outer size.
-    'after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit] after:border after:border-transparent',
-    'forced-colors:after:border-[ButtonText]',
+    // A real 1px border on every intent (transparent when chromeless) sits inside the fixed height,
+    // so the outer edge matches Field's at each size. Never draw the edge with an outer shadow:
+    // it paints outside the box and makes the button look 2px taller than its neighbours.
+    // Forced colors paints the border, so bg-only buttons keep a visible boundary.
+    'forced-colors:border-[ButtonText]',
     // >=44px hit target on touch without changing the visual size
     'pointer-coarse:before:absolute pointer-coarse:before:top-1/2 pointer-coarse:before:left-1/2',
     'pointer-coarse:before:size-full pointer-coarse:before:min-h-11 pointer-coarse:before:min-w-11',
@@ -36,22 +37,25 @@ const buttonVariants = cva(
       intent: {
         // Brand color: the one primary call to action
         primary:
-          'bg-primary text-primary-fg rounded-lg shadow-[0_0_0_1px_var(--color-primary)] hover:not-aria-disabled:opacity-90',
+          'bg-primary text-primary-fg rounded-lg border-primary hover:not-aria-disabled:opacity-90',
         // Muted surface: the workhorse
         secondary:
-          'bg-surface-muted text-fg-strong rounded-lg shadow-[0_0_0_1px_var(--color-ring)] hover:not-aria-disabled:bg-ring',
+          'bg-surface-muted text-fg-strong rounded-lg border-ring hover:not-aria-disabled:bg-ring',
         // Raised surface: shifts to secondary background on hover
-        surface: 'bg-surface-raised text-fg rounded-xl hover:not-aria-disabled:bg-surface-muted',
+        surface:
+          'bg-surface-raised text-fg rounded-xl border-transparent hover:not-aria-disabled:bg-surface-muted',
         // Inverse: strong emphasis without the brand color
-        dark: 'bg-inverse text-inverse-fg rounded-lg shadow-[0_0_0_1px_var(--color-ring)] hover:not-aria-disabled:opacity-90',
+        dark: 'bg-inverse text-inverse-fg rounded-lg border-ring hover:not-aria-disabled:opacity-90',
         // No chrome until hover: toolbars, table rows
-        ghost: 'bg-transparent text-fg rounded-lg hover:not-aria-disabled:bg-surface-muted',
+        ghost:
+          'bg-transparent text-fg rounded-lg border-transparent hover:not-aria-disabled:bg-surface-muted',
       },
       size: {
-        // Supabase-like scale: compact height, 14px text
-        sm: 'h-8.5 px-3 text-sm',
-        md: 'h-9.5 px-4 text-sm',
-        lg: 'h-10.5 px-5 text-base',
+        // Supabase-like scale: compact height, 14px text. Heights include the 1px border and match
+        // Field's (34/38/42); padding is 1px under the 12/16/20 rhythm to absorb the border.
+        sm: 'h-8.5 px-2.75 text-sm',
+        md: 'h-9.5 px-3.75 text-sm',
+        lg: 'h-10.5 px-4.75 text-base',
       },
       tone: { default: '', danger: '' },
       fullWidth: { true: 'w-full', false: '' },
@@ -62,14 +66,14 @@ const buttonVariants = cva(
       {
         intent: 'primary',
         tone: 'danger',
-        class: 'bg-danger text-danger-fg shadow-[0_0_0_1px_var(--color-danger)]',
+        class: 'bg-danger text-danger-fg border-danger',
       },
       // Outline-ish danger fills on hover (GitHub pattern); danger text on the darker hover bg would fail contrast
       {
         intent: 'secondary',
         tone: 'danger',
         class:
-          'text-danger shadow-[0_0_0_1px_var(--color-danger)] hover:not-aria-disabled:bg-danger hover:not-aria-disabled:text-danger-fg',
+          'text-danger border-danger hover:not-aria-disabled:bg-danger hover:not-aria-disabled:text-danger-fg',
       },
       {
         intent: 'surface',
@@ -81,7 +85,7 @@ const buttonVariants = cva(
       {
         intent: 'dark',
         tone: 'danger',
-        class: 'bg-danger text-danger-fg shadow-[0_0_0_1px_var(--color-danger)]',
+        class: 'bg-danger text-danger-fg border-danger',
       },
       {
         intent: 'ghost',
@@ -108,8 +112,8 @@ const iconSize = {
   lg: '[&_svg]:size-[18px]',
 } as const
 // The side with an icon looks heavier, so it gets ~4px less padding
-const iconStartPadding = { sm: 'ps-2', md: 'ps-3', lg: 'ps-4' } as const
-const iconEndPadding = { sm: 'pe-2', md: 'pe-3', lg: 'pe-4' } as const
+const iconStartPadding = { sm: 'ps-1.75', md: 'ps-2.75', lg: 'ps-3.75' } as const
+const iconEndPadding = { sm: 'pe-1.75', md: 'pe-2.75', lg: 'pe-3.75' } as const
 
 type ContentProps = {
   size: Size
@@ -137,7 +141,7 @@ function ButtonContent({
         ref={layerRef}
         data-ripple={ripple ? '' : undefined}
         aria-hidden
-        className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit] forced-colors:hidden"
+        className="pointer-events-none absolute -inset-px overflow-hidden rounded-[inherit] forced-colors:hidden"
       />
       {/* Content stays in layout (keeps width + accessible name) and fades out under the spinner */}
       <span
@@ -179,7 +183,7 @@ function iconPadding(size: Size, iconLeft: ReactNode, iconRight: ReactNode) {
 function stateClass(disabled: boolean, loading: boolean) {
   if (loading) return 'cursor-progress opacity-70'
   if (disabled)
-    return 'cursor-not-allowed opacity-50 forced-colors:opacity-100 forced-colors:text-[GrayText] forced-colors:after:border-[GrayText]'
+    return 'cursor-not-allowed opacity-50 forced-colors:opacity-100 forced-colors:text-[GrayText] forced-colors:border-[GrayText]'
 }
 
 type BaseProps = Omit<ComponentProps<'button'>, 'children'> &
