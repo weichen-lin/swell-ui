@@ -166,7 +166,7 @@ export function Combobox({
   useLayoutEffect(() => {
     inputRef.current?.setCustomValidity(disabled || readOnly ? '' : invalidMessage)
   }, [invalidMessage, disabled, readOnly])
-  useComboboxPosition(open, inputRef, contentRef)
+  const positionStyle = useComboboxPosition(open, inputRef, contentRef)
   useLayoutEffect(() => {
     if (activeId) document.getElementById(activeId)?.scrollIntoView?.({ block: 'nearest' })
   }, [activeId])
@@ -511,6 +511,7 @@ export function Combobox({
           ref={contentRef}
           popover="manual"
           data-slot="combobox-content"
+          style={positionStyle}
           className={cn(
             'fixed inset-auto z-50 m-0 box-border max-h-70 overflow-y-auto rounded-surface border border-popover-border bg-popover-bg p-1 font-sans text-sm text-fg shadow-popover outline-none scrollbar-subtle',
             'transition-opacity duration-150 starting:opacity-0 motion-reduce:transition-none',

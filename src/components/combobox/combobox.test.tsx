@@ -595,6 +595,31 @@ test('popup flips, clamps to the visual viewport and tracks viewport changes wit
   }
 })
 
+test('popup is anchored to the field with CSS where the browser supports it', async () => {
+  const user = userEvent.setup()
+  const supports = vi.spyOn(CSS, 'supports').mockReturnValue(true)
+  try {
+    const { container } = render(<Combobox label="Project" options={options} />)
+    await user.click(input())
+    const popup = container.querySelector<HTMLElement>('[data-slot="combobox-content"]')!
+    const field = container.querySelector<HTMLElement>('[data-slot="input-control"]')!
+    const name = field.style.getPropertyValue('anchor-name')
+    expect(name).toMatch(/^--swell[\w-]+$/)
+    expect(popup.style.getPropertyValue('position-anchor')).toBe(name)
+    expect(popup.style.getPropertyValue('--swell-anchor-gap')).toBe('4px')
+    expect(popup.style.getPropertyValue('--swell-anchor-cap')).toBe('280px')
+    // Nothing measured: no script-set side, offsets or size caps
+    expect(popup).not.toHaveAttribute('data-side')
+    expect(popup.style.maxHeight).toBe('')
+    expect(popup.style.left).toBe('')
+    expect(input()).toHaveFocus()
+    await user.keyboard('{Escape}')
+    expect(field.style.getPropertyValue('anchor-name')).toBe('')
+  } finally {
+    supports.mockRestore()
+  }
+})
+
 const invalidProps: ComboboxProps[] = [
   // @ts-expect-error label or aria-label is required
   { options },

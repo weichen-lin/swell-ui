@@ -1,18 +1,40 @@
-import { type RefObject, useLayoutEffect } from 'react'
+import { type CSSProperties, type RefObject, useId, useLayoutEffect } from 'react'
+import {
+  anchorName,
+  anchoredPopupStyle,
+  nameAnchor,
+  useAnchorPositioning,
+} from '../../lib/anchor-position'
 
 const clamp = (n: number, min: number, max: number) =>
   Math.max(min, Math.min(n, Math.max(min, max)))
 
-/** Top-layer positioning only: unlike Menu, a combobox never transfers focus into the list. */
+const MAX_HEIGHT = 280
+
+/**
+ * Top-layer positioning only: unlike Menu, a combobox never transfers focus into the list.
+ * Returns the popup's style: anchor positioning where supported (below the field, matching its
+ * width), otherwise nothing and the popup is measured and placed here.
+ */
 export function useComboboxPosition(
   open: boolean,
   inputRef: RefObject<HTMLInputElement | null>,
   contentRef: RefObject<HTMLDivElement | null>,
-) {
+): CSSProperties | undefined {
+  const anchored = useAnchorPositioning()
+  const name = anchorName(useId())
   useLayoutEffect(() => {
     const content = contentRef.current
     const anchor = inputRef.current?.closest<HTMLElement>('[data-slot="input-control"]')
     if (!open || !content || !anchor) return
+    if (anchored) {
+      const unname = nameAnchor(anchor, name)
+      content.showPopover?.()
+      return () => {
+        content.hidePopover?.()
+        unname()
+      }
+    }
     content.showPopover?.()
     const update = () => {
       const rect = anchor.getBoundingClientRect()
@@ -24,9 +46,9 @@ export function useComboboxPosition(
       content.style.width = `${Math.min(rect.width, Math.max(0, width - 16))}px`
       const below = top + height - rect.bottom - 12
       const above = rect.top - top - 12
-      const needed = Math.min(content.scrollHeight, 280)
+      const needed = Math.min(content.scrollHeight, MAX_HEIGHT)
       const side = below < needed && above > below ? 'top' : 'bottom'
-      content.style.maxHeight = `${Math.max(0, Math.min(280, side === 'top' ? above : below))}px`
+      content.style.maxHeight = `${Math.max(0, Math.min(MAX_HEIGHT, side === 'top' ? above : below))}px`
       const w = content.offsetWidth
       const h = content.offsetHeight
       const rtl = getComputedStyle(anchor).direction === 'rtl'
@@ -54,5 +76,16 @@ export function useComboboxPosition(
       window.visualViewport?.removeEventListener('scroll', update)
       content.hidePopover?.()
     }
-  }, [open, inputRef, contentRef])
+  }, [open, inputRef, contentRef, anchored, name])
+  if (!anchored) return undefined
+  return {
+    ...anchoredPopupStyle({
+      name,
+      side: 'bottom',
+      align: 'start',
+      gap: 4,
+      maxBlockSize: MAX_HEIGHT,
+    }),
+    width: 'anchor-size(width)',
+  }
 }

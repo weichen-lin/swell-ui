@@ -13,6 +13,12 @@ import {
   useRef,
   useState,
 } from 'react'
+import {
+  anchorName,
+  anchoredPopupStyle,
+  nameAnchor,
+  useAnchorPositioning,
+} from '../../lib/anchor-position'
 import { cn } from '../../lib/cn'
 import { Slot, wrapChildren } from '../../lib/slot'
 import { useMergedRef } from '../input/field'
@@ -174,6 +180,8 @@ function OpenContent({
   const mergedRef = useMergedRef(contentRef, ref)
   const query = useRef({ text: '', time: 0 })
   const dismiss = useEffectEvent((reason: DropdownMenuChangeReason) => menu.change(false, reason))
+  const anchored = useAnchorPositioning()
+  const anchor = anchorName(menu.triggerId)
 
   useLayoutEffect(() => {
     const content = contentRef.current
@@ -209,6 +217,7 @@ function OpenContent({
     const content = contentRef.current
     const trigger = triggerRef.current
     if (!content || !trigger) return
+    if (anchored) return nameAnchor(trigger, anchor)
     const update = () => {
       const rect = trigger.getBoundingClientRect()
       const viewport = window.visualViewport
@@ -265,7 +274,7 @@ function OpenContent({
       window.visualViewport?.removeEventListener('resize', update)
       window.visualViewport?.removeEventListener('scroll', update)
     }
-  }, [side, align, sideOffset, contentRef, triggerRef])
+  }, [side, align, sideOffset, contentRef, triggerRef, anchored, anchor])
 
   return (
     <div
@@ -278,7 +287,14 @@ function OpenContent({
       popover="manual"
       data-slot="dropdown-menu-content"
       data-state="open"
-      style={style}
+      style={
+        anchored
+          ? {
+              ...anchoredPopupStyle({ name: anchor, side, align, gap: Math.max(0, sideOffset) }),
+              ...style,
+            }
+          : style
+      }
       className={cn(
         'fixed inset-auto z-50 m-0 box-border w-max min-w-50 overflow-y-auto rounded-surface border border-popover-border bg-popover-bg p-1 font-sans text-sm text-fg shadow-popover outline-none',
         'transition-opacity duration-150 starting:opacity-0 motion-reduce:transition-none',

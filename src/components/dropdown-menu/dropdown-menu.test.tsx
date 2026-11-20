@@ -157,3 +157,25 @@ it('leaves focus on a new surface opened by a selection', async () => {
   expect(screen.queryByRole('menu')).not.toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'Outside' })).toHaveFocus()
 })
+it('leaves placement to CSS anchor positioning where the browser supports it', async () => {
+  const user = userEvent.setup()
+  const supports = vi.spyOn(CSS, 'supports').mockReturnValue(true)
+  try {
+    render(<Example />)
+    const trigger = screen.getByRole('button', { name: 'Actions' })
+    await user.click(trigger)
+    const menu = screen.getByRole('menu')
+    const name = trigger.style.getPropertyValue('anchor-name')
+    expect(name).toMatch(/^--swell[\w-]+-trigger$/)
+    expect(menu.style.getPropertyValue('position-anchor')).toBe(name)
+    expect(menu.style.getPropertyValue('--swell-anchor-gap')).toBe('6px')
+    // Nothing measured: no script-set side, offsets or size caps
+    expect(menu).not.toHaveAttribute('data-side')
+    expect(menu.style.maxHeight).toBe('')
+    expect(menu.style.left).toBe('')
+    await user.keyboard('{Escape}')
+    expect(trigger.style.getPropertyValue('anchor-name')).toBe('')
+  } finally {
+    supports.mockRestore()
+  }
+})
