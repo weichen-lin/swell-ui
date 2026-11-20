@@ -212,7 +212,7 @@ describe('Drawer', () => {
     expect(drawer()).toHaveClass('motion-safe:starting:open:translate-x-full')
     const panel = drawer().querySelector('[data-slot="drawer-panel"]')
     expect(panel).toHaveClass('border-l')
-    expect(panel).not.toHaveClass('rounded-xl')
+    expect(panel).not.toHaveClass('rounded-surface')
   })
 
   it.each([

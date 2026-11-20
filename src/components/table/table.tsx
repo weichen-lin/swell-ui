@@ -233,7 +233,7 @@ export function Table<T>({
                           <button
                             type="button"
                             className={cn(
-                              'inline-flex min-h-8 cursor-pointer items-center gap-1.5 rounded-sm hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus pointer-coarse:min-h-11',
+                              'inline-flex min-h-8 cursor-pointer items-center gap-1.5 rounded-inset hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus pointer-coarse:min-h-11',
                               direction && 'text-fg',
                             )}
                             onClick={() =>

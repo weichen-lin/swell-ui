@@ -290,7 +290,7 @@ export function Radio({
         // Real touch spacing prevents neighboring 44px hit areas from overlapping.
         'pointer-coarse:min-h-11 pointer-coarse:py-2.5',
         card && [
-          'w-full rounded-lg border bg-surface p-3 pointer-coarse:p-3',
+          'w-full rounded-control border bg-surface p-3 pointer-coarse:p-3',
           'transition-[border-color,background-color] duration-150 ease-out',
           '[&>span:last-child>span:first-child]:font-medium',
           'has-[input:checked]:bg-[color-mix(in_oklab,var(--color-control-checked)_4%,var(--color-surface))]',

@@ -120,7 +120,7 @@ export function Dialog({ size = 'md', className, children, ...props }: DialogPro
       <div
         data-slot="dialog-panel"
         className={cn(
-          'flex max-h-[inherit] flex-col rounded-xl border border-popover-border bg-popover-bg shadow-dialog',
+          'flex max-h-[inherit] flex-col rounded-surface border border-popover-border bg-popover-bg shadow-dialog',
           // Forced colors drops the shadow; the border then carries the edge
           'forced-colors:border-[CanvasText]',
           'max-sm:rounded-b-none max-sm:border-b-0 max-sm:pb-[env(safe-area-inset-bottom)]',

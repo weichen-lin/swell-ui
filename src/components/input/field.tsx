@@ -154,7 +154,7 @@ function Notch({
         notchPadding[ring][size],
         halo
           ? [
-              '-inset-1 rounded-[calc(var(--radius-lg)+3px)] border-[3px] border-(--field-halo)',
+              '-inset-1 rounded-[calc(var(--radius-control)+3px)] border-[3px] border-(--field-halo)',
               // Forced colors would paint the idle ring; show it only on focus, as the focus indicator
               'forced-colors:invisible forced-colors:group-has-[:is(input,select,textarea):is(:focus,:open)]/control:visible forced-colors:border-[Highlight]',
             ]
@@ -343,7 +343,7 @@ export function FieldShell<T extends HTMLElement>({
         data-start={hasStart ? '' : undefined}
         onMouseDown={forwardClick}
         className={cn(
-          'group/control relative isolate flex items-center rounded-lg border',
+          'group/control relative isolate flex items-center rounded-control border',
           // Floating is outlined (MUI): transparent, so the label straddling the border sits on one color
           floatingLabel ? 'bg-transparent' : '[--field-bg:var(--color-input-bg)] bg-(--field-bg)',
           'transition-[border-color,box-shadow,background-color] duration-200 ease-in-out motion-reduce:transition-none',

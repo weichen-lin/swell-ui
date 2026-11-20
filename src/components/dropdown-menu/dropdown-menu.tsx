@@ -280,7 +280,7 @@ function OpenContent({
       data-state="open"
       style={style}
       className={cn(
-        'fixed inset-auto z-50 m-0 box-border w-max min-w-50 overflow-y-auto rounded-lg border border-popover-border bg-popover-bg p-1 font-sans text-sm text-fg shadow-popover outline-none',
+        'fixed inset-auto z-50 m-0 box-border w-max min-w-50 overflow-y-auto rounded-control border border-popover-border bg-popover-bg p-1 font-sans text-sm text-fg shadow-popover outline-none',
         'transition-opacity duration-150 starting:opacity-0 motion-reduce:transition-none',
         className,
       )}
@@ -399,7 +399,7 @@ export function DropdownMenuItem({
       data-tone={tone}
       data-text-value={textValue}
       className={cn(
-        'flex min-h-8 w-full cursor-default items-center gap-2 rounded-md px-2 py-1.5 text-start text-sm/snug outline-none select-none pointer-coarse:min-h-10',
+        'flex min-h-8 w-full cursor-default items-center gap-2 rounded-item px-2 py-1.5 text-start text-sm/snug outline-none select-none pointer-coarse:min-h-10',
         'focus:bg-popover-highlight focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus',
         'aria-disabled:cursor-not-allowed aria-disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0',
         tone === 'danger'

@@ -43,7 +43,7 @@ export function Alert({
       data-slot="alert"
       data-tone={tone}
       className={cn(
-        '@container/alert flex items-start gap-3 rounded-xl border border-ring-deep px-4 py-3',
+        '@container/alert flex items-start gap-3 rounded-surface border border-ring-deep px-4 py-3',
         'text-sm text-fg forced-colors:border-[CanvasText]',
         className,
       )}

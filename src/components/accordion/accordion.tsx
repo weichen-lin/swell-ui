@@ -276,7 +276,7 @@ export function AccordionItem({
         data-disabled={isDisabled || undefined}
         className={cn(
           'min-w-0 border-input-border',
-          group.variant === 'outline' ? 'rounded-xl border bg-surface' : 'border-b',
+          group.variant === 'outline' ? 'rounded-surface border bg-surface' : 'border-b',
           className,
         )}
       >
@@ -331,11 +331,11 @@ export function AccordionTrigger({
         data-slot="accordion-trigger"
         data-state={item.open ? 'open' : 'closed'}
         className={cn(
-          'group/accordion-trigger flex min-h-12 w-full cursor-pointer items-start gap-3 rounded-sm py-3 text-start text-sm/6 font-medium text-fg outline-none',
+          'group/accordion-trigger flex min-h-12 w-full cursor-pointer items-start gap-3 rounded-inset py-3 text-start text-sm/6 font-medium text-fg outline-none',
           'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
           'disabled:cursor-not-allowed disabled:opacity-50 aria-disabled:cursor-default',
           'forced-colors:disabled:text-[GrayText]',
-          group.variant === 'outline' && 'rounded-xl px-4',
+          group.variant === 'outline' && 'rounded-surface px-4',
           className,
         )}
         onClick={(event) => {

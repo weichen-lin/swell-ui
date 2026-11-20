@@ -95,8 +95,8 @@ const pickerClasses = cn(
   'supports-[appearance:base-select]:[@media(hover:hover)_and_(pointer:fine)]:[&::picker(select)]:min-w-[anchor-size(width)]',
   'supports-[appearance:base-select]:[@media(hover:hover)_and_(pointer:fine)]:[&::picker(select)]:max-h-[max(10rem,calc(100%-12px))]',
   'supports-[appearance:base-select]:[@media(hover:hover)_and_(pointer:fine)]:[&::picker(select)]:overflow-y-auto',
-  // One radius step above the trigger, so inner rows (rounded-lg) sit concentric in the 4px inset
-  'supports-[appearance:base-select]:[@media(hover:hover)_and_(pointer:fine)]:[&::picker(select)]:rounded-xl',
+  // One radius step above the trigger, so inner rows (rounded-control) sit concentric in the 4px inset
+  'supports-[appearance:base-select]:[@media(hover:hover)_and_(pointer:fine)]:[&::picker(select)]:rounded-surface',
   'supports-[appearance:base-select]:[@media(hover:hover)_and_(pointer:fine)]:[&::picker(select)]:border',
   'supports-[appearance:base-select]:[@media(hover:hover)_and_(pointer:fine)]:[&::picker(select)]:border-popover-border',
   'supports-[appearance:base-select]:[@media(hover:hover)_and_(pointer:fine)]:[&::picker(select)]:bg-popover-bg',
@@ -132,7 +132,7 @@ function optionClasses(size: FieldSize, mono: boolean) {
     'supports-[appearance:base-select]:[@media(hover:hover)_and_(pointer:fine)]:cursor-default',
     'supports-[appearance:base-select]:[@media(hover:hover)_and_(pointer:fine)]:items-center',
     'supports-[appearance:base-select]:[@media(hover:hover)_and_(pointer:fine)]:gap-2',
-    'supports-[appearance:base-select]:[@media(hover:hover)_and_(pointer:fine)]:rounded-lg',
+    'supports-[appearance:base-select]:[@media(hover:hover)_and_(pointer:fine)]:rounded-control',
     'supports-[appearance:base-select]:[@media(hover:hover)_and_(pointer:fine)]:bg-transparent',
     'supports-[appearance:base-select]:[@media(hover:hover)_and_(pointer:fine)]:px-2',
     'supports-[appearance:base-select]:[@media(hover:hover)_and_(pointer:fine)]:py-1.5',

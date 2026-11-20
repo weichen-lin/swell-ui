@@ -15,6 +15,13 @@ describe('cn', () => {
     expect(cn('max-w-page', 'max-w-sm')).toBe('max-w-sm')
   })
 
+  it('merges semantic radius tokens with Tailwind ones and with each other', () => {
+    expect(cn('rounded-control', 'rounded-lg')).toBe('rounded-lg')
+    expect(cn('rounded-lg', 'rounded-surface')).toBe('rounded-surface')
+    expect(cn('rounded-item', 'rounded-inset')).toBe('rounded-inset')
+    expect(cn('rounded-control', 'rounded-t-none')).toBe('rounded-control rounded-t-none')
+  })
+
   it('keeps a custom token apart from other groups', () => {
     expect(cn('rounded-sm', 'rounded-t-lg')).toBe('rounded-sm rounded-t-lg')
     expect(cn('shadow-popover', 'shadow-fg')).toBe('shadow-popover shadow-fg')

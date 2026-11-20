@@ -781,7 +781,7 @@ function ToastCard({
       onPointerCancel={(event) => endDrag(event, true)}
       className={cn(
         // No text selection: a drag on the text is a swipe
-        'group/toast absolute inset-x-0 rounded-xl outline-none select-none',
+        'group/toast absolute inset-x-0 rounded-surface outline-none select-none',
         edge === 'bottom' ? 'bottom-0 origin-top' : 'top-0 origin-bottom',
         // Stack position (transform) and swipe offset (translate) compose; exits add scale
         'transform-[translateY(var(--toast-y))_scale(var(--toast-scale))]',

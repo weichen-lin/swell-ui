@@ -310,7 +310,7 @@ export function Combobox({
       data-slot="combobox-option"
       data-active={activeItem?.value === item.value ? '' : undefined}
       className={cn(
-        'flex min-h-control-sm cursor-default items-center gap-2 rounded-lg px-2 py-1.5 text-sm/5 text-fg outline-none select-none pointer-coarse:min-h-11',
+        'flex min-h-control-sm cursor-default items-center gap-2 rounded-control px-2 py-1.5 text-sm/5 text-fg outline-none select-none pointer-coarse:min-h-11',
         'data-active:bg-popover-highlight data-active:outline-1 data-active:-outline-offset-1 data-active:outline-input-border',
         'aria-disabled:cursor-not-allowed aria-disabled:opacity-50 forced-colors:data-active:outline-[Highlight]',
       )}
@@ -512,7 +512,7 @@ export function Combobox({
           popover="manual"
           data-slot="combobox-content"
           className={cn(
-            'fixed inset-auto z-50 m-0 box-border max-h-70 overflow-y-auto rounded-xl border border-popover-border bg-popover-bg p-1 font-sans text-sm text-fg shadow-popover outline-none scrollbar-subtle',
+            'fixed inset-auto z-50 m-0 box-border max-h-70 overflow-y-auto rounded-surface border border-popover-border bg-popover-bg p-1 font-sans text-sm text-fg shadow-popover outline-none scrollbar-subtle',
             'transition-opacity duration-150 starting:opacity-0 motion-reduce:transition-none',
             contentClassName,
           )}

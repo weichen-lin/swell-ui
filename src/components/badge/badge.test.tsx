@@ -133,7 +133,7 @@ test('forwards native props and merges className without losing base classes', (
   expect(badge).toHaveAttribute('id', 'b1')
   expect(badge).toHaveAttribute('title', 'Full value')
   expect(badge).toHaveAttribute('data-env', 'prod')
-  expect(badge).toHaveClass('max-w-20', 'uppercase', 'inline-flex', 'rounded-md')
+  expect(badge).toHaveClass('max-w-20', 'uppercase', 'inline-flex', 'rounded-item')
   expect(ref.current).toBe(badge)
 })
 

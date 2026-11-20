@@ -37,18 +37,18 @@ const buttonVariants = cva(
       intent: {
         // Brand color: the one primary call to action
         primary:
-          'bg-primary text-primary-fg rounded-lg border-primary hover:not-aria-disabled:opacity-90',
+          'bg-primary text-primary-fg rounded-control border-primary hover:not-aria-disabled:opacity-90',
         // Muted surface: the workhorse
         secondary:
-          'bg-surface-muted text-fg-strong rounded-lg border-ring hover:not-aria-disabled:bg-ring',
+          'bg-surface-muted text-fg-strong rounded-control border-ring hover:not-aria-disabled:bg-ring',
         // Raised surface: shifts to secondary background on hover
         surface:
-          'bg-surface-raised text-fg rounded-xl border-transparent hover:not-aria-disabled:bg-surface-muted',
+          'bg-surface-raised text-fg rounded-surface border-transparent hover:not-aria-disabled:bg-surface-muted',
         // Inverse: strong emphasis without the brand color
-        dark: 'bg-inverse text-inverse-fg rounded-lg border-ring hover:not-aria-disabled:opacity-90',
+        dark: 'bg-inverse text-inverse-fg rounded-control border-ring hover:not-aria-disabled:opacity-90',
         // No chrome until hover: toolbars, table rows
         ghost:
-          'bg-transparent text-fg rounded-lg border-transparent hover:not-aria-disabled:bg-surface-muted',
+          'bg-transparent text-fg rounded-control border-transparent hover:not-aria-disabled:bg-surface-muted',
       },
       size: {
         // Supabase-like scale: compact height, 14px text. Heights include the 1px border and match

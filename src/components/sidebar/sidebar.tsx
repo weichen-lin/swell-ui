@@ -211,7 +211,7 @@ function useHoverPill<T extends HTMLElement>() {
 const bodyClasses = [
   'relative isolate flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overscroll-contain px-3 py-2',
   // fg at 5%, under the items (z -1 inside the isolated body); Tabs' timing and curve
-  'after:pointer-events-none after:absolute after:top-0 after:left-0 after:-z-1 after:rounded-md',
+  'after:pointer-events-none after:absolute after:top-0 after:left-0 after:-z-1 after:rounded-item',
   'after:bg-fg/5 after:opacity-0 data-hover:after:opacity-100',
   'after:h-(--sidebar-hover-h) after:w-(--sidebar-hover-w)',
   'after:[translate:var(--sidebar-hover-x)_var(--sidebar-hover-y)]',
@@ -281,7 +281,7 @@ export function SidebarGroup({ label, className, children, ...props }: SidebarGr
 }
 
 const itemClasses = [
-  'flex h-9 w-full items-center gap-2 rounded-md ps-2.5 pe-2',
+  'flex h-9 w-full items-center gap-2 rounded-item ps-2.5 pe-2',
   'text-sm leading-5 font-medium text-fg-muted no-underline select-none',
   'touch-manipulation [-webkit-tap-highlight-color:transparent]',
   // Not transition-colors: that would also fade the focus ring in from the text color

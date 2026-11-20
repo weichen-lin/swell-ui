@@ -86,7 +86,7 @@ export function Checkbox({
             aria-describedby={row.describedBy}
             aria-invalid={row.invalid ? true : ariaInvalid}
             className={cn(
-              'peer col-start-1 row-start-1 m-0 size-4 cursor-pointer appearance-none rounded-sm border outline-hidden',
+              'peer col-start-1 row-start-1 m-0 size-4 cursor-pointer appearance-none rounded-inset border outline-hidden',
               'disabled:cursor-not-allowed',
               'border-(--checkbox-border) bg-(--checkbox-bg) [box-shadow:0_0_0_3px_var(--checkbox-halo)]',
               'transition-[background-color,border-color,box-shadow] duration-200 ease-in-out',
