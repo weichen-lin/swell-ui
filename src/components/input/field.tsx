@@ -366,7 +366,7 @@ export function FieldShell<T extends HTMLElement>({
                 '[--field-border:var(--color-input-border)] [--field-halo:transparent]',
                 'has-[:is(input,select,textarea):is(:focus,:open)]:[--field-border:var(--color-input-focus)] has-[:is(input,select,textarea):is(:focus,:open)]:[--field-halo:var(--color-input-halo)]',
               ],
-          '[--field-lift:0_0_#0000]',
+          '[--field-lift:0_0_transparent]',
           !invalid &&
             !disabled &&
             !readOnly && [
