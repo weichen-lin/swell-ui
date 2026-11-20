@@ -241,10 +241,28 @@ test('pressed looks sunken: inset shadow and fill, never a scale', () => {
   render(<Button intent="ghost">Press</Button>)
   const btn = screen.getByRole('button', { name: 'Press' })
   expect(btn).toHaveClass(
-    'data-pressed:[--tw-shadow:var(--shadow-pressed)]',
+    'data-pressed:[--btn-shadow:var(--shadow-pressed),0_0_0_0_transparent]',
     'data-pressed:not-aria-disabled:bg-surface-inset',
   )
   expect(btn.className).not.toMatch(/scale/)
+})
+
+test('filled intents rest raised and lift on hover; ghost and inert buttons stay flat', () => {
+  render(
+    <>
+      <Button intent="secondary">Filled</Button>
+      <Button intent="ghost">Ghost</Button>
+    </>,
+  )
+  const filled = screen.getByRole('button', { name: 'Filled' })
+  expect(filled).toHaveClass(
+    'not-aria-disabled:not-data-pressed:[--btn-shadow:var(--shadow-raised),var(--shadow-lift)]',
+    'hover:not-aria-disabled:not-data-pressed:-translate-y-(--lift)',
+  )
+  // Lift is a transform: no margin, inset or size change
+  expect(filled.className).not.toMatch(/(^|:)-?(m[tby]?|top|bottom|h)-\(--lift\)/)
+  const ghost = screen.getByRole('button', { name: 'Ghost' })
+  expect(ghost.className).not.toMatch(/shadow-raised|--lift/)
 })
 
 test('keyboard press sets data-pressed until keyup, ignoring auto-repeat ripples', () => {

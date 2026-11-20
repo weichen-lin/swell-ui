@@ -14,6 +14,15 @@ import { cn } from '../../lib/cn'
 import { Slot, type SlotProps, wrapChildren } from '../../lib/slot'
 import { Tooltip, type TooltipProps } from '../tooltip'
 
+// Filled intents rest raised and rise by --lift on hover. Ghost has no chrome to raise: it only sinks
+// when pressed. Disabled and loading (aria-disabled) rest flat: depth says "press me", which an
+// inert button can't honour, and dimming alone would leave it looking ready.
+const raised = [
+  'not-aria-disabled:not-data-pressed:[--btn-shadow:var(--shadow-raised),var(--shadow-lift)]',
+  'hover:not-aria-disabled:not-data-pressed:[--btn-shadow:var(--shadow-raised),var(--shadow-lift-hover)]',
+  'hover:not-aria-disabled:not-data-pressed:-translate-y-(--lift)',
+]
+
 const buttonVariants = cva(
   [
     'relative inline-flex cursor-pointer items-center justify-center border font-medium whitespace-nowrap',
@@ -22,17 +31,22 @@ const buttonVariants = cva(
     // that centers its icon.
     '[--btn-ps:var(--btn-p)] [--btn-pe:var(--btn-p)] ps-(--btn-ps) pe-(--btn-pe)',
     'touch-manipulation select-none [-webkit-tap-highlight-color:transparent]',
-    'transition-[color,background-color,border-color,opacity,box-shadow] duration-150 ease-out',
-    // Pressed looks sunken: an inset fill + shadow, so the box never changes size. data-pressed is set by
-    // usePressFeedback; unlike :active it clears on pointercancel (touch scroll) and drag-off. The
-    // resting shadow is a transparent inset (not `none`) so it interpolates.
-    'shadow-[inset_0_0_0_0_transparent] data-pressed:[--tw-shadow:var(--shadow-pressed)]',
+    'transition-[color,background-color,border-color,opacity,box-shadow,translate] duration-150 ease-out',
+    // Depth, from the shadow and a lift alone, so the box never changes size or place in the layout.
+    // Filled intents rest raised (see `raised`); every state's --btn-shadow is the same list, two
+    // inset bevel layers then one outer lift, so each layer interpolates against its own kind (zero
+    // transparent placeholders, not `none`). Pressed looks sunken: the bevel turns into
+    // --shadow-pressed and the lift drops. data-pressed is set by usePressFeedback; unlike :active
+    // it clears on pointercancel (touch scroll) and drag-off.
+    'shadow-(--btn-shadow) [--btn-shadow:inset_0_0_0_0_transparent,inset_0_0_0_0_transparent,0_0_0_0_transparent]',
+    'data-pressed:[--btn-shadow:var(--shadow-pressed),0_0_0_0_transparent]',
     // Forced colors drops shadows and fills: invert to the highlight pair instead
     'forced-colors:data-pressed:bg-[Highlight] forced-colors:data-pressed:text-[HighlightText]',
     'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
     // A real 1px border on every intent (transparent when chromeless) sits inside the fixed height,
     // so the outer edge matches Field's at each size. Never draw the edge with an outer shadow:
-    // it paints outside the box and makes the button look 2px taller than its neighbours.
+    // it paints outside the box and makes the button look 2px taller than its neighbours. The only
+    // outer shadow is the faint, blurred lift (--shadow-lift*), the same drop Field shows on hover.
     // Forced colors paints the border, so bg-only buttons keep a visible boundary.
     'forced-colors:border-[ButtonText]',
     // >=44px hit target on touch without changing the visual size
@@ -44,16 +58,25 @@ const buttonVariants = cva(
     variants: {
       intent: {
         // Brand color: the one primary call to action
-        primary:
+        primary: [
+          ...raised,
           'bg-primary text-primary-fg rounded-control border-primary hover:not-aria-disabled:opacity-90 data-pressed:not-aria-disabled:bg-primary-pressed',
+        ],
         // Muted surface: the workhorse
-        secondary:
+        secondary: [
+          ...raised,
           'bg-surface-muted text-fg-strong rounded-control border-ring hover:not-aria-disabled:bg-ring data-pressed:not-aria-disabled:bg-surface-inset',
+        ],
         // Raised surface: shifts to secondary background on hover
-        surface:
+        surface: [
+          ...raised,
           'bg-surface-raised text-fg rounded-control border-transparent hover:not-aria-disabled:bg-surface-muted data-pressed:not-aria-disabled:bg-surface-inset',
+        ],
         // Inverse: strong emphasis without the brand color
-        dark: 'bg-inverse text-inverse-fg rounded-control border-ring hover:not-aria-disabled:opacity-90 data-pressed:not-aria-disabled:bg-inverse-pressed',
+        dark: [
+          ...raised,
+          'bg-inverse text-inverse-fg rounded-control border-ring hover:not-aria-disabled:opacity-90 data-pressed:not-aria-disabled:bg-inverse-pressed',
+        ],
         // No chrome until hover: toolbars, table rows
         ghost:
           'bg-transparent text-fg rounded-control border-transparent hover:not-aria-disabled:bg-surface-muted data-pressed:not-aria-disabled:bg-surface-inset',

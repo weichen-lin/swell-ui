@@ -12,14 +12,20 @@
 :root {
   /*
    * Shadows: transparent zero shadows, not `none`, so a state change that adds one still
-   * interpolates. The inset ones stay inset so they pair up with the inset zero shadow Button rests on.
+   * interpolates. Each keeps its default's layer count and inset/outer kind, so Button's states
+   * still pair up layer by layer.
    */
   --shadow-input: inset 0 0 0 0 transparent;
   --shadow-input-lift: 0 0 0 0 transparent;
   --shadow-switch-thumb: 0 0 0 0 transparent;
   --shadow-popover: 0 0 0 0 transparent;
   --shadow-dialog: 0 0 0 0 transparent;
-  --shadow-pressed: inset 0 0 0 0 transparent; /* pressed reads from the fill alone: surface-inset / *-pressed */
+  /* Button reads its state from the fill alone: no bevel, no lift, pressed is surface-inset / *-pressed */
+  --shadow-pressed: inset 0 0 0 0 transparent, inset 0 0 0 0 transparent;
+  --shadow-raised: inset 0 0 0 0 transparent, inset 0 0 0 0 transparent;
+  --shadow-lift: 0 0 0 0 transparent;
+  --shadow-lift-hover: 0 0 0 0 transparent;
+  --lift: 0px;
   --shadow-whisper: 0 0 0 0 transparent;
 
   /* Radii: roughly 25% tighter than the default 8 / 12 / 6 / 4 px */

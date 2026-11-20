@@ -255,6 +255,24 @@
     inset 0 -1px 0 light-dark(transparent, rgb(255 255 255 / 0.08));
 
   /*
+   * Raised (Button at rest): the same light, the other way up. A highlight along the top inside
+   * edge and, on dark, a shade along the bottom one (a light fill such as the default brand shows
+   * no highlight, and no drop shadow reads on near-black). Two inset layers, like --shadow-pressed,
+   * so the press interpolates layer by layer.
+   */
+  --shadow-raised:
+    inset 0 1px 0 light-dark(rgb(255 255 255 / 0.2), rgb(255 255 255 / 0.1)),
+    inset 0 -1px 0 light-dark(transparent, rgb(0 0 0 / 0.25));
+  /*
+   * Lift: a faint drop straight down, the same as Field's hover (--shadow-input-lift), and a
+   * slightly longer one while hovered, when the control also rises by --lift. Never an edge: blur
+   * only, no spread, so the control still looks as tall as its neighbours.
+   */
+  --shadow-lift: 0 1px 2px light-dark(rgb(0 0 0 / 0.06), transparent);
+  --shadow-lift-hover: 0 2px 4px light-dark(rgb(0 0 0 / 0.1), transparent);
+  --lift: 0.5px;
+
+  /*
    * Radii by role, not by size. Override one and every component of that role follows.
    * The values are Tailwind's lg/xl/md/sm, so the look is unchanged. Pills, switches and dots stay rounded-full.
    */
