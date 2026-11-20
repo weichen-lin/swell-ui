@@ -1,5 +1,6 @@
 import type { Preview } from '@storybook/react-vite'
 import '../src/styles/dev.css'
+import flatCss from '../src/styles/themes/flat.css?inline'
 
 const preview: Preview = {
   globalTypes: {
@@ -16,11 +17,34 @@ const preview: Preview = {
         dynamicTitle: true,
       },
     },
+    material: {
+      description: 'Material (flat.css token overrides)',
+      toolbar: {
+        title: 'Material',
+        icon: 'paintbrush',
+        items: [
+          { value: 'default', title: 'Default' },
+          { value: 'flat', title: 'Flat' },
+        ],
+        dynamicTitle: true,
+      },
+    },
   },
-  initialGlobals: { theme: 'light' },
+  initialGlobals: { theme: 'light', material: 'default' },
   decorators: [
     (Story, context) => {
       document.documentElement.dataset.theme = context.globals.theme === 'dark' ? 'dark' : 'light'
+      // flat.css is plain :root overrides, so adding or removing its <style> is the whole switch
+      const id = 'swell-flat-theme'
+      const existing = document.getElementById(id)
+      if (context.globals.material === 'flat' && !existing) {
+        const el = document.createElement('style')
+        el.id = id
+        el.textContent = flatCss
+        document.head.append(el)
+      } else if (context.globals.material !== 'flat') {
+        existing?.remove()
+      }
       return <Story />
     },
   ],

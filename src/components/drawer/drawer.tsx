@@ -120,7 +120,7 @@ export function Drawer({
       <div
         data-slot="drawer-panel"
         className={cn(
-          'flex h-full flex-col border-popover-border bg-popover-bg shadow-dialog',
+          'flex h-full flex-col border-popover-border bg-popover-bg [box-shadow:var(--shadow-dialog)]',
           panelSideClasses[side],
           // Forced colors drops the shadow; the border then carries the edge
           'forced-colors:border-[CanvasText]',

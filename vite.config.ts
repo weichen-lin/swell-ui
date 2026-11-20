@@ -32,7 +32,12 @@ export default defineConfig({
     target: 'es2023',
     tsconfig: 'tsconfig.lib.json',
     dts: true,
-    copy: ['src/styles/theme.css', 'src/styles/styles.css', 'src/styles/typography.css'],
+    copy: [
+      'src/styles/theme.css',
+      'src/styles/styles.css',
+      'src/styles/typography.css',
+      { from: 'src/styles/themes/flat.css', to: 'dist/themes' },
+    ],
   },
   plugins: lazyPlugins(() => [react(), tailwindcss()]),
   test: {

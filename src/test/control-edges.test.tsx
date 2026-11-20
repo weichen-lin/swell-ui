@@ -70,6 +70,8 @@ function edgeLayers(value: string) {
       .filter((token) => /^-?[\d.]+(px|rem)?$/.test(token))
       .map((token) => Number.parseFloat(token) * (token.endsWith('rem') ? 16 : 1))
     const [x = 0, y = 0, blur = 0, spread = 0] = lengths
+    // A zero shadow draws nothing (the flat theme's transparent placeholder)
+    if (lengths.every((length) => length === 0)) return false
     if (blur > 0) return false
     const halo = x === 0 && y === 0 && spread >= 3 && colors.some((c) => /halo/.test(c))
     return !halo
@@ -162,9 +164,9 @@ describe.each(sizes)('size %s', (size) => {
       const button = screen.getByRole('button', { name })
       expect(button).toHaveClass('border')
       // Only the sunken pressed look: a transparent inset at rest, --shadow-pressed (inset) on press
-      const shadows = [...button.classList].filter((c) => /(^|:)shadow-/.test(c))
+      const shadows = [...button.classList].filter((c) => /(^|:|\[)(--tw-)?shadow/.test(c))
       expect(shadows.sort()).toEqual([
-        'data-pressed:shadow-pressed',
+        'data-pressed:[--tw-shadow:var(--shadow-pressed)]',
         'shadow-[inset_0_0_0_0_transparent]',
       ])
     }

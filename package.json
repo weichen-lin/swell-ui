@@ -26,6 +26,7 @@
     "./theme.css": "./dist/theme.css",
     "./styles.css": "./dist/styles.css",
     "./typography.css": "./dist/typography.css",
+    "./themes/flat.css": "./dist/themes/flat.css",
     "./package.json": "./package.json"
   },
   "publishConfig": {

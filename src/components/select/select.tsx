@@ -101,7 +101,7 @@ const pickerClasses = cn(
   'supports-[appearance:base-select]:[@media(hover:hover)_and_(pointer:fine)]:[&::picker(select)]:border-popover-border',
   'supports-[appearance:base-select]:[@media(hover:hover)_and_(pointer:fine)]:[&::picker(select)]:bg-popover-bg',
   'supports-[appearance:base-select]:[@media(hover:hover)_and_(pointer:fine)]:[&::picker(select)]:p-1',
-  'supports-[appearance:base-select]:[@media(hover:hover)_and_(pointer:fine)]:[&::picker(select)]:shadow-popover',
+  'supports-[appearance:base-select]:[@media(hover:hover)_and_(pointer:fine)]:[&::picker(select)]:[box-shadow:var(--shadow-popover)]',
   'supports-[appearance:base-select]:[@media(hover:hover)_and_(pointer:fine)]:[&::picker(select)]:text-fg',
   // Fade + slight grow from the trigger edge; closing is quicker than opening. display/overlay are
   // discrete, so allow-discrete keeps the picker in the top layer until the fade-out ends. The picker

@@ -39,6 +39,9 @@ In the CSS file that imports Tailwind:
 `styles.css` brings the tokens and an `@source` that points Tailwind at the bundled components, so
 their classes are generated even though Tailwind skips `node_modules` by default.
 
+For a flat look (no shadows, tighter corners, stronger borders), add
+`@import '@weichenlin/swell-ui/themes/flat.css';` after it. It only overrides tokens.
+
 ## Quick start
 
 ```tsx

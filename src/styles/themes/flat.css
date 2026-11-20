@@ -1,0 +1,52 @@
+/*
+ * Flat material: no elevation shadows, tighter corners, and stronger hairlines doing the job
+ * shadows did. Tokens only; no component changes.
+ *
+ * Opt in with one import after styles.css:
+ *   @import '@weichenlin/swell-ui/themes/flat.css';
+ *
+ * These are plain unlayered declarations on :root, so they beat the `@layer theme` variables Tailwind
+ * emits for theme.css whatever the import order. Light and dark follow `color-scheme` as usual.
+ * The base palette and the field border (>=3:1) are untouched.
+ */
+:root {
+  /*
+   * Shadows: transparent zero shadows, not `none`, so a state change that adds one still
+   * interpolates. The inset ones stay inset so they pair up with the inset zero shadow Button rests on.
+   */
+  --shadow-input: inset 0 0 0 0 transparent;
+  --shadow-input-lift: 0 0 0 0 transparent;
+  --shadow-switch-thumb: 0 0 0 0 transparent;
+  --shadow-popover: 0 0 0 0 transparent;
+  --shadow-dialog: 0 0 0 0 transparent;
+  --shadow-pressed: inset 0 0 0 0 transparent; /* pressed reads from the fill alone: surface-inset / *-pressed */
+  --shadow-whisper: 0 0 0 0 transparent;
+
+  /* Radii: roughly 25% tighter than the default 8 / 12 / 6 / 4 px */
+  --radius-control: 0.375rem; /* 6px */
+  --radius-surface: 0.5rem; /* 8px */
+  --radius-item: 0.25rem; /* 4px */
+  --radius-inset: 0.125rem; /* 2px */
+
+  /*
+   * Hairlines carry the separation shadows used to. Cards (border-strong), popovers, dialogs and
+   * drawers (popover-border) go from a faint line to a clearly visible one, on light and dark.
+   */
+  --color-border: light-dark(
+    color-mix(in oklab, var(--color-fg) 12%, var(--color-bg)),
+    color-mix(in oklab, var(--color-fg) 19%, var(--color-bg))
+  );
+  --color-border-strong: light-dark(
+    color-mix(in oklab, var(--color-fg) 24%, var(--color-bg)),
+    color-mix(in oklab, var(--color-fg) 30%, var(--color-bg))
+  );
+  --color-popover-border: light-dark(
+    color-mix(in oklab, var(--color-fg) 28%, var(--color-surface-raised)),
+    color-mix(in oklab, var(--color-fg) 30%, var(--color-surface-raised))
+  );
+  /* Dialogs lose their drop shadow, so the dim behind them does a little more */
+  --color-dialog-backdrop: light-dark(
+    color-mix(in oklab, var(--color-fg) 48%, transparent),
+    rgb(0 0 0 / 0.7)
+  );
+}

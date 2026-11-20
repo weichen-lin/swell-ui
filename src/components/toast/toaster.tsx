@@ -812,7 +812,7 @@ function ToastCard({
         data-slot="toast-card"
         style={{ height }}
         className={cn(
-          'overflow-hidden rounded-[inherit] border shadow-popover',
+          'overflow-hidden rounded-[inherit] border [box-shadow:var(--shadow-popover)]',
           // Forced colors drops the shadow and fills; the border carries the edge
           'forced-colors:border-[CanvasText]',
           // Height follows content (JS-measured, so no interpolate-size); type changes recolor

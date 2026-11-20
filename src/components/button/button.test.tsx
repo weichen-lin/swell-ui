@@ -241,7 +241,7 @@ test('pressed looks sunken: inset shadow and fill, never a scale', () => {
   render(<Button intent="ghost">Press</Button>)
   const btn = screen.getByRole('button', { name: 'Press' })
   expect(btn).toHaveClass(
-    'data-pressed:shadow-pressed',
+    'data-pressed:[--tw-shadow:var(--shadow-pressed)]',
     'data-pressed:not-aria-disabled:bg-surface-inset',
   )
   expect(btn.className).not.toMatch(/scale/)

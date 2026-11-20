@@ -226,7 +226,7 @@ export function Tooltip({
               ref={bubbleRef}
               className={cn(
                 'block w-max max-w-xs rounded-item border border-border-strong bg-inverse px-2 py-1',
-                'text-xs/snug font-medium text-inverse-fg shadow-whisper',
+                'text-xs/snug font-medium text-inverse-fg [box-shadow:var(--shadow-whisper)]',
                 'transition-[opacity,translate] duration-150 ease-out starting:opacity-0',
                 {
                   top: 'starting:translate-y-0.5',

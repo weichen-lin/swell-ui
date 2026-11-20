@@ -26,7 +26,7 @@ const buttonVariants = cva(
     // Pressed looks sunken: an inset fill + shadow, so the box never changes size. data-pressed is set by
     // usePressFeedback; unlike :active it clears on pointercancel (touch scroll) and drag-off. The
     // resting shadow is a transparent inset (not `none`) so it interpolates.
-    'shadow-[inset_0_0_0_0_transparent] data-pressed:shadow-pressed',
+    'shadow-[inset_0_0_0_0_transparent] data-pressed:[--tw-shadow:var(--shadow-pressed)]',
     // Forced colors drops shadows and fills: invert to the highlight pair instead
     'forced-colors:data-pressed:bg-[Highlight] forced-colors:data-pressed:text-[HighlightText]',
     'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
