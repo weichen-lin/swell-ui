@@ -18,9 +18,13 @@ const buttonVariants = cva(
   [
     'relative inline-flex cursor-pointer items-center justify-center border font-medium whitespace-nowrap',
     'touch-manipulation select-none [-webkit-tap-highlight-color:transparent]',
-    'transition-[color,background-color,border-color,opacity,scale] duration-150 ease-out',
-    // Set by usePressFeedback; unlike :active it clears on pointercancel (touch scroll) and drag-off
-    'data-pressed:scale-[0.97]',
+    'transition-[color,background-color,border-color,opacity,box-shadow] duration-150 ease-out',
+    // Pressed looks sunken: an inset fill + shadow, so the box never changes size. data-pressed is set by
+    // usePressFeedback; unlike :active it clears on pointercancel (touch scroll) and drag-off. The
+    // resting shadow is a transparent inset (not `none`) so it interpolates.
+    'shadow-[inset_0_0_0_0_transparent] data-pressed:shadow-pressed',
+    // Forced colors drops shadows and fills: invert to the highlight pair instead
+    'forced-colors:data-pressed:bg-[Highlight] forced-colors:data-pressed:text-[HighlightText]',
     'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
     // A real 1px border on every intent (transparent when chromeless) sits inside the fixed height,
     // so the outer edge matches Field's at each size. Never draw the edge with an outer shadow:
@@ -37,18 +41,18 @@ const buttonVariants = cva(
       intent: {
         // Brand color: the one primary call to action
         primary:
-          'bg-primary text-primary-fg rounded-control border-primary hover:not-aria-disabled:opacity-90',
+          'bg-primary text-primary-fg rounded-control border-primary hover:not-aria-disabled:opacity-90 data-pressed:not-aria-disabled:bg-primary-pressed',
         // Muted surface: the workhorse
         secondary:
-          'bg-surface-muted text-fg-strong rounded-control border-ring hover:not-aria-disabled:bg-ring',
+          'bg-surface-muted text-fg-strong rounded-control border-ring hover:not-aria-disabled:bg-ring data-pressed:not-aria-disabled:bg-surface-inset',
         // Raised surface: shifts to secondary background on hover
         surface:
-          'bg-surface-raised text-fg rounded-surface border-transparent hover:not-aria-disabled:bg-surface-muted',
+          'bg-surface-raised text-fg rounded-surface border-transparent hover:not-aria-disabled:bg-surface-muted data-pressed:not-aria-disabled:bg-surface-inset',
         // Inverse: strong emphasis without the brand color
-        dark: 'bg-inverse text-inverse-fg rounded-control border-ring hover:not-aria-disabled:opacity-90',
+        dark: 'bg-inverse text-inverse-fg rounded-control border-ring hover:not-aria-disabled:opacity-90 data-pressed:not-aria-disabled:bg-inverse-pressed',
         // No chrome until hover: toolbars, table rows
         ghost:
-          'bg-transparent text-fg rounded-control border-transparent hover:not-aria-disabled:bg-surface-muted',
+          'bg-transparent text-fg rounded-control border-transparent hover:not-aria-disabled:bg-surface-muted data-pressed:not-aria-disabled:bg-surface-inset',
       },
       size: {
         // Supabase-like scale: compact height, 14px text. Heights include the 1px border and match
@@ -66,31 +70,34 @@ const buttonVariants = cva(
       {
         intent: 'primary',
         tone: 'danger',
-        class: 'bg-danger text-danger-fg border-danger',
+        class:
+          'bg-danger text-danger-fg border-danger data-pressed:not-aria-disabled:bg-danger-pressed',
       },
       // Outline-ish danger fills on hover (GitHub pattern); danger text on the darker hover bg would fail contrast
       {
         intent: 'secondary',
         tone: 'danger',
         class:
-          'text-danger border-danger hover:not-aria-disabled:bg-danger hover:not-aria-disabled:text-danger-fg',
+          'text-danger border-danger hover:not-aria-disabled:bg-danger hover:not-aria-disabled:text-danger-fg data-pressed:not-aria-disabled:bg-danger-pressed data-pressed:not-aria-disabled:text-danger-fg',
       },
       {
         intent: 'surface',
         tone: 'danger',
         class:
-          'text-danger hover:not-aria-disabled:bg-danger hover:not-aria-disabled:text-danger-fg',
+          'text-danger hover:not-aria-disabled:bg-danger hover:not-aria-disabled:text-danger-fg data-pressed:not-aria-disabled:bg-danger-pressed data-pressed:not-aria-disabled:text-danger-fg',
       },
       // Strong emphasis + danger is just solid danger, same as primary
       {
         intent: 'dark',
         tone: 'danger',
-        class: 'bg-danger text-danger-fg border-danger',
+        class:
+          'bg-danger text-danger-fg border-danger data-pressed:not-aria-disabled:bg-danger-pressed',
       },
       {
         intent: 'ghost',
         tone: 'danger',
-        class: 'text-danger hover:not-aria-disabled:bg-danger/10',
+        class:
+          'text-danger hover:not-aria-disabled:bg-danger/10 data-pressed:not-aria-disabled:bg-danger-inset',
       },
     ],
     defaultVariants: {

@@ -11,7 +11,7 @@ const RELEASE_EVENTS = ['pointerup', 'pointerleave', 'pointercancel', 'keyup', '
 
 /**
  * Press feedback for buttons and button-styled links: toggles `data-pressed`
- * on the host (styled as a scale) and, when `ripple` is on, spawns a
+ * on the host (styled as a sunken, inset look) and, when `ripple` is on, spawns a
  * Material-style ripple via the Web Animations API.
  *
  * Attach the returned ref to an absolutely positioned, clipped overlay inside

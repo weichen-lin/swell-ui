@@ -161,7 +161,12 @@ describe.each(sizes)('size %s', (size) => {
     for (const name of ['Default', 'Danger']) {
       const button = screen.getByRole('button', { name })
       expect(button).toHaveClass('border')
-      expect([...button.classList].filter((c) => /(^|:)shadow-/.test(c))).toEqual([])
+      // Only the sunken pressed look: a transparent inset at rest, --shadow-pressed (inset) on press
+      const shadows = [...button.classList].filter((c) => /(^|:)shadow-/.test(c))
+      expect(shadows.sort()).toEqual([
+        'data-pressed:shadow-pressed',
+        'shadow-[inset_0_0_0_0_transparent]',
+      ])
     }
   })
 })

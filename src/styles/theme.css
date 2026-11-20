@@ -190,7 +190,7 @@
   );
   --color-danger-subtle-bg: light-dark(
     color-mix(in oklab, var(--color-danger) 14%, var(--color-bg)),
-    color-mix(in oklab, var(--color-danger) 16%, var(--color-bg))
+    color-mix(in oklab, var(--color-danger) 11%, var(--color-bg))
   );
   --color-danger-subtle-fg: light-dark(
     color-mix(in oklab, var(--color-fg) 11%, var(--color-danger)),
@@ -231,6 +231,25 @@
     color-mix(in oklab, var(--color-neutral) 35%, var(--color-bg)),
     color-mix(in oklab, var(--color-neutral) 40%, var(--color-bg))
   );
+
+  /*
+   * Pressed (Button): the control looks pushed into the page. The fill goes to an "inset" color
+   * and an inset shadow (never an outer one) darkens the top edge. Solid fills move 15% toward
+   * their text color (danger only 8%: it has less contrast to spare), which keeps text >=4.5:1;
+   * neutral fills go to surface-inset, a step below the muted hover fill (below the page on dark).
+   */
+  --color-surface-inset: light-dark(
+    color-mix(in oklab, var(--color-fg) 9%, var(--color-bg)),
+    color-mix(in oklab, black 35%, var(--color-bg))
+  );
+  --color-primary-pressed: color-mix(in oklab, var(--color-primary) 85%, var(--color-primary-fg));
+  --color-inverse-pressed: color-mix(in oklab, var(--color-inverse) 85%, var(--color-inverse-fg));
+  --color-danger-pressed: color-mix(in oklab, var(--color-danger) 92%, var(--color-danger-fg));
+  --color-danger-inset: light-dark(
+    color-mix(in oklab, var(--color-danger) 11%, var(--color-bg)),
+    color-mix(in oklab, var(--color-danger) 14%, black)
+  ); /* ghost danger */
+  --shadow-pressed: inset 0 2px 4px light-dark(rgb(0 0 0 / 0.22), rgb(0 0 0 / 0.5));
 
   /*
    * Radii by role, not by size. Override one and every component of that role follows.

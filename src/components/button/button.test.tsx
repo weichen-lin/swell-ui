@@ -237,6 +237,16 @@ test('data-pressed is set on pointerdown and cleared on pointercancel', () => {
   expect(btn).not.toHaveAttribute('data-pressed')
 })
 
+test('pressed looks sunken: inset shadow and fill, never a scale', () => {
+  render(<Button intent="ghost">Press</Button>)
+  const btn = screen.getByRole('button', { name: 'Press' })
+  expect(btn).toHaveClass(
+    'data-pressed:shadow-pressed',
+    'data-pressed:not-aria-disabled:bg-surface-inset',
+  )
+  expect(btn.className).not.toMatch(/scale/)
+})
+
 test('keyboard press sets data-pressed until keyup, ignoring auto-repeat ripples', () => {
   render(<Button>Press</Button>)
   const btn = screen.getByRole('button', { name: 'Press' })
@@ -256,7 +266,7 @@ test('ripple spawns on press and can be turned off', () => {
 
   rerender(<Button ripple={false}>Press</Button>)
   expect(btn.querySelector('[data-ripple]')).toBeNull()
-  // Press scale still works without the ripple
+  // Press feedback still works without the ripple
   press(btn)
   expect(btn).toHaveAttribute('data-pressed')
 })
