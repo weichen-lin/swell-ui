@@ -109,9 +109,9 @@ test.each([false, true])(
 )
 
 test.each([
-  ['sm', 'h-[34px]', 'text-sm'],
-  ['md', 'h-[38px]', 'text-sm'],
-  ['lg', 'h-[42px]', 'text-base'],
+  ['sm', 'h-control-sm', 'text-sm'],
+  ['md', 'h-control-md', 'text-sm'],
+  ['lg', 'h-control-lg', 'text-base'],
 ] as const)('size %s sets field height and text size', (size, height, text) => {
   render(<Input label="Tag" size={size} />)
   const input = screen.getByLabelText('Tag')

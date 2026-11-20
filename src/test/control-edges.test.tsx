@@ -11,6 +11,7 @@ import { render, screen } from '@testing-library/react'
 import { describe, expect, test } from 'vite-plus/test'
 import { Button } from '../components/button'
 import { Input } from '../components/input'
+import theme from '../styles/theme.css?raw'
 
 // Every shipped source file (components, lib, styles), as text
 const sources = Object.entries(
@@ -117,10 +118,15 @@ describe('outer edges', () => {
 const intents = ['primary', 'secondary', 'surface', 'dark', 'ghost'] as const
 const sizes = ['sm', 'md', 'lg'] as const
 
-/** Height class to px: `h-9.5` (Tailwind spacing, 4px steps at a 16px root) or `h-[38px]`. */
+/** Height class to px: `h-control-md` (resolved from theme.css), `h-9.5` (4px steps) or `h-[38px]`. */
 function heightPx(el: Element) {
-  const cls = [...el.classList].find((c) => /^h-(\d+(\.\d+)?|\[\d+px\])$/.test(c))
+  const cls = [...el.classList].find((c) => /^h-(control-\w+|\d+(\.\d+)?|\[\d+px\])$/.test(c))
   if (!cls) return undefined
+  const token = cls.match(/^h-control-(\w+)$/)
+  if (token) {
+    const rem = theme.match(new RegExp(`--spacing-control-${token[1]}:\\s*([\\d.]+)rem`))![1]
+    return Number(rem) * 16
+  }
   const arbitrary = cls.match(/^h-\[(\d+)px\]$/)
   return arbitrary ? Number(arbitrary[1]) : Number(cls.slice(2)) * 4
 }

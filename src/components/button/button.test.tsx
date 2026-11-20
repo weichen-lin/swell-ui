@@ -22,7 +22,7 @@ const press = (el: Element) =>
 test('renders default primary/md variant', () => {
   render(<Button>Deploy</Button>)
   const btn = screen.getByRole('button', { name: 'Deploy' })
-  expect(btn).toHaveClass('bg-primary', 'h-9.5')
+  expect(btn).toHaveClass('bg-primary', 'h-control-md')
 })
 
 test('applies intent and size variants', () => {
@@ -31,7 +31,10 @@ test('applies intent and size variants', () => {
       Sync
     </Button>,
   )
-  expect(screen.getByRole('button', { name: 'Sync' })).toHaveClass('bg-surface-muted', 'h-10.5')
+  expect(screen.getByRole('button', { name: 'Sync' })).toHaveClass(
+    'bg-surface-muted',
+    'h-control-lg',
+  )
 })
 
 test('caller className overrides via tailwind-merge', () => {
@@ -275,7 +278,7 @@ test('icon-only Button is square, named, and shows its label as a tooltip', asyn
   try {
     render(<Button icon={<GitBranch />} aria-label="Sync now" size="sm" />)
     const btn = screen.getByRole('button', { name: 'Sync now' })
-    expect(btn).toHaveClass('h-8.5', 'aspect-square', 'px-0')
+    expect(btn).toHaveClass('h-control-sm', 'aspect-square', 'px-0')
     expect(btn).not.toHaveClass('px-2.75')
     // The label tooltip would only repeat the name, so it is not a description
     expect(btn).not.toHaveAttribute('aria-describedby')
@@ -365,7 +368,7 @@ test('asChild renders the link styled as a button, with props, classes and ref m
   expect(link).toHaveAttribute('title', 'Create')
   expect(link).not.toHaveAttribute('type')
   expect(link).not.toHaveAttribute('aria-disabled')
-  expect(link).toHaveClass('bg-surface-muted', 'h-9.5', 'ps-2.75', 'extra', 'own')
+  expect(link).toHaveClass('bg-surface-muted', 'h-control-md', 'ps-2.75', 'extra', 'own')
   // Ripple layer and icon live inside the link, not around it
   expect(link.querySelector('[data-ripple]')).not.toBeNull()
   expect(link).toContainElement(screen.getByTestId('icon'))

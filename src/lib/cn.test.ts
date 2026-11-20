@@ -35,6 +35,17 @@ describe('cn', () => {
     }
   })
 
+  it('knows every control height token in theme.css', () => {
+    const names = tokens('spacing')
+    expect(names).toEqual(['control-sm', 'control-md', 'control-lg'])
+    for (const name of names) {
+      expect(cn(`h-${name}`, 'h-10')).toBe('h-10')
+      expect(cn('h-10', `h-${name}`)).toBe(`h-${name}`)
+      expect(cn(`min-h-${name}`, 'min-h-11')).toBe('min-h-11')
+      expect(cn(`size-${name}`, 'w-4')).toBe(`size-${name} w-4`)
+    }
+  })
+
   it('treats every color token in theme.css as a color', () => {
     const colors = tokens('color')
     expect(colors.length).toBeGreaterThan(50)

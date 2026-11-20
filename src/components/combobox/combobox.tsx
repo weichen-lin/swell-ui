@@ -310,7 +310,7 @@ export function Combobox({
       data-slot="combobox-option"
       data-active={activeItem?.value === item.value ? '' : undefined}
       className={cn(
-        'flex min-h-8.5 cursor-default items-center gap-2 rounded-lg px-2 py-1.5 text-sm/5 text-fg outline-none select-none pointer-coarse:min-h-11',
+        'flex min-h-control-sm cursor-default items-center gap-2 rounded-lg px-2 py-1.5 text-sm/5 text-fg outline-none select-none pointer-coarse:min-h-11',
         'data-active:bg-popover-highlight data-active:outline-1 data-active:-outline-offset-1 data-active:outline-input-border',
         'aria-disabled:cursor-not-allowed aria-disabled:opacity-50 forced-colors:data-active:outline-[Highlight]',
       )}

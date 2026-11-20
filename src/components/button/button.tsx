@@ -52,10 +52,10 @@ const buttonVariants = cva(
       },
       size: {
         // Supabase-like scale: compact height, 14px text. Heights include the 1px border and match
-        // Field's (34/38/42); padding is 1px under the 12/16/20 rhythm to absorb the border.
-        sm: 'h-8.5 px-2.75 text-sm',
-        md: 'h-9.5 px-3.75 text-sm',
-        lg: 'h-10.5 px-4.75 text-base',
+        // Field's (34/38/42) via the --spacing-control-* tokens; padding is 1px under the 12/16/20 rhythm to absorb the border.
+        sm: 'h-control-sm px-2.75 text-sm',
+        md: 'h-control-md px-3.75 text-sm',
+        lg: 'h-control-lg px-4.75 text-base',
       },
       tone: { default: '', danger: '' },
       fullWidth: { true: 'w-full', false: '' },

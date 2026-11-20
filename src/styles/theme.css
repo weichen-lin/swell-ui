@@ -235,6 +235,11 @@
   /* Fonts and radii are Tailwind's defaults; see the README to change them */
   --shadow-whisper: rgba(0, 0, 0, 0.05) 0 4px 24px;
   --container-page: 1200px;
+
+  /* Control heights (border included): Button, Field, Select, Combobox, ... Override on any container to make a dense region. */
+  --spacing-control-sm: 2.125rem; /* 34px */
+  --spacing-control-md: 2.375rem; /* 38px */
+  --spacing-control-lg: 2.625rem; /* 42px */
 }
 
 /* Follow the system unless data-theme forces one; light-dark() above reads this */

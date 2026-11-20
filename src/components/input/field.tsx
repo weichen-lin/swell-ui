@@ -57,7 +57,7 @@ type FrameProps = Omit<FieldProps, 'label'> & {
   status?: string
 }
 
-const controlHeight = { sm: 'h-[34px]', md: 'h-[38px]', lg: 'h-[42px]' } as const
+const controlHeight = { sm: 'h-control-sm', md: 'h-control-md', lg: 'h-control-lg' } as const
 export const textSize = { sm: 'text-sm', md: 'text-sm', lg: 'text-base' } as const
 export const iconSize = {
   sm: '[&_svg]:size-4',
@@ -71,9 +71,9 @@ export const endSlotPadding = { sm: 'pe-2', md: 'pe-2.5', lg: 'pe-3' } as const
 const actionsPadding = { sm: 'pe-[3px]', md: 'pe-1', lg: 'pe-1' } as const
 /** Compact Button square that fits inside the field's inner height with an even inset. */
 export const compactButton = {
-  sm: 'size-[26px]',
-  md: 'size-7',
-  lg: 'size-8',
+  sm: 'size-[calc(var(--spacing-control-sm)-8px)]',
+  md: 'size-[calc(var(--spacing-control-md)-10px)]',
+  lg: 'size-[calc(var(--spacing-control-lg)-10px)]',
 } as const
 const labelStart = { sm: 'start-2', md: 'start-2', lg: 'start-3' } as const
 /*

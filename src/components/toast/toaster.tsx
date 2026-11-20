@@ -830,8 +830,13 @@ function ToastCard({
             'group-data-stacked/toast:pointer-events-none group-data-stacked/toast:opacity-0',
           )}
         >
-          {/* Keeps clear of the close button (34px, pulled 8px into the padding, plus the 12px gap) */}
-          <div className={cn('flex items-start gap-3', dismissible && 'pe-9.5')}>
+          {/* Keeps clear of the close button (a sm Button, pulled 8px into the padding, plus the 12px gap) */}
+          <div
+            className={cn(
+              'flex items-start gap-3',
+              dismissible && 'pe-[calc(var(--spacing-control-sm)+4px)]',
+            )}
+          >
             <ToastIcon type={type} />
             <div className="min-w-0 flex-1">
               <div
