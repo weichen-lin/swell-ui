@@ -41,7 +41,7 @@ test('caller className overrides via tailwind-merge', () => {
   render(<Button className="px-8">Go</Button>)
   const btn = screen.getByRole('button', { name: 'Go' })
   expect(btn).toHaveClass('px-8')
-  expect(btn).not.toHaveClass('px-3.75')
+  expect(btn).not.toHaveClass('ps-(--btn-ps)', 'pe-(--btn-pe)')
 })
 
 test('fires onClick', async () => {
@@ -190,7 +190,7 @@ test('icons render in aria-hidden slots and trim padding on their side', () => {
   const btn = screen.getByRole('button', { name: 'Branch' })
   expect(screen.getByTestId('left').closest('[aria-hidden="true"]')).not.toBeNull()
   expect(screen.getByTestId('right').closest('[aria-hidden="true"]')).not.toBeNull()
-  expect(btn).toHaveClass('ps-2.75', 'pe-2.75')
+  expect(btn).toHaveClass('[--btn-ps:--spacing(2.75)]', '[--btn-pe:--spacing(2.75)]')
 })
 
 test('tone="danger" applies the compound classes', () => {
@@ -288,7 +288,7 @@ test('icon-only Button is square, named, and shows its label as a tooltip', asyn
   try {
     render(<Button icon={<GitBranch />} aria-label="Sync now" size="sm" />)
     const btn = screen.getByRole('button', { name: 'Sync now' })
-    expect(btn).toHaveClass('h-control-sm', 'aspect-square', 'px-0')
+    expect(btn).toHaveClass('h-control-sm', 'aspect-square')
     expect(btn).not.toHaveClass('px-2.75')
     // The label tooltip would only repeat the name, so it is not a description
     expect(btn).not.toHaveAttribute('aria-describedby')
@@ -378,7 +378,8 @@ test('asChild renders the link styled as a button, with props, classes and ref m
   expect(link).toHaveAttribute('title', 'Create')
   expect(link).not.toHaveAttribute('type')
   expect(link).not.toHaveAttribute('aria-disabled')
-  expect(link).toHaveClass('bg-surface-muted', 'h-control-md', 'ps-2.75', 'extra', 'own')
+  expect(link).toHaveClass('bg-surface-muted', 'h-control-md', 'extra', 'own')
+  expect(link).toHaveClass('[--btn-ps:--spacing(2.75)]')
   // Ripple layer and icon live inside the link, not around it
   expect(link.querySelector('[data-ripple]')).not.toBeNull()
   expect(link).toContainElement(screen.getByTestId('icon'))
@@ -466,4 +467,89 @@ test('icon-only asChild puts the icon inside the link, named by aria-label', () 
   const link = screen.getByRole('link', { name: 'Delete app' })
   expect(link).toHaveClass('aspect-square')
   expect(link).toContainElement(screen.getByTestId('icon'))
+})
+
+const hangStart = '-ms-[(var(--btn-ps)+1px)]'
+const hangEnd = '-me-[(var(--btn-pe)+1px)]'
+const sizes = ['sm', 'md', 'lg'] as const
+const basePadding = { sm: 2.75, md: 3.75, lg: 4.75 } as const
+const iconPadding = { sm: 1.75, md: 2.75, lg: 3.75 } as const
+const pad = (side: 'ps' | 'pe', n: number) =>
+  `[--${side === 'ps' ? 'btn-ps' : 'btn-pe'}:--spacing(${n})]`
+
+test('no hang by default', () => {
+  render(<Button>Plain</Button>)
+  const btn = screen.getByRole('button', { name: 'Plain' })
+  expect(btn).not.toHaveClass(hangStart)
+  expect(btn).not.toHaveClass(hangEnd)
+})
+
+test.each(sizes)('hang pulls out by the same variable the padding reads (%s)', (size) => {
+  const { rerender } = render(
+    <Button size={size} hang="start">
+      Edit
+    </Button>,
+  )
+  const btn = screen.getByRole('button', { name: 'Edit' })
+  expect(btn).toHaveClass(hangStart, 'ps-(--btn-ps)', `[--btn-p:--spacing(${basePadding[size]})]`)
+  expect(btn).not.toHaveClass(hangEnd)
+
+  rerender(
+    <Button size={size} hang="end">
+      Edit
+    </Button>,
+  )
+  expect(btn).toHaveClass(hangEnd)
+  expect(btn).not.toHaveClass(hangStart)
+
+  rerender(
+    <Button size={size} hang="both">
+      Edit
+    </Button>,
+  )
+  expect(btn).toHaveClass(hangStart, hangEnd)
+})
+
+test.each(sizes)('hang follows the trimmed padding on an icon side (%s)', (size) => {
+  render(
+    <Button size={size} hang="both" iconLeft={<GitBranch />} iconRight={<Trash2 />}>
+      Edit
+    </Button>,
+  )
+  const btn = screen.getByRole('button', { name: 'Edit' })
+  expect(btn).toHaveClass(
+    pad('ps', iconPadding[size]),
+    pad('pe', iconPadding[size]),
+    hangStart,
+    hangEnd,
+  )
+})
+
+test('hang on one side keeps the full padding on the other side next to an icon', () => {
+  render(
+    <Button size="md" hang="start" iconLeft={<GitBranch />}>
+      Edit
+    </Button>,
+  )
+  const btn = screen.getByRole('button', { name: 'Edit' })
+  expect(btn).toHaveClass(pad('ps', iconPadding.md), hangStart)
+  expect(btn).not.toHaveClass(pad('pe', iconPadding.md))
+})
+
+test.each(sizes)('hang works on the icon-only Button (%s)', (size) => {
+  render(<Button size={size} hang="start" icon={<GitBranch />} aria-label="Edit" tooltip={false} />)
+  const btn = screen.getByRole('button', { name: 'Edit' })
+  expect(btn).toHaveClass('aspect-square', hangStart, 'ps-(--btn-ps)')
+  expect(btn.className).toMatch(
+    new RegExp(`\\[--btn-p:calc\\(\\(var\\(--spacing-control-${size}\\)`),
+  )
+})
+
+test('hang works with asChild', () => {
+  render(
+    <Button asChild hang="end" intent="ghost">
+      <a href="/x">Open</a>
+    </Button>,
+  )
+  expect(screen.getByRole('link', { name: 'Open' })).toHaveClass(hangEnd)
 })

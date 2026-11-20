@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { GitBranch, RefreshCw, Settings, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { Button, type ButtonProps } from '../src/components/button'
+import { Card, CardContent, CardHeader } from '../src/components/card'
 import { iconArgType } from './_helpers/story-icons'
 
 const intents = ['primary', 'secondary', 'surface', 'dark', 'ghost'] as const
@@ -261,6 +262,52 @@ export const AsLink: Story = {
         {/* oxlint-disable-next-line jsx-a11y/anchor-has-content, jsx-a11y/control-has-associated-label -- Button puts the icon and aria-label on it */}
         <a href="#settings" />
       </Button>
+    </div>
+  ),
+}
+
+/**
+ * `hang` pulls a ghost button outward by its own inset, so its label (not its invisible box) lines
+ * up with the card's text: `start` on the left, `end` on the right. Works at every size, with
+ * icons, and on icon-only buttons.
+ */
+export const Hang: Story = {
+  parameters: { controls: { disable: true } },
+  render: () => (
+    <div className="grid max-w-md gap-4">
+      <Card>
+        <CardHeader
+          title="Deployments"
+          description="Last 7 days"
+          action={
+            <Button intent="ghost" size="sm" hang="end">
+              View all
+            </Button>
+          }
+        />
+        <CardContent>
+          <p className="text-sm">The label above ends where this text column ends.</p>
+        </CardContent>
+      </Card>
+      {sizes.map((size) => (
+        <Card key={size}>
+          <div className="flex items-center justify-between px-5 pt-3">
+            <Button intent="ghost" size={size} hang="start" iconLeft={<GitBranch />}>
+              Edit branch ({size})
+            </Button>
+            <Button
+              intent="ghost"
+              size={size}
+              hang="end"
+              icon={<Settings />}
+              aria-label="Settings"
+            />
+          </div>
+          <CardContent>
+            <p className="text-sm">The icon and text above start where this text starts.</p>
+          </CardContent>
+        </Card>
+      ))}
     </div>
   ),
 }

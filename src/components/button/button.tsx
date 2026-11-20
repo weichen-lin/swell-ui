@@ -17,6 +17,10 @@ import { Tooltip, type TooltipProps } from '../tooltip'
 const buttonVariants = cva(
   [
     'relative inline-flex cursor-pointer items-center justify-center border font-medium whitespace-nowrap',
+    // Horizontal padding comes from two variables so `hang` can read the same numbers: size sets
+    // --btn-p, an icon on one side overrides that side. Square (icon-only) sets --btn-p to the inset
+    // that centers its icon.
+    '[--btn-ps:var(--btn-p)] [--btn-pe:var(--btn-p)] ps-(--btn-ps) pe-(--btn-pe)',
     'touch-manipulation select-none [-webkit-tap-highlight-color:transparent]',
     'transition-[color,background-color,border-color,opacity,box-shadow] duration-150 ease-out',
     // Pressed looks sunken: an inset fill + shadow, so the box never changes size. data-pressed is set by
@@ -57,16 +61,39 @@ const buttonVariants = cva(
       size: {
         // Supabase-like scale: compact height, 14px text. Heights include the 1px border and match
         // Field's (34/38/42) via the --spacing-control-* tokens; padding is 1px under the 12/16/20 rhythm to absorb the border.
-        sm: 'h-control-sm px-2.75 text-sm',
-        md: 'h-control-md px-3.75 text-sm',
-        lg: 'h-control-lg px-4.75 text-base',
+        sm: 'h-control-sm text-sm [--btn-p:--spacing(2.75)]',
+        md: 'h-control-md text-sm [--btn-p:--spacing(3.75)]',
+        lg: 'h-control-lg text-base [--btn-p:--spacing(4.75)]',
       },
       tone: { default: '', danger: '' },
       fullWidth: { true: 'w-full', false: '' },
       // Icon-only: width follows the size's height
-      square: { true: 'aspect-square px-0', false: '' },
+      square: { true: 'aspect-square', false: '' },
+      // Negative inline margin = the side's real inset (padding + the 1px border), so the label or
+      // icon, not the button's box, lines up with the surrounding content edge
+      hang: {
+        start: '-ms-[(var(--btn-ps)+1px)]',
+        end: '-me-[(var(--btn-pe)+1px)]',
+        both: '-ms-[(var(--btn-ps)+1px)] -me-[(var(--btn-pe)+1px)]',
+      },
     },
     compoundVariants: [
+      // Icon-only: pad so the icon (16px, 18px on lg) sits centered in the square, border included
+      {
+        square: true,
+        size: 'sm',
+        class: '[--btn-p:calc((var(--spacing-control-sm)-1rem)/2-1px)]',
+      },
+      {
+        square: true,
+        size: 'md',
+        class: '[--btn-p:calc((var(--spacing-control-md)-1rem)/2-1px)]',
+      },
+      {
+        square: true,
+        size: 'lg',
+        class: '[--btn-p:calc((var(--spacing-control-lg)-18px)/2-1px)]',
+      },
       {
         intent: 'primary',
         tone: 'danger',
@@ -119,8 +146,16 @@ const iconSize = {
   lg: '[&_svg]:size-[18px]',
 } as const
 // The side with an icon looks heavier, so it gets ~4px less padding
-const iconStartPadding = { sm: 'ps-1.75', md: 'ps-2.75', lg: 'ps-3.75' } as const
-const iconEndPadding = { sm: 'pe-1.75', md: 'pe-2.75', lg: 'pe-3.75' } as const
+const iconStartPadding = {
+  sm: '[--btn-ps:--spacing(1.75)]',
+  md: '[--btn-ps:--spacing(2.75)]',
+  lg: '[--btn-ps:--spacing(3.75)]',
+} as const
+const iconEndPadding = {
+  sm: '[--btn-pe:--spacing(1.75)]',
+  md: '[--btn-pe:--spacing(2.75)]',
+  lg: '[--btn-pe:--spacing(3.75)]',
+} as const
 
 type ContentProps = {
   size: Size
@@ -194,7 +229,15 @@ function stateClass(disabled: boolean, loading: boolean) {
 }
 
 type BaseProps = Omit<ComponentProps<'button'>, 'children'> &
-  Omit<VariantProps<typeof buttonVariants>, 'square'> & {
+  Omit<VariantProps<typeof buttonVariants>, 'square' | 'hang'> & {
+    /**
+     * Pulls the button outward by its own horizontal inset on that side (padding plus border), so
+     * the label or icon lines up with the surrounding content edge (a card header, a toolbar end)
+     * instead of the button's box. Meant for `ghost`, whose box is invisible at rest; on a filled
+     * intent the box would stick out of its container. Follows the size, icons and icon-only
+     * buttons automatically; a `className` padding override is not tracked.
+     */
+    hang?: 'start' | 'end' | 'both'
     /** Shows a spinner, keeps width and focus, blocks activation. */
     loading?: boolean
     /** Announced through a polite live region while loading. */
@@ -265,6 +308,7 @@ function ButtonImpl({
   tone,
   fullWidth,
   square,
+  hang,
   loading = false,
   loadingText = 'Loading',
   disabled = false,
@@ -282,7 +326,7 @@ function ButtonImpl({
   const s = size ?? 'md'
   const inert = disabled || loading
   const classes = cn(
-    buttonVariants({ intent, size, tone, fullWidth, square }),
+    buttonVariants({ intent, size, tone, fullWidth, square, hang }),
     iconPadding(s, iconLeft, iconRight),
     stateClass(disabled, loading),
     className,
