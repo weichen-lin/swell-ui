@@ -51,7 +51,7 @@ const buttonVariants = cva(
           'bg-surface-muted text-fg-strong rounded-control border-ring hover:not-aria-disabled:bg-ring data-pressed:not-aria-disabled:bg-surface-inset',
         // Raised surface: shifts to secondary background on hover
         surface:
-          'bg-surface-raised text-fg rounded-surface border-transparent hover:not-aria-disabled:bg-surface-muted data-pressed:not-aria-disabled:bg-surface-inset',
+          'bg-surface-raised text-fg rounded-control border-transparent hover:not-aria-disabled:bg-surface-muted data-pressed:not-aria-disabled:bg-surface-inset',
         // Inverse: strong emphasis without the brand color
         dark: 'bg-inverse text-inverse-fg rounded-control border-ring hover:not-aria-disabled:opacity-90 data-pressed:not-aria-disabled:bg-inverse-pressed',
         // No chrome until hover: toolbars, table rows
