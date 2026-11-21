@@ -17,29 +17,21 @@ const REQUIRED = [
   'position-try-fallbacks: flip-x',
   'position-try-order: most-height',
 ]
-/** Tooltip also restyles its bubble by the fallback in use (anchored container queries). */
-const REQUIRED_FOR_TOOLTIP = [...REQUIRED, 'container-type: anchored']
 
-export function supportsAnchorPositioning(declarations: readonly string[] = REQUIRED) {
+export function supportsAnchorPositioning() {
   return (
     typeof CSS !== 'undefined' &&
     typeof CSS.supports === 'function' &&
-    declarations.every((declaration) => CSS.supports(declaration))
+    REQUIRED.every((declaration) => CSS.supports(declaration))
   )
 }
 
 const subscribeNever = () => () => {}
 const serverSnapshot = () => false
-const popupSnapshot = () => supportsAnchorPositioning()
-const tooltipSnapshot = () => supportsAnchorPositioning(REQUIRED_FOR_TOOLTIP)
 
 /** False during SSR and hydration, so the server markup always matches the script path. */
-export function useAnchorPositioning(kind: 'popup' | 'tooltip' = 'popup') {
-  return useSyncExternalStore(
-    subscribeNever,
-    kind === 'tooltip' ? tooltipSnapshot : popupSnapshot,
-    serverSnapshot,
-  )
+export function useAnchorPositioning() {
+  return useSyncExternalStore(subscribeNever, supportsAnchorPositioning, serverSnapshot)
 }
 
 /** useId() output as a dashed ident (anchor names must be unique per instance). */

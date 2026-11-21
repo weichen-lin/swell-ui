@@ -14,9 +14,6 @@ test('needs every probe, and CSS.supports itself', () => {
     (declaration: string) => declaration !== 'position-try-fallbacks: flip-x',
   )
   expect(supportsAnchorPositioning()).toBe(false)
-  supports.mockImplementation((declaration: string) => declaration !== 'container-type: anchored')
-  expect(supportsAnchorPositioning()).toBe(true)
-  expect(supportsAnchorPositioning(['container-type: anchored'])).toBe(false)
   vi.stubGlobal('CSS', undefined)
   expect(supportsAnchorPositioning()).toBe(false)
 })

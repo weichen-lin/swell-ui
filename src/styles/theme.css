@@ -371,13 +371,12 @@
 }
 
 /*
- * Fallbacks for popups placed with CSS anchor positioning (DropdownMenu, Combobox, Tooltip in
- * browsers that support it; src/lib/anchor-position.ts sets the base styles and the order).
+ * Fallbacks for popups placed with CSS anchor positioning (DropdownMenu, Combobox;
+ * src/lib/anchor-position.ts sets the base styles and the order).
  * --swell-<side>: that side at natural size, 8px clear of the viewport edge.
  * --swell-<side>-fill: that side filling the room, chosen only when that side has at least as
  * much room as the opposite one (any surplus on the other side pushes the far inset off-screen,
  * so the option overflows and is skipped). --swell-anchor-cap bounds the fill (Combobox's 280px).
- * --swell-tooltip-<side>: that side whenever it has strictly more room, fitting or not.
  */
 @position-try --swell-below {
   top: calc(anchor(bottom) + var(--swell-anchor-gap));
@@ -442,24 +441,4 @@
   justify-self: stretch;
   width: auto;
   max-width: max-content;
-}
-@position-try --swell-tooltip-bottom {
-  top: anchor(bottom);
-  bottom: clamp(-1000000px, (100% - anchor(top) - anchor(bottom) + 0.001px) * 10000000, 1000000px);
-  align-self: start;
-}
-@position-try --swell-tooltip-top {
-  top: clamp(-1000000px, (100% - anchor(bottom) - anchor(top) + 0.001px) * 10000000, 1000000px);
-  bottom: anchor(top);
-  align-self: end;
-}
-@position-try --swell-tooltip-right {
-  left: anchor(right);
-  right: clamp(-1000000px, (100% - anchor(left) - anchor(right) + 0.001px) * 10000000, 1000000px);
-  justify-self: start;
-}
-@position-try --swell-tooltip-left {
-  left: clamp(-1000000px, (100% - anchor(right) - anchor(left) + 0.001px) * 10000000, 1000000px);
-  right: anchor(left);
-  justify-self: end;
 }

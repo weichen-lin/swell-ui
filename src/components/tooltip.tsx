@@ -1,6 +1,5 @@
 import {
   cloneElement,
-  type CSSProperties,
   type FocusEvent,
   type ReactElement,
   type ReactNode,
@@ -12,7 +11,6 @@ import {
   useSyncExternalStore,
 } from 'react'
 import { createPortal } from 'react-dom'
-import { anchorName, useAnchorPositioning } from '../lib/anchor-position'
 import { cn } from '../lib/cn'
 
 const OPEN_DELAY_MS = 300
@@ -51,41 +49,6 @@ export type TooltipProps = {
 type Position = { side: Side; left: number; top: number }
 
 const opposite: Record<Side, Side> = { top: 'bottom', bottom: 'top', left: 'right', right: 'left' }
-
-/*
- * Anchor-positioned bubble (see lib/anchor-position): the preferred side when it fits (8px clear
- * of the viewport), else the opposite side when that has more room, centered on the trigger and
- * clamped 8px inside the viewport. The bubble's margin bridges the gap, so it flips with the
- * fallback through an anchored container query.
- */
-const anchoredSide: Record<Side, CSSProperties> = {
-  top: { top: VIEWPORT_PADDING_PX, bottom: 'anchor(top)', alignSelf: 'end' },
-  bottom: { top: 'anchor(bottom)', bottom: VIEWPORT_PADDING_PX, alignSelf: 'start' },
-  left: { left: VIEWPORT_PADDING_PX, right: 'anchor(left)', justifySelf: 'end' },
-  right: { left: 'anchor(right)', right: VIEWPORT_PADDING_PX, justifySelf: 'start' },
-}
-const anchoredBubble: Record<Side, string> = {
-  top: 'mb-1.5 starting:translate-y-0.5 [@container_anchored(fallback:--swell-tooltip-bottom)]:mt-1.5 [@container_anchored(fallback:--swell-tooltip-bottom)]:mb-0 [@container_anchored(fallback:--swell-tooltip-bottom)]:starting:-translate-y-0.5',
-  bottom:
-    'mt-1.5 starting:-translate-y-0.5 [@container_anchored(fallback:--swell-tooltip-top)]:mt-0 [@container_anchored(fallback:--swell-tooltip-top)]:mb-1.5 [@container_anchored(fallback:--swell-tooltip-top)]:starting:translate-y-0.5',
-  left: 'mr-1.5 starting:translate-x-0.5 [@container_anchored(fallback:--swell-tooltip-right)]:mr-0 [@container_anchored(fallback:--swell-tooltip-right)]:ml-1.5 [@container_anchored(fallback:--swell-tooltip-right)]:starting:-translate-x-0.5',
-  right:
-    'ml-1.5 starting:-translate-x-0.5 [@container_anchored(fallback:--swell-tooltip-left)]:ml-0 [@container_anchored(fallback:--swell-tooltip-left)]:mr-1.5 [@container_anchored(fallback:--swell-tooltip-left)]:starting:translate-x-0.5',
-}
-
-function anchoredStyle(name: string, side: Side): CSSProperties {
-  const vertical = side === 'top' || side === 'bottom'
-  return {
-    positionAnchor: name,
-    positionVisibility: 'always',
-    positionTryFallbacks: `--swell-tooltip-${opposite[side]}`,
-    containerType: 'anchored',
-    ...(vertical
-      ? { left: VIEWPORT_PADDING_PX, right: VIEWPORT_PADDING_PX, justifySelf: 'anchor-center' }
-      : { top: VIEWPORT_PADDING_PX, bottom: VIEWPORT_PADDING_PX, alignSelf: 'anchor-center' }),
-    ...anchoredSide[side],
-  }
-}
 
 function isFocusVisible(el: Element) {
   try {
@@ -156,10 +119,6 @@ export function Tooltip({
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
   const active = content != null && content !== false && content !== ''
   const isClient = useIsClient()
-  const anchorSupported = useAnchorPositioning('tooltip')
-  // A trigger inside the top layer (open popover, modal dialog) can't anchor a bubble outside it
-  const [inTopLayer, setInTopLayer] = useState(false)
-  const anchored = anchorSupported && !inTopLayer
 
   const clearTimer = () => clearTimeout(timer.current)
   const show = () => {
@@ -192,11 +151,6 @@ export function Tooltip({
   // Measure before paint so the bubble never flashes at a stale spot; follow scrolls and resizes
   useLayoutEffect(() => {
     if (!open) return
-    if (anchorSupported) {
-      const nested = anchorRef.current?.closest(':popover-open, dialog:modal') != null
-      setInTopLayer(nested)
-      if (!nested) return
-    }
     const update = () => {
       const anchor = anchorRef.current
       const bubble = bubbleRef.current
@@ -217,7 +171,7 @@ export function Tooltip({
       window.removeEventListener('scroll', update, true)
       window.removeEventListener('resize', update)
     }
-  }, [open, side, content, anchorSupported])
+  }, [open, side, content])
 
   const describedBy =
     active && describe
@@ -225,13 +179,11 @@ export function Tooltip({
       : children.props['aria-describedby']
 
   const placed = position?.side ?? side
-  const name = anchorName(id)
 
   // Same element tree whether or not there is content, so toggling it never remounts the trigger
   return (
     <span
       ref={anchorRef}
-      style={anchored ? { anchorName: name } : undefined}
       className={cn('relative inline-flex', className)}
       onPointerEnter={() => {
         if (!active) return
@@ -257,23 +209,12 @@ export function Tooltip({
             role="tooltip"
             aria-hidden={describe ? undefined : true}
             hidden={!open}
-            data-side={anchored ? undefined : placed}
-            style={
-              anchored
-                ? anchoredStyle(name, side)
-                : position && { left: position.left, top: position.top }
-            }
+            data-side={placed}
+            style={position && { left: position.left, top: position.top }}
             className={cn(
               'fixed top-0 left-0 z-50',
-              // Padding (not margin) bridges the gap so the pointer can move onto the bubble;
-              // anchored, the bubble's margin does (inside this box, so still hoverable)
-              !anchored &&
-                {
-                  top: 'pb-1.5',
-                  bottom: 'pt-1.5',
-                  left: 'pr-1.5',
-                  right: 'pl-1.5',
-                }[placed],
+              // Padding (not margin) bridges the gap so the pointer can move onto the bubble
+              { top: 'pb-1.5', bottom: 'pt-1.5', left: 'pr-1.5', right: 'pl-1.5' }[placed],
             )}
           >
             <span
@@ -282,14 +223,12 @@ export function Tooltip({
                 'block w-max max-w-xs rounded-item border border-border-strong bg-inverse px-2 py-1',
                 'text-xs/snug font-medium text-inverse-fg [box-shadow:var(--shadow-whisper)]',
                 'transition-[opacity,translate] duration-150 ease-out starting:opacity-0',
-                anchored
-                  ? anchoredBubble[side]
-                  : {
-                      top: 'starting:translate-y-0.5',
-                      bottom: 'starting:-translate-y-0.5',
-                      left: 'starting:translate-x-0.5',
-                      right: 'starting:-translate-x-0.5',
-                    }[placed],
+                {
+                  top: 'starting:translate-y-0.5',
+                  bottom: 'starting:-translate-y-0.5',
+                  left: 'starting:translate-x-0.5',
+                  right: 'starting:-translate-x-0.5',
+                }[placed],
                 'motion-reduce:transition-none',
               )}
             >
