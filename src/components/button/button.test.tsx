@@ -265,6 +265,38 @@ test('filled intents rest raised and lift on hover; ghost and inert buttons stay
   expect(ghost.className).not.toMatch(/shadow-raised|--lift/)
 })
 
+test('raised intents scale their hover fill by --hover-strength; ghost and danger fills keep the full change', () => {
+  render(
+    <>
+      <Button intent="primary">Primary</Button>
+      <Button intent="dark" tone="danger">
+        Dark danger
+      </Button>
+      <Button intent="secondary">Secondary</Button>
+      <Button intent="surface">Surface</Button>
+      <Button intent="secondary" tone="danger">
+        Secondary danger
+      </Button>
+      <Button intent="ghost">Ghost</Button>
+    </>,
+  )
+  const get = (name: string) => screen.getByRole('button', { name })
+  const fade = 'hover:not-aria-disabled:opacity-[calc(1-0.1*var(--hover-strength))]'
+  expect(get('Primary')).toHaveClass(fade)
+  expect(get('Dark danger')).toHaveClass(fade)
+  expect(get('Secondary')).toHaveClass(
+    'hover:not-aria-disabled:bg-[color-mix(in_oklab,var(--color-ring)_calc(var(--hover-strength)*100%),var(--color-surface-muted))]',
+  )
+  expect(get('Surface')).toHaveClass(
+    'hover:not-aria-disabled:bg-[color-mix(in_oklab,var(--color-surface-muted)_calc(var(--hover-strength)*100%),var(--color-surface-raised))]',
+  )
+  // Solid danger on hover is a semantic switch, not a tint: not scaled
+  expect(get('Secondary danger')).toHaveClass('hover:not-aria-disabled:bg-danger')
+  expect(get('Secondary danger').className).not.toMatch(/hover-strength/)
+  expect(get('Ghost')).toHaveClass('hover:not-aria-disabled:bg-surface-muted')
+  expect(get('Ghost').className).not.toMatch(/hover-strength/)
+})
+
 test('keyboard press sets data-pressed until keyup, ignoring auto-repeat ripples', () => {
   render(<Button>Press</Button>)
   const btn = screen.getByRole('button', { name: 'Press' })

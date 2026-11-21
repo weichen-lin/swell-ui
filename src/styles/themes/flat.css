@@ -26,6 +26,7 @@
   --shadow-lift: 0 0 0 0 transparent;
   --shadow-lift-hover: 0 0 0 0 transparent;
   --lift: 0px;
+  --hover-strength: 1;
   --shadow-whisper: 0 0 0 0 transparent;
 
   /* Radii: roughly 25% tighter than the default 8 / 12 / 6 / 4 px */

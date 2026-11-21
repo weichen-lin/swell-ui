@@ -17,6 +17,9 @@ import { Tooltip, type TooltipProps } from '../tooltip'
 // Filled intents rest raised and rise by --lift on hover. Ghost has no chrome to raise: it only sinks
 // when pressed. Disabled and loading (aria-disabled) rest flat: depth says "press me", which an
 // inert button can't honour, and dimming alone would leave it looking ready.
+// Hover also changes the fill, but depth now carries part of that cue, so the raised intents scale
+// the fill change by --hover-strength (0.5 by default, 1 where flat.css removes the depth). Opacity
+// hovers fade to 1 - 0.1 * strength; fill hovers mix that share of the hover color into the rest one.
 const raised = [
   'not-aria-disabled:not-data-pressed:[--btn-shadow:var(--shadow-raised),var(--shadow-lift)]',
   'hover:not-aria-disabled:not-data-pressed:[--btn-shadow:var(--shadow-raised),var(--shadow-lift-hover)]',
@@ -60,22 +63,22 @@ const buttonVariants = cva(
         // Brand color: the one primary call to action
         primary: [
           ...raised,
-          'bg-primary text-primary-fg rounded-control border-primary hover:not-aria-disabled:opacity-90 data-pressed:not-aria-disabled:bg-primary-pressed',
+          'bg-primary text-primary-fg rounded-control border-primary hover:not-aria-disabled:opacity-[calc(1-0.1*var(--hover-strength))] data-pressed:not-aria-disabled:bg-primary-pressed',
         ],
         // Muted surface: the workhorse
         secondary: [
           ...raised,
-          'bg-surface-muted text-fg-strong rounded-control border-ring hover:not-aria-disabled:bg-ring data-pressed:not-aria-disabled:bg-surface-inset',
+          'bg-surface-muted text-fg-strong rounded-control border-ring hover:not-aria-disabled:bg-[color-mix(in_oklab,var(--color-ring)_calc(var(--hover-strength)*100%),var(--color-surface-muted))] data-pressed:not-aria-disabled:bg-surface-inset',
         ],
-        // Raised surface: shifts to secondary background on hover
+        // Raised surface: shifts toward the secondary background on hover
         surface: [
           ...raised,
-          'bg-surface-raised text-fg rounded-control border-transparent hover:not-aria-disabled:bg-surface-muted data-pressed:not-aria-disabled:bg-surface-inset',
+          'bg-surface-raised text-fg rounded-control border-transparent hover:not-aria-disabled:bg-[color-mix(in_oklab,var(--color-surface-muted)_calc(var(--hover-strength)*100%),var(--color-surface-raised))] data-pressed:not-aria-disabled:bg-surface-inset',
         ],
         // Inverse: strong emphasis without the brand color
         dark: [
           ...raised,
-          'bg-inverse text-inverse-fg rounded-control border-ring hover:not-aria-disabled:opacity-90 data-pressed:not-aria-disabled:bg-inverse-pressed',
+          'bg-inverse text-inverse-fg rounded-control border-ring hover:not-aria-disabled:opacity-[calc(1-0.1*var(--hover-strength))] data-pressed:not-aria-disabled:bg-inverse-pressed',
         ],
         // No chrome until hover: toolbars, table rows
         ghost:

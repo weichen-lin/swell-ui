@@ -271,6 +271,8 @@
   --shadow-lift: 0 1px 2px light-dark(rgb(0 0 0 / 0.06), transparent);
   --shadow-lift-hover: 0 2px 4px light-dark(rgb(0 0 0 / 0.1), transparent);
   --lift: 0.5px;
+  /* Share of the old hover fill change that Button's raised intents apply (0 to 1): depth carries the rest. Flat sets 1. */
+  --hover-strength: 0.5;
 
   /*
    * Radii by role, not by size. Override one and every component of that role follows.
