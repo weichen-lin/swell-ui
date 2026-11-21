@@ -27,6 +27,16 @@
   --shadow-lift-hover: 0 0 0 0 transparent;
   --lift: 0px;
   --hover-strength: 1;
+  /*
+   * Pressed without depth has only its fill to show it, and hover now fades the fill too, so pressed
+   * goes further from rest than the default. Danger can't just go further toward its text color on
+   * light (text contrast falls under 4.5:1), so there pressed darkens instead.
+   */
+  --pressed-strength: 1.5;
+  --color-danger-pressed: light-dark(
+    color-mix(in oklab, var(--color-danger) 90%, var(--color-fg)),
+    color-mix(in oklab, var(--color-danger) 84%, var(--color-danger-fg))
+  );
   --shadow-whisper: 0 0 0 0 transparent;
 
   /* Radii: roughly 25% tighter than the default 8 / 12 / 6 / 4 px */

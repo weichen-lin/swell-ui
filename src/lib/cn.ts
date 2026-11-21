@@ -33,6 +33,7 @@ const twMerge = extendTailwindMerge({
         'accent',
         'inverse',
         'inverse-fg',
+        'inverse-hover',
         'inverse-pressed',
         'danger-pressed',
         'danger-inset',

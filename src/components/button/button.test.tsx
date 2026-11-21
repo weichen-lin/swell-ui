@@ -269,6 +269,7 @@ test('raised intents scale their hover fill by --hover-strength; ghost and dange
   render(
     <>
       <Button intent="primary">Primary</Button>
+      <Button intent="dark">Dark</Button>
       <Button intent="dark" tone="danger">
         Dark danger
       </Button>
@@ -283,7 +284,14 @@ test('raised intents scale their hover fill by --hover-strength; ghost and dange
   const get = (name: string) => screen.getByRole('button', { name })
   const fade = 'hover:not-aria-disabled:opacity-[calc(1-0.1*var(--hover-strength))]'
   expect(get('Primary')).toHaveClass(fade)
-  expect(get('Dark danger')).toHaveClass(fade)
+  // Dark can't fade (its fill is the page color in dark mode): it mixes toward --color-inverse-hover
+  const darkHover =
+    'hover:not-aria-disabled:bg-[color-mix(in_oklab,var(--color-inverse-hover)_calc(var(--hover-strength)*100%),var(--color-inverse))]'
+  expect(get('Dark')).toHaveClass(darkHover)
+  expect(get('Dark').className).not.toMatch(/opacity-\[calc/)
+  // Dark danger keeps the old fade and its own fill: the inverse hover fill must not leak
+  expect(get('Dark danger')).toHaveClass(fade, 'hover:not-aria-disabled:bg-danger')
+  expect(get('Dark danger').className).not.toContain('--color-inverse-hover')
   expect(get('Secondary')).toHaveClass(
     'hover:not-aria-disabled:bg-[color-mix(in_oklab,var(--color-ring)_calc(var(--hover-strength)*100%),var(--color-surface-muted))]',
   )
@@ -295,6 +303,22 @@ test('raised intents scale their hover fill by --hover-strength; ghost and dange
   expect(get('Secondary danger').className).not.toMatch(/hover-strength/)
   expect(get('Ghost')).toHaveClass('hover:not-aria-disabled:bg-surface-muted')
   expect(get('Ghost').className).not.toMatch(/hover-strength/)
+})
+
+test('pressed ends the hover fade so its fill shows at full strength', () => {
+  render(
+    <>
+      <Button intent="primary">Primary</Button>
+      <Button intent="dark" tone="danger">
+        Dark danger
+      </Button>
+    </>,
+  )
+  for (const name of ['Primary', 'Dark danger'])
+    expect(screen.getByRole('button', { name })).toHaveClass(
+      'hover:not-aria-disabled:opacity-[calc(1-0.1*var(--hover-strength))]',
+      'data-pressed:not-aria-disabled:opacity-100',
+    )
 })
 
 test('keyboard press sets data-pressed until keyup, ignoring auto-repeat ripples', () => {

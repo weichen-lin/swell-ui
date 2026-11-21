@@ -20,6 +20,9 @@ import { Tooltip, type TooltipProps } from '../tooltip'
 // Hover also changes the fill, but depth now carries part of that cue, so the raised intents scale
 // the fill change by --hover-strength (0.5 by default, 1 where flat.css removes the depth). Opacity
 // hovers fade to 1 - 0.1 * strength; fill hovers mix that share of the hover color into the rest one.
+// Pressed ends the fade (opacity-100) so its fill shows at full strength: a faded pressed fill let the
+// page through, dropping text contrast and blurring pressed against hover.
+// `dark` can't fade: on dark its fill is the page color, so it mixes toward --color-inverse-hover.
 const raised = [
   'not-aria-disabled:not-data-pressed:[--btn-shadow:var(--shadow-raised),var(--shadow-lift)]',
   'hover:not-aria-disabled:not-data-pressed:[--btn-shadow:var(--shadow-raised),var(--shadow-lift-hover)]',
@@ -63,7 +66,7 @@ const buttonVariants = cva(
         // Brand color: the one primary call to action
         primary: [
           ...raised,
-          'bg-primary text-primary-fg rounded-control border-primary hover:not-aria-disabled:opacity-[calc(1-0.1*var(--hover-strength))] data-pressed:not-aria-disabled:bg-primary-pressed',
+          'bg-primary text-primary-fg rounded-control border-primary hover:not-aria-disabled:opacity-[calc(1-0.1*var(--hover-strength))] data-pressed:not-aria-disabled:bg-primary-pressed data-pressed:not-aria-disabled:opacity-100',
         ],
         // Muted surface: the workhorse
         secondary: [
@@ -78,7 +81,7 @@ const buttonVariants = cva(
         // Inverse: strong emphasis without the brand color
         dark: [
           ...raised,
-          'bg-inverse text-inverse-fg rounded-control border-ring hover:not-aria-disabled:opacity-[calc(1-0.1*var(--hover-strength))] data-pressed:not-aria-disabled:bg-inverse-pressed',
+          'bg-inverse text-inverse-fg rounded-control border-ring hover:not-aria-disabled:bg-[color-mix(in_oklab,var(--color-inverse-hover)_calc(var(--hover-strength)*100%),var(--color-inverse))] data-pressed:not-aria-disabled:bg-inverse-pressed',
         ],
         // No chrome until hover: toolbars, table rows
         ghost:
@@ -139,12 +142,13 @@ const buttonVariants = cva(
         class:
           'text-danger hover:not-aria-disabled:bg-danger hover:not-aria-disabled:text-danger-fg data-pressed:not-aria-disabled:bg-danger-pressed data-pressed:not-aria-disabled:text-danger-fg',
       },
-      // Strong emphasis + danger is just solid danger, same as primary
+      // Strong emphasis + danger is just solid danger, same as primary. The base hover fill (inverse)
+      // is overridden; hover fades like primary instead (danger is no page-colored fill, so it shows)
       {
         intent: 'dark',
         tone: 'danger',
         class:
-          'bg-danger text-danger-fg border-danger data-pressed:not-aria-disabled:bg-danger-pressed',
+          'bg-danger text-danger-fg border-danger hover:not-aria-disabled:bg-danger hover:not-aria-disabled:opacity-[calc(1-0.1*var(--hover-strength))] data-pressed:not-aria-disabled:bg-danger-pressed data-pressed:not-aria-disabled:opacity-100',
       },
       {
         intent: 'ghost',

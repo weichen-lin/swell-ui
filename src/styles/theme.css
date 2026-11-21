@@ -242,8 +242,25 @@
     color-mix(in oklab, var(--color-fg) 9%, var(--color-bg)),
     color-mix(in oklab, var(--color-fg) 4%, var(--color-bg))
   );
-  --color-primary-pressed: color-mix(in oklab, var(--color-primary) 85%, var(--color-primary-fg));
-  --color-inverse-pressed: color-mix(in oklab, var(--color-inverse) 85%, var(--color-inverse-fg));
+  /*
+   * Hover (the `dark` Button): the fill at full --hover-strength, moved toward the text color.
+   * Light moves 11.5% toward the surface, matching the old fade; on dark, where the fill is the page
+   * itself and a fade would show the same color, 14% toward fg-muted so the change reads.
+   */
+  --color-inverse-hover: light-dark(
+    color-mix(in oklab, var(--color-inverse) 88.5%, var(--color-inverse-fg)),
+    color-mix(in oklab, var(--color-inverse) 86%, var(--color-inverse-fg))
+  );
+  --color-primary-pressed: color-mix(
+    in oklab,
+    var(--color-primary-fg) calc(15% * var(--pressed-strength)),
+    var(--color-primary)
+  );
+  --color-inverse-pressed: color-mix(
+    in oklab,
+    var(--color-inverse-fg) calc(15% * var(--pressed-strength)),
+    var(--color-inverse)
+  );
   --color-danger-pressed: color-mix(in oklab, var(--color-danger) 92%, var(--color-danger-fg));
   --color-danger-inset: light-dark(
     color-mix(in oklab, var(--color-danger) 11%, var(--color-bg)),
@@ -273,6 +290,8 @@
   --lift: 0.5px;
   /* Share of the old hover fill change that Button's raised intents apply (0 to 1): depth carries the rest. Flat sets 1. */
   --hover-strength: 0.5;
+  /* Scales how far the primary and `dark` Button's pressed fills move from its rest fill (1 = 15%). Flat raises it so pressed stays clear of hover. */
+  --pressed-strength: 1;
 
   /*
    * Radii by role, not by size. Override one and every component of that role follows.
