@@ -11,6 +11,8 @@ minimumReleaseAgeExclude:
   - '@fumadocs/base-ui@16.19.4'
   - fumadocs-core@16.19.4
 overrides:
+  glob@>=9.0.0 <=14.0.1: ^14.0.2
+  minimatch@>=7.0.0 <11.0.1: ^11.0.1
   vite@*: 'catalog:'
   vitest@*: 'catalog:'
 peerDependencyRules:
