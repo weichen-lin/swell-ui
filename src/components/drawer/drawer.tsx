@@ -17,11 +17,19 @@ export type DrawerSize = 'sm' | 'md' | 'lg'
 export type DrawerCloseReason = ModalCloseReason
 
 export type DrawerProps = Omit<ComponentProps<'dialog'>, 'open'> & {
+  /** Whether the drawer is open. Controlled: the drawer never opens or closes itself. */
   open: boolean
+  /** Called for Esc, the backdrop, the close button and `DrawerClose`; set `open` to `false` to close. */
   onOpenChange: (open: boolean, reason: DrawerCloseReason) => void
-  /** Edge it slides out of. Defaults to right (details, filters); navigation passes left. */
+  /**
+   * Edge it slides out of. Right suits details and filters; navigation passes left.
+   * @defaultValue 'right'
+   */
   side?: DrawerSide
-  /** Width: sm 280px (navigation), md 384px (default, filters), lg 480px (details, forms). */
+  /**
+   * Width: sm 280px (navigation), md 384px (filters), lg 480px (details, forms).
+   * @defaultValue 'md'
+   */
   size?: DrawerSize
 }
 
@@ -135,6 +143,7 @@ export function Drawer({
 export type DrawerHeaderProps = Omit<ComponentProps<'div'>, 'title'> & {
   /** Also names the drawer. */
   title: ReactNode
+  /** Supporting text under the title, announced with it. */
   description?: ReactNode
 }
 
@@ -211,8 +220,12 @@ export type DrawerCloseProps = Omit<
 > & {
   /** Required: the button shows only an icon. */
   'aria-label': string
+  /**
+   * Button size.
+   * @defaultValue 'sm'
+   */
   size?: 'sm' | 'md' | 'lg'
-  /** Defaults to X. */
+  /** Icon to show. Defaults to an X. */
   icon?: ReactNode
 }
 

@@ -54,9 +54,16 @@ export type ToasterProps = {
    * keep its own stack and position.
    */
   id?: string
-  /** Corner (or edge center) the stack grows from. Default `bottom-right`. */
+  /**
+   * Corner (or edge center) the stack grows from: bottom-right, bottom-left, bottom-center,
+   * top-right, top-left or top-center.
+   * @defaultValue 'bottom-right'
+   */
   position?: ToastPosition
-  /** Cards shown in the collapsed stack; older ones wait hidden. Default 3, at most 2 on phones. */
+  /**
+   * Cards shown in the collapsed stack; older ones wait hidden. At most 2 on phones.
+   * @defaultValue 3
+   */
   visibleToasts?: number
 }
 

@@ -16,8 +16,16 @@ import { type ChoiceLabelProps, ChoiceRow } from '../checkbox/choice-row'
 import { isPresent, useMergedRef } from '../input/field'
 
 type SelectionProps =
-  | { value: string | null; defaultValue?: never }
-  | { value?: undefined; defaultValue?: string }
+  | {
+      /** Controlled selection; `null` clears it. */
+      value: string | null
+      defaultValue?: never
+    }
+  | {
+      value?: undefined
+      /** Uncontrolled initial selection. Nothing is selected when omitted. */
+      defaultValue?: string
+    }
 
 export type RadioGroupProps = Omit<
   ComponentProps<'fieldset'>,
@@ -26,16 +34,29 @@ export type RadioGroupProps = Omit<
   SelectionProps & {
     /** Native group and submitted field name. Independent groups need different names. */
     name: string
+    /** Names the group (fieldset legend). */
     legend: ReactNode
+    /** Muted line under the legend, linked with aria-describedby. */
     description?: ReactNode
     /** Shows one group message; marks the group invalid. `true` omits the message. */
     error?: ReactNode
+    /** Marks the group required: native validation needs one selection. */
     required?: boolean
+    /** Called when the selection changes, with the new value and the native change event. */
     onValueChange?: (value: string, event: ChangeEvent<HTMLInputElement>) => void
+    /**
+     * Plain rows or bordered cards.
+     * @defaultValue 'default'
+     */
     variant?: 'default' | 'card'
-    /** Layout only; both orientations keep native radio keyboard behavior. */
+    /**
+     * Layout only; both orientations keep native radio keyboard behavior.
+     * @defaultValue 'vertical'
+     */
     orientation?: 'vertical' | 'horizontal'
+    /** Classes for the items container; `className` goes to the fieldset. */
     itemsClassName?: string
+    /** `Radio` items. */
     children: ReactNode
   }
 
@@ -248,6 +269,7 @@ export type RadioProps = Omit<
   ChoiceLabelProps & {
     /** A unique, non-empty value within the parent RadioGroup. */
     value: string
+    /** Muted line under the label, linked with aria-describedby. */
     description?: ReactNode
     /** Classes for the native input; className belongs to the row or card. */
     inputClassName?: string

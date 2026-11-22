@@ -16,14 +16,21 @@ export type SwitchProps = NativeSwitchProps &
     description?: ReactNode
     /** Truthy sets aria-invalid; text is shown under the label and linked with aria-describedby. */
     error?: ReactNode
-    /** sm 28x14 for dense rows and tables, md 36x20 for settings. */
+    /**
+     * sm 28x14 for dense rows and tables, md 36x20 for settings.
+     * @defaultValue 'md'
+     */
     size?: SwitchSize
     /**
      * A spinner in the thumb while the change is being saved: aria-busy, and clicks/Space are
      * swallowed without disabling, so focus stays put.
+     * @defaultValue false
      */
     loading?: boolean
-    /** `start`: label first and the switch pushed to the far end, as in a settings row. */
+    /**
+     * `start`: label first and the switch pushed to the far end, as in a settings row.
+     * @defaultValue 'end'
+     */
     labelPosition?: 'end' | 'start'
     /** Classes for the `<input>` (the track); `className` goes to the row. */
     inputClassName?: string

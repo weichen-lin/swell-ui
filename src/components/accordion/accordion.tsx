@@ -17,18 +17,55 @@ import { useAccordionMotion } from './use-accordion-motion'
 
 export type AccordionVariant = 'line' | 'outline'
 type Selection<T> =
-  | { value: T; defaultValue?: never; onValueChange?: (value: T) => void }
-  | { value?: undefined; defaultValue?: T; onValueChange?: (value: T) => void }
+  | {
+      /** The open item's `value`, or an array of them when `type` is `'multiple'` (controlled). Pair it with `onValueChange`. */
+      value: T
+      defaultValue?: never
+      /** Called with the new selection when an item opens or closes. */
+      onValueChange?: (value: T) => void
+    }
+  | {
+      value?: undefined
+      /** The initially open item's `value`, or an array of them when `type` is `'multiple'`. */
+      defaultValue?: T
+      /** Called with the new selection when an item opens or closes. */
+      onValueChange?: (value: T) => void
+    }
 
 export type AccordionProps = Omit<ComponentProps<'div'>, 'defaultValue' | 'onChange'> &
   (
-    | (Selection<string | null> & { type?: 'single'; collapsible?: boolean })
-    | (Selection<readonly string[]> & { type: 'multiple'; collapsible?: never })
+    | (Selection<string | null> & {
+        /**
+         * `'single'` keeps one item open; `'multiple'` lets any number be open.
+         * @defaultValue 'single'
+         */
+        type?: 'single'
+        /**
+         * Lets the open item be closed again.
+         * @defaultValue true
+         */
+        collapsible?: boolean
+      })
+    | (Selection<readonly string[]> & {
+        /** `'multiple'` lets any number of items be open; `value` is then an array. */
+        type: 'multiple'
+        collapsible?: never
+      })
   ) & {
+    /**
+     * Visual style: `'line'` separates items with a rule; `'outline'` frames each one.
+     * @defaultValue 'line'
+     */
     variant?: AccordionVariant
-    /** Native heading level around each trigger. */
+    /**
+     * Native heading level around each trigger.
+     * @defaultValue 3
+     */
     headingLevel?: 2 | 3 | 4 | 5 | 6
-    /** Disables triggers, without changing values or disabling content fields. */
+    /**
+     * Disables triggers, without changing values or disabling content fields.
+     * @defaultValue false
+     */
     disabled?: boolean
   }
 
@@ -244,6 +281,10 @@ export function Accordion({
 export type AccordionItemProps = ComponentProps<'div'> & {
   /** Unique, non-empty value in this group. */
   value: string
+  /**
+   * Disables this item's trigger, without disabling its content.
+   * @defaultValue false
+   */
   disabled?: boolean
 }
 
@@ -375,9 +416,15 @@ export type AccordionContentProps = Omit<
   ComponentProps<'div'>,
   'id' | 'hidden' | 'inert' | 'role' | 'aria-hidden' | 'aria-labelledby'
 > & {
-  /** Defaults to true. false unmounts children after closing, but keeps the ARIA target. */
+  /**
+   * `false` unmounts the children after closing, but keeps the ARIA target.
+   * @defaultValue true
+   */
   keepMounted?: boolean
-  /** Opt in to a named landmark for complex content; avoid excessive regions. */
+  /**
+   * Opt in to a named landmark for complex content; avoid excessive regions.
+   * @defaultValue false
+   */
   region?: boolean
   /** Outer height wrapper classes. className styles the inner padded content. */
   contentClassName?: string

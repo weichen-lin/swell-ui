@@ -25,9 +25,19 @@ import { useMergedRef } from '../input/field'
 
 export type DropdownMenuChangeReason = 'trigger' | 'item-select' | 'escape' | 'outside' | 'tab'
 export type DropdownMenuProps = {
+  /** A `DropdownMenuTrigger` and a `DropdownMenuContent`. */
   children: ReactNode
+  /** Whether the menu is open (controlled). Pair it with `onOpenChange`. */
   open?: boolean
+  /**
+   * Whether the menu starts open when uncontrolled.
+   * @defaultValue false
+   */
   defaultOpen?: boolean
+  /**
+   * Called when the menu opens or closes. `reason` is `'trigger'`, `'item-select'`, `'escape'`,
+   * `'outside'` or `'tab'`.
+   */
   onOpenChange?: (open: boolean, reason: DropdownMenuChangeReason) => void
 }
 
@@ -84,7 +94,13 @@ export function DropdownMenu({
   )
 }
 
-export type DropdownMenuTriggerProps = ComponentProps<'button'> & { asChild?: boolean }
+export type DropdownMenuTriggerProps = ComponentProps<'button'> & {
+  /**
+   * Render the only child (your `Button`, say) as the trigger instead of a `<button>`.
+   * @defaultValue false
+   */
+  asChild?: boolean
+}
 export function DropdownMenuTrigger({
   asChild = false,
   ref,
@@ -147,8 +163,21 @@ export function DropdownMenuTrigger({
 
 type Side = 'top' | 'bottom' | 'left' | 'right'
 export type DropdownMenuContentProps = ComponentProps<'div'> & {
+  /**
+   * Preferred side of the trigger: `'top' | 'bottom' | 'left' | 'right'`. Flips when there is not
+   * enough room.
+   * @defaultValue 'bottom'
+   */
   side?: Side
+  /**
+   * Alignment against the trigger.
+   * @defaultValue 'end'
+   */
   align?: 'start' | 'center' | 'end'
+  /**
+   * Gap to the trigger, in pixels.
+   * @defaultValue 6
+   */
   sideOffset?: number
 }
 const opposite: Record<Side, Side> = { top: 'bottom', bottom: 'top', left: 'right', right: 'left' }
@@ -369,9 +398,19 @@ function OpenContent({
 }
 
 export type DropdownMenuItemProps = Omit<ComponentProps<'button'>, 'onSelect'> & {
+  /**
+   * Render the only child (a link, say) as the item instead of a `<button>`.
+   * @defaultValue false
+   */
   asChild?: boolean
+  /** Decorative leading icon (aria-hidden). */
   iconLeft?: ReactNode
+  /**
+   * Visual tone: `'danger'` marks a destructive action.
+   * @defaultValue 'default'
+   */
   tone?: 'default' | 'danger'
+  /** Text typeahead matches, when it differs from the item's content. */
   textValue?: string
   /** Runs for pointer and keyboard activation. Call preventDefault() to keep the menu open. */
   onSelect?: (event: Event) => void

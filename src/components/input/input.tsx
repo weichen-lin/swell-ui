@@ -8,6 +8,10 @@ export type InputType = 'text' | 'email' | 'url' | 'tel'
 
 export type InputProps = Omit<FieldProps, 'type' | 'label' | 'floating'> &
   FieldLabelProps & {
+    /**
+     * Input type. There is no `number`; use `inputMode="numeric"` instead.
+     * @defaultValue 'text'
+     */
     type?: InputType
   }
 

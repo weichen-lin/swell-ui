@@ -27,12 +27,28 @@ const TabNavContext = createContext<TabNavContextValue | null>(null)
 
 // A second nav landmark on the page needs a name to tell it apart; one of the two is required
 type TabNavLabel =
-  | { 'aria-label': string; 'aria-labelledby'?: never }
-  | { 'aria-labelledby': string; 'aria-label'?: never }
+  | {
+      /** Names the nav landmark. Pass this or `aria-labelledby`. */
+      'aria-label': string
+      'aria-labelledby'?: never
+    }
+  | {
+      /** Id of the element that names the nav landmark. Pass this or `aria-label`. */
+      'aria-labelledby': string
+      'aria-label'?: never
+    }
 
 export type TabNavProps = Omit<ComponentProps<'nav'>, 'aria-label' | 'aria-labelledby'> &
   TabNavLabel & {
+    /**
+     * Visual style: `'line'` underlines the current link; `'segmented'` puts it on a raised knob.
+     * @defaultValue 'line'
+     */
     variant?: TabsVariant
+    /**
+     * Tab size: `'sm' | 'md'`.
+     * @defaultValue 'md'
+     */
     size?: TabsSize
     /** Classes for the inner `<ul>` (the scrolling bar); `className` goes to the `<nav>`. */
     listClassName?: string
@@ -79,6 +95,7 @@ export type TabNavLinkProps = ComponentProps<'a'> &
     /**
      * Render the only child (usually a router Link) as the tab, merging these props into it. The
      * link sets href, aria-current="page" and aria-disabled; the tab is styled from them.
+     * @defaultValue false
      */
     asChild?: boolean
   }

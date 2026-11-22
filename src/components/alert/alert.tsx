@@ -6,13 +6,21 @@ import { Button } from '../button'
 export type AlertTone = 'neutral' | 'info' | 'success' | 'warning' | 'danger'
 
 export type AlertProps = Omit<ComponentProps<'div'>, 'title'> & {
+  /**
+   * Icon and its color: neutral, info, success, warning or danger.
+   * @defaultValue 'neutral'
+   */
   tone?: AlertTone
+  /** Heading line. `children` render as the description under it. */
   title?: ReactNode
   /** An action such as a retry button or a link to settings. */
   action?: ReactNode
   /** Shows the dismiss button. The caller controls whether the Alert stays mounted. */
   onDismiss?: MouseEventHandler<HTMLButtonElement>
-  /** Accessible name of the dismiss button. */
+  /**
+   * Accessible name of the dismiss button.
+   * @defaultValue 'Dismiss alert'
+   */
   dismissLabel?: string
 }
 

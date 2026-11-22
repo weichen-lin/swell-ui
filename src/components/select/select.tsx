@@ -22,15 +22,22 @@ import {
 
 /** `value` must be non-empty: `''` is reserved for "nothing chosen". */
 export type SelectOption = {
+  /** Submitted with the form; must be non-empty. */
   value: string
   /** Also the option's text, which typeahead and screen readers use. */
   label: string
   /** Decorative (aria-hidden); shown in the picker and on the trigger while selected. */
   icon?: ReactNode
+  /** Visible but not selectable. */
   disabled?: boolean
 }
 
-export type SelectGroup = { label: string; options: SelectOption[] }
+export type SelectGroup = {
+  /** Group title, shown above its options. */
+  label: string
+  /** Options in the group. */
+  options: SelectOption[]
+}
 
 type NativeSelectProps = Omit<
   ComponentProps<'select'>,
@@ -39,18 +46,29 @@ type NativeSelectProps = Omit<
 
 export type SelectProps = NativeSelectProps &
   FieldLabelProps & {
+    /** Options and option groups, in display order. */
     options: (SelectOption | SelectGroup)[]
     /** `''` means nothing chosen. */
     value?: string
+    /** Initial value when uncontrolled; without it nothing is chosen. */
     defaultValue?: string
     /** Shown while nothing is chosen. Label-above only: a floating label takes its place (MUI). */
     placeholder?: string
+    /** Supporting text below the field; linked as the accessible description. */
     helperText?: ReactNode
     /** Truthy puts the field in the error state; the text replaces helperText. */
     error?: ReactNode
+    /**
+     * Field height and text size.
+     * @defaultValue 'md'
+     */
     size?: FieldSize
     /** Fixed decorative leading icon; the selected option's own icon wins when it has one. */
     start?: ReactNode
+    /**
+     * Monospace text.
+     * @defaultValue false
+     */
     mono?: boolean
     /** Classes for the `<select>`; `className` goes to the outer wrapper. */
     selectClassName?: string

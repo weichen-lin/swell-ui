@@ -4,16 +4,23 @@ export type ToastType = 'neutral' | 'success' | 'info' | 'warning' | 'danger' | 
 
 /** A button rendered with the toast's Button styling. Clicking it dismisses the toast unless `onClick` calls `event.preventDefault()`. */
 export type ToastActionButton = {
+  /** Button text. */
   label: string
+  /** Runs on click, before the toast closes; call `event.preventDefault()` to keep it open. */
   onClick?: (event: MouseEvent<HTMLButtonElement>) => void
 }
 
 export type ToastOptions = {
   /** Reusing the id of a toast still on screen updates that toast in place instead of adding one. */
   id?: string
+  /** Main text. */
   title: ReactNode
+  /** Secondary text under the title. */
   description?: ReactNode
-  /** Default `neutral`. */
+  /**
+   * Icon and color: neutral, success, info, warning, danger or loading (a spinner).
+   * @defaultValue 'neutral'
+   */
   type?: ToastType
   /**
    * `{ label, onClick }` renders a small secondary Button. Any other node (e.g. a router `<Link>`
@@ -21,11 +28,15 @@ export type ToastOptions = {
    */
   action?: ToastActionButton | ReactNode
   /**
-   * Milliseconds on screen; `Infinity` keeps it until dismissed. Default: 5000, 10000 with an
-   * action, never for `danger` and `loading`.
+   * Milliseconds on screen; `Infinity` keeps it until dismissed. 10000 with an action; `danger`
+   * and `loading` never expire.
+   * @defaultValue 5000
    */
   duration?: number
-  /** False hides the close button and turns off swipe and Esc. Default true. */
+  /**
+   * False hides the close button and turns off swipe and Esc.
+   * @defaultValue true
+   */
   dismissible?: boolean
   /** The `<Toaster id>` that shows it. Left out, it goes to the Toaster without an id. */
   toasterId?: string
@@ -171,10 +182,15 @@ type ShortcutOptions = Omit<ToastOptions, 'title' | 'type'>
 type PromiseStep = ReactNode | Omit<ToastOptions, 'id' | 'type'>
 
 export type ToastPromiseOptions<T> = {
+  /** Same as `ToastOptions.id`. */
   id?: string
+  /** Same as `ToastOptions.toasterId`. */
   toasterId?: string
+  /** Shown while the promise is pending: a title, or full options without `id` and `type`. */
   loading: PromiseStep
+  /** Shown when it resolves: a step, or a function of the result that returns one. */
   success: PromiseStep | ((data: T) => PromiseStep)
+  /** Shown when it rejects, as a `danger` toast: a step, or a function of the error. */
   error: PromiseStep | ((error: unknown) => PromiseStep)
 }
 

@@ -8,8 +8,17 @@ import { isPresent } from '../input/field'
  * (a table row, a toolbar). Same idea as the input family's FieldLabelProps.
  */
 export type ChoiceLabelProps =
-  | { label: ReactNode; 'aria-label'?: string }
-  | { label?: never; 'aria-label': string }
+  | {
+      /** Visible label. Required unless `aria-label` is set. */
+      label: ReactNode
+      /** Accessible name when there is no visible `label`. */
+      'aria-label'?: string
+    }
+  | {
+      label?: never
+      /** Accessible name when there is no visible `label`. */
+      'aria-label': string
+    }
 
 /** What the row hands its control. */
 export type ChoiceRowParts = {

@@ -109,6 +109,7 @@ export type TabContentProps = {
   icon?: ReactNode
   /** Trailing slot, usually a Badge; part of the accessible name (e.g. "Resources 12"). */
   badge?: ReactNode
+  /** The label. */
   children?: ReactNode
 }
 

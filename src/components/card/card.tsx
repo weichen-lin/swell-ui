@@ -17,7 +17,10 @@ const CardContext = createContext<{ titleId: string; setTitled: (titled: boolean
 })
 
 export type CardProps = ComponentProps<'div'> & {
-  /** `section`/`article` are named by their CardHeader title. */
+  /**
+   * Element to render. `section` and `article` are named by their CardHeader title.
+   * @defaultValue 'div'
+   */
   as?: CardElement
 }
 
@@ -43,10 +46,16 @@ export function Card({ as: Comp = 'div', className, ...props }: CardProps) {
 }
 
 export type CardHeaderProps = Omit<ComponentProps<'div'>, 'title' | 'children'> & {
+  /** Heading text. */
   title: ReactNode
+  /** Secondary text below the title. */
   description?: ReactNode
   /** Trailing control, e.g. a "View all" link. */
   action?: ReactNode
+  /**
+   * Heading element rendered for the title: `2` for `h2`, `3` for `h3`.
+   * @defaultValue 2
+   */
   headingLevel?: 2 | 3
 }
 

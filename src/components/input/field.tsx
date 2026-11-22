@@ -20,20 +20,38 @@ type NativeInputProps = Omit<ComponentProps<'input'>, 'size' | 'children'>
 export type FieldProps = NativeInputProps & {
   /** Visible label, rendered as a real `<label>` above the field. */
   label: string
-  /** Outlined floating label: rests inside the field and moves onto the top border. */
+  /**
+   * Outlined floating label: rests inside the field and moves onto the top border.
+   * @defaultValue false
+   */
   floating?: boolean
+  /** Supporting text below the field, linked with aria-describedby. */
   helperText?: ReactNode
   /** Truthy puts the field in the error state; the text replaces helperText. */
   error?: ReactNode
+  /**
+   * Field height and text size.
+   * @defaultValue 'md'
+   */
   size?: FieldSize
   /** Decorative leading icon (aria-hidden) or plain text prefix such as `https://`. */
   start?: ReactNode
   /** Decorative trailing icon (aria-hidden) or plain text suffix. */
   end?: ReactNode
-  /** Monospace with spellcheck/autocorrect off, for tags, SHAs and hostnames. */
+  /**
+   * Monospace with spellcheck/autocorrect off, for tags, SHAs and hostnames.
+   * @defaultValue false
+   */
   mono?: boolean
-  /** Shows a spinner and announces validatingText; the field stays editable. */
+  /**
+   * Shows a spinner and announces validatingText; the field stays editable.
+   * @defaultValue false
+   */
   validating?: boolean
+  /**
+   * Text announced politely while validating is true.
+   * @defaultValue 'Checking…'
+   */
   validatingText?: string
   /** Classes for the `<input>`; `className` goes to the outer wrapper. */
   inputClassName?: string
@@ -44,8 +62,21 @@ export type FieldProps = NativeInputProps & {
  * (a table cell, a toolbar filter). Floating needs a visible label.
  */
 export type FieldLabelProps =
-  | { label: string; floating?: boolean }
-  | { label?: never; floating?: never; 'aria-label': string }
+  | {
+      /** Visible label, rendered as a real `<label>`. Omit it only when `aria-label` is set. */
+      label: string
+      /**
+       * Outlined floating label that rests inside the field. Needs a visible `label`.
+       * @defaultValue false
+       */
+      floating?: boolean
+    }
+  | {
+      label?: never
+      floating?: never
+      /** Accessible name when there is no visible `label`. */
+      'aria-label': string
+    }
 
 type FrameProps = Omit<FieldProps, 'label'> & {
   label?: string

@@ -19,7 +19,9 @@ export type ThemeSwitcherProps = Omit<
   ComponentProps<'button'>,
   'onChange' | 'value' | 'defaultValue' | 'children'
 > & {
+  /** Current theme: `'system'`, `'light'` or `'dark'`. `'system'` follows `prefers-color-scheme`. */
   value: Theme
+  /** Called with the theme to switch to (`'light'` or `'dark'`), never `'system'`. */
   onChange: (value: Theme) => void
 }
 

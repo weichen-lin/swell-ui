@@ -8,8 +8,20 @@ type BadgeSize = 'sm' | 'md'
 
 // onClick is omitted on purpose: a badge is static; use a Button or link when it needs an action
 export type BadgeProps = Omit<ComponentProps<'span'>, 'onClick'> & {
+  /**
+   * Color of the badge: `'neutral'`, `'info'`, `'success'`, `'warning'` or `'danger'`.
+   * @defaultValue 'neutral'
+   */
   tone?: BadgeTone
+  /**
+   * Visual style: `'subtle'`, `'outline'` or `'solid'`. All three share the same box size.
+   * @defaultValue 'subtle'
+   */
   variant?: BadgeVariant
+  /**
+   * Height and padding: `'sm'` (20px) or `'md'` (24px).
+   * @defaultValue 'md'
+   */
   size?: BadgeSize
   /** Leading, decorative glyph (hidden from assistive tech). Ignored while `busy`. */
   icon?: ReactNode

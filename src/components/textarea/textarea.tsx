@@ -12,23 +12,60 @@ import { useAutoResize } from './use-auto-resize'
 
 type HeightProps =
   | {
+      /**
+       * Grow with the content instead of using a fixed height.
+       * @defaultValue false
+       */
       autoResize?: false
+      /**
+       * Visible rows. A positive integer; not allowed with `autoResize`.
+       * @defaultValue 3
+       */
       rows?: number
+      /**
+       * Manual resize handle. Not allowed with `autoResize`.
+       * @defaultValue 'vertical'
+       */
       resize?: 'vertical' | 'none'
       minRows?: never
       maxRows?: never
     }
-  | { autoResize: true; minRows?: number; maxRows?: number; rows?: never; resize?: never }
+  | {
+      /** Grow with the content instead of using a fixed height. */
+      autoResize: true
+      /**
+       * Minimum visible rows. A positive integer; only with `autoResize`.
+       * @defaultValue 3
+       */
+      minRows?: number
+      /** Maximum rows before it scrolls. At least `minRows`; only with `autoResize`. */
+      maxRows?: number
+      rows?: never
+      resize?: never
+    }
 
 export type TextareaProps = Omit<ComponentProps<'textarea'>, 'children' | 'rows'> &
   FieldLabelProps &
   HeightProps & {
+    /** Helper text under the field, linked with aria-describedby. */
     helperText?: ReactNode
     /** Replaces helperText and marks the field invalid. `true` shows only the error outline. */
     error?: ReactNode
+    /**
+     * Field text size and padding.
+     * @defaultValue 'md'
+     */
     size?: FieldSize
-    /** UTF-16 length, matching native maxLength. Never truncates controlled values. */
+    /**
+     * Shows the character count, and `/ maxLength` when set. UTF-16 length, matching native
+     * maxLength. Never truncates controlled values.
+     * @defaultValue false
+     */
     showCount?: boolean
+    /**
+     * Monospace font; turns off spellcheck, autocorrect and autocapitalize.
+     * @defaultValue false
+     */
     mono?: boolean
     /** Classes for the textarea; className belongs to the outer field. */
     textareaClassName?: string

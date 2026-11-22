@@ -34,15 +34,21 @@ type TriggerProps = { 'aria-describedby'?: string }
 export type TooltipProps = {
   /** Nothing renders (and no aria-describedby is added) when empty. */
   content?: ReactNode
-  /** Preferred side; flips to the opposite one when it doesn't fit the viewport. */
+  /**
+   * Preferred side: top, bottom, left or right. Flips to the opposite one when it doesn't fit
+   * the viewport.
+   * @defaultValue 'top'
+   */
   side?: Side
   /**
    * Link the tooltip to the trigger via aria-describedby. Turn off when the
    * tooltip only repeats the trigger's accessible name (e.g. icon button labels).
+   * @defaultValue true
    */
   describe?: boolean
   /** Classes for the wrapper that anchors the tooltip. */
   className?: string
+  /** The trigger element. It gets `aria-describedby`; non-interactive ones need a `tabIndex`. */
   children: ReactElement<TriggerProps>
 }
 

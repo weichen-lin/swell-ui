@@ -71,8 +71,16 @@ export function SidebarProvider({ children }: { children: ReactNode }) {
 
 // A second nav landmark on the page needs a name to tell it apart; one of the two is required
 type SidebarLabel =
-  | { 'aria-label': string; 'aria-labelledby'?: never }
-  | { 'aria-labelledby': string; 'aria-label'?: never }
+  | {
+      /** Names the navigation landmark. Pass this or `aria-labelledby`. */
+      'aria-label': string
+      'aria-labelledby'?: never
+    }
+  | {
+      /** Id of the element that names the landmark. Pass this or `aria-label`. */
+      'aria-labelledby': string
+      'aria-label'?: never
+    }
 
 export type SidebarProps = Omit<ComponentProps<'nav'>, 'aria-label' | 'aria-labelledby'> &
   SidebarLabel
@@ -123,7 +131,12 @@ export type SidebarTriggerProps = Omit<
   ComponentProps<'button'>,
   'children' | 'type' | 'aria-label' | 'aria-expanded' | 'aria-controls'
 > & {
+  /**
+   * Accessible name of the button.
+   * @defaultValue 'Open navigation'
+   */
   'aria-label'?: string
+  /** Button size: `'sm'`, `'md'` or `'lg'`. Uses the Button default when omitted. */
   size?: 'sm' | 'md' | 'lg'
 }
 
@@ -325,6 +338,7 @@ export type SidebarItemProps = ComponentProps<'a'> & {
   /**
    * Render the only child (usually a router Link) as the item, merging these props into it. The
    * link sets href and aria-current="page"; the item is styled from them.
+   * @defaultValue false
    */
   asChild?: boolean
 }

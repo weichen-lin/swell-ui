@@ -18,16 +18,25 @@ export type DialogSize = 'sm' | 'md' | 'lg'
 export type DialogCloseReason = ModalCloseReason
 
 export type DialogProps = Omit<ComponentProps<'dialog'>, 'open'> & {
+  /** Whether the dialog is open. Controlled: the dialog never opens or closes itself. */
   open: boolean
+  /** Called for every close request, with the reason; set `open` to `false` to close. */
   onOpenChange: (open: boolean, reason: DialogCloseReason) => void
-  /** Max width: sm 384px (confirmations), md 480px (default), lg 640px (wide forms). */
+  /**
+   * Max width: sm 384px (confirmations), md 480px (default), lg 640px (wide forms).
+   * @defaultValue 'md'
+   */
   size?: DialogSize
   /**
    * Destructive confirmation: role="alertdialog", no close button by default, and a backdrop
    * click doesn't close (it bounces instead). Put `autoFocus` on the least destructive button.
+   * @defaultValue false
    */
   alert?: boolean
-  /** False blocks Esc, the backdrop and the close button (e.g. while a request is pending). */
+  /**
+   * False blocks Esc, the backdrop and the close button (e.g. while a request is pending).
+   * @defaultValue true
+   */
   dismissible?: boolean
 }
 
@@ -133,9 +142,14 @@ export function Dialog({ size = 'md', className, children, ...props }: DialogPro
 }
 
 export type DialogHeaderProps = Omit<ComponentProps<'div'>, 'title'> & {
+  /** Heading; also names the dialog. */
   title: ReactNode
+  /** Supporting text under the title, announced with it. */
   description?: ReactNode
-  /** Top-right close button. Defaults to on, except for `alert` dialogs (answer with the footer). */
+  /**
+   * Top-right close button. On, except for `alert` dialogs (answer with the footer).
+   * @defaultValue true
+   */
   closeButton?: boolean
 }
 

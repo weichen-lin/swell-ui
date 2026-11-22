@@ -6,18 +6,35 @@ import { Checkbox } from '../checkbox'
 import { SearchInput } from '../input'
 
 export type TableColumn<T> = {
+  /** Unique column ID; also the `id` of a `TableSort`. */
   id: string
+  /** Header content. */
   header: ReactNode
+  /** Renders the cell for a row. */
   cell: (row: T) => ReactNode
+  /** Shows a sort button in the header when `sorting` is set on the table. */
   sortable?: boolean
+  /**
+   * Text alignment: `'start'`, `'center'` or `'end'`.
+   * @defaultValue 'end' for numeric columns, otherwise 'start'
+   */
   align?: 'start' | 'center' | 'end'
+  /** Right-aligns the column and uses tabular numerals. */
   numeric?: boolean
+  /** Renders the body cells as row headers (`<th scope="row">`). */
   rowHeader?: boolean
+  /** Classes for the body cells. */
   className?: string
+  /** Classes for the header cell. */
   headerClassName?: string
 }
 
-export type TableSort = { id: string; direction: 'asc' | 'desc' }
+export type TableSort = {
+  /** Column ID. */
+  id: string
+  /** Sort direction. */
+  direction: 'asc' | 'desc'
+}
 
 const labels = {
   search: 'Search rows',
@@ -39,16 +56,32 @@ const labels = {
 export type TableProps<T> = Omit<ComponentProps<'table'>, 'title' | 'children' | 'className'> & {
   /** Rows to render on the current page, in display order. */
   data: readonly T[]
+  /** Column definitions, in display order. */
   columns: readonly TableColumn<T>[]
+  /** Returns a stable, unique ID for each row; used as the React key and for selection. */
   getRowId: (row: T) => string
+  /** Toolbar title; also names the table unless `aria-label` or `aria-labelledby` is set. */
   title?: ReactNode
+  /**
+   * Shown instead of the table when there is no data and no active filter.
+   * @defaultValue 'No rows yet'
+   */
   emptyState?: ReactNode
+  /**
+   * Shown inside the table when a search or filter leaves no rows.
+   * @defaultValue 'No matching rows'
+   */
   noResults?: ReactNode
-  /** Indicates filtering when the caller applies filters outside the search field. */
+  /**
+   * Indicates filtering when the caller applies filters outside the search field.
+   * @defaultValue false
+   */
   filtered?: boolean
-  /** Controlled UI. The caller supplies the resulting data. */
+  /** Shows a search field in the toolbar. The caller filters `data`. */
   search?: { value: string; onChange: (value: string) => void }
+  /** Enables sort buttons on columns marked `sortable`. The caller sorts `data`. */
   sorting?: { value: TableSort | null; onChange: (value: TableSort | null) => void }
+  /** Shows a pagination footer. The caller passes only the current page as `data`. */
   pagination?: {
     /** Zero-based page index. */
     pageIndex: number
@@ -56,6 +89,7 @@ export type TableProps<T> = Omit<ComponentProps<'table'>, 'title' | 'children' |
     rowCount: number
     onPageChange: (pageIndex: number) => void
   }
+  /** Adds row checkboxes and a select-all-on-page checkbox. Selection can span pages. */
   selection?: {
     ids: ReadonlySet<string>
     onChange: (ids: Set<string>) => void
@@ -63,7 +97,13 @@ export type TableProps<T> = Omit<ComponentProps<'table'>, 'title' | 'children' |
   }
   /** Root element classes. Use `tableClassName` for column layout or minimum width. */
   className?: string
+  /** Classes for the `<table>` element; use for column layout or a minimum width. */
   tableClassName?: string
+  /**
+   * Overrides built-in text: `search`, `clearSelection`, `selectPage`, `selectRow`, `selectionCount`,
+   * `scrollRegion`, `pagination`, `previousPage`, `nextPage`, `page`, `range`, `emptyState`, `noResults`.
+   * @defaultValue English text
+   */
   labels?: Partial<typeof labels>
 }
 

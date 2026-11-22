@@ -47,14 +47,34 @@ const partId = (baseId: string, part: 'tab' | 'panel', value: string) =>
 
 // A tablist needs a name (APG); one of the two is required
 type TabsLabel =
-  | { 'aria-label': string; 'aria-labelledby'?: never }
-  | { 'aria-labelledby': string; 'aria-label'?: never }
+  | {
+      /** Names the tablist. Pass this or `aria-labelledby`. */
+      'aria-label': string
+      'aria-labelledby'?: never
+    }
+  | {
+      /** Id of the element that names the tablist. Pass this or `aria-label`. */
+      'aria-labelledby': string
+      'aria-label'?: never
+    }
 
 // `value` set means controlled. Uncontrolled needs `defaultValue`: with nothing selected no tab
 // would hold tabIndex=0 and the list would be unreachable by keyboard.
 type TabsState =
-  | { value: string; defaultValue?: never; onValueChange?: (value: string) => void }
-  | { value?: never; defaultValue: string; onValueChange?: (value: string) => void }
+  | {
+      /** Selected tab's `value` (controlled). Pair it with `onValueChange`. */
+      value: string
+      defaultValue?: never
+      /** Called with the new tab's `value` when the selection changes. */
+      onValueChange?: (value: string) => void
+    }
+  | {
+      value?: never
+      /** Initially selected tab's `value` when uncontrolled. */
+      defaultValue: string
+      /** Called with the new tab's `value` when the selection changes. */
+      onValueChange?: (value: string) => void
+    }
 
 export type TabsProps = Omit<
   ComponentProps<'div'>,
@@ -65,9 +85,18 @@ export type TabsProps = Omit<
     /**
      * `automatic` (default): arrow keys select as they move, for panels that show instantly.
      * `manual`: arrows only move focus, Enter/Space selects; use it when a panel loads data.
+     * @defaultValue 'automatic'
      */
     activationMode?: TabsActivationMode
+    /**
+     * Visual style: `'line'` underlines the selected tab; `'segmented'` puts it on a raised knob.
+     * @defaultValue 'line'
+     */
     variant?: TabsVariant
+    /**
+     * Tab size: `'sm' | 'md'`.
+     * @defaultValue 'md'
+     */
     size?: TabsSize
   }
 
@@ -187,6 +216,7 @@ export function TabList({
 
 export type TabProps = Omit<ComponentProps<'button'>, 'value' | 'role' | 'type' | 'children'> &
   TabContentProps & {
+    /** Identifies the tab and pairs it with the `TabPanel` of the same `value`. */
     value: string
   }
 
@@ -242,8 +272,12 @@ export function Tab({
 }
 
 export type TabPanelProps = Omit<ComponentProps<'div'>, 'role' | 'hidden'> & {
+  /** The `value` of the tab that shows this panel. */
   value: string
-  /** Keep the panel (and its state) mounted while hidden; by default only the selected panel renders. */
+  /**
+   * Keep the panel (and its state) mounted while hidden; by default only the selected panel renders.
+   * @defaultValue false
+   */
   keepMounted?: boolean
 }
 

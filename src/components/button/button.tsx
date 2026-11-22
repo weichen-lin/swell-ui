@@ -62,6 +62,12 @@ const buttonVariants = cva(
   ],
   {
     variants: {
+      /**
+       * Visual weight: `primary` for the one main action, `secondary` as the workhorse, `surface` a
+       * borderless raised fill, `dark` strong emphasis without the brand color, `ghost` no chrome
+       * until hover (toolbars, table rows).
+       * @defaultValue 'primary'
+       */
       intent: {
         // Brand color: the one primary call to action
         primary: [
@@ -87,6 +93,10 @@ const buttonVariants = cva(
         ghost:
           'bg-transparent text-fg rounded-control border-transparent hover:not-aria-disabled:bg-surface-muted data-pressed:not-aria-disabled:bg-surface-inset',
       },
+      /**
+       * Height and text size; heights (34 / 38 / 42px) match the text fields'.
+       * @defaultValue 'md'
+       */
       size: {
         // Supabase-like scale: compact height, 14px text. Heights include the 1px border and match
         // Field's (34/38/42) via the --spacing-control-* tokens; padding is 1px under the 12/16/20 rhythm to absorb the border.
@@ -94,7 +104,15 @@ const buttonVariants = cva(
         md: 'h-control-md text-sm [--btn-p:--spacing(3.75)]',
         lg: 'h-control-lg text-base [--btn-p:--spacing(4.75)]',
       },
+      /**
+       * `danger` recolors any intent for destructive actions.
+       * @defaultValue 'default'
+       */
       tone: { default: '', danger: '' },
+      /**
+       * Stretches to the container's width. Not available on icon-only buttons.
+       * @defaultValue false
+       */
       fullWidth: { true: 'w-full', false: '' },
       // Icon-only: width follows the size's height
       square: { true: 'aspect-square', false: '' },
@@ -268,13 +286,22 @@ type BaseProps = Omit<ComponentProps<'button'>, 'children'> &
      * buttons automatically; a `className` padding override is not tracked.
      */
     hang?: 'start' | 'end' | 'both'
-    /** Shows a spinner, keeps width and focus, blocks activation. */
+    /**
+     * Shows a spinner, keeps width and focus, blocks activation.
+     * @defaultValue false
+     */
     loading?: boolean
-    /** Announced through a polite live region while loading. */
+    /**
+     * Announced through a polite live region while loading.
+     * @defaultValue 'Loading'
+     */
     loadingText?: string
     /** Tooltip explaining why the button is disabled; shown on hover and keyboard focus. */
     disabledReason?: string
-    /** Material-style press ripple; on by default. */
+    /**
+     * Material-style press ripple.
+     * @defaultValue true
+     */
     ripple?: boolean
   }
 
@@ -288,12 +315,19 @@ type AsChildProps = {
   children: ReactElement
   loading?: never
   loadingText?: never
+  /**
+   * `button` unless set, so a Button inside a form never submits it by accident. Not available
+   * with `asChild`.
+   * @defaultValue 'button'
+   */
   type?: never
 }
 
 type TextButtonProps = BaseProps & {
   icon?: never
+  /** Icon before the label; hidden from assistive tech, trims the padding on its side. */
   iconLeft?: ReactNode
+  /** Icon after the label; hidden from assistive tech, trims the padding on its side. */
   iconRight?: ReactNode
   tooltip?: never
   tooltipSide?: never
@@ -304,8 +338,12 @@ type IconOnlyButtonProps = Omit<BaseProps, 'aria-label' | 'fullWidth'> & {
   icon: NonNullable<ReactNode>
   /** Required: an icon has no text to name the button. */
   'aria-label': string
-  /** Show the label as a tooltip on hover/focus. */
+  /**
+   * Show the label as a tooltip on hover/focus.
+   * @defaultValue true
+   */
   tooltip?: boolean
+  /** Side of the label tooltip. */
   tooltipSide?: TooltipProps['side']
   fullWidth?: never
   iconLeft?: never

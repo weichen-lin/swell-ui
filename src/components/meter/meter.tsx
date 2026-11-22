@@ -4,9 +4,17 @@ import type { BadgeTone } from '../badge'
 
 export type MeterTone = BadgeTone
 
-export type MeterSegment = { label: string; value: number; tone: MeterTone }
+export type MeterSegment = {
+  /** Legend text. Must be unique: it is the React key. */
+  label: string
+  /** Size of the segment: its weight against the sum of all values. */
+  value: number
+  /** Color of the segment and its legend swatch: neutral, info, success, warning or danger. */
+  tone: MeterTone
+}
 
 export type MeterProps = Omit<ComponentProps<'div'>, 'children'> & {
+  /** Label of the meter; it also names the legend list. */
   label: ReactNode
   /** Short trailing text on the label row, e.g. "9 of 13 report health". */
   summary?: ReactNode

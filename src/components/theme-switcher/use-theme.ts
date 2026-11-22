@@ -3,7 +3,10 @@ import { useEffect, useState } from 'react'
 export type Theme = 'system' | 'light' | 'dark'
 
 export type UseThemeOptions = {
-  /** localStorage key the choice is saved under. */
+  /**
+   * localStorage key the choice is saved under.
+   * @defaultValue 'swell-ui-theme'
+   */
   storageKey?: string
 }
 

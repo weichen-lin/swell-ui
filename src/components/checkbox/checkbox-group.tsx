@@ -14,6 +14,10 @@ export type CheckboxGroupProps = Omit<ComponentProps<'fieldset'>, 'children'> & 
    * validate in your submit handler and pass the message here.
    */
   error?: ReactNode
+  /**
+   * Layout of the rows.
+   * @defaultValue 'vertical'
+   */
   orientation?: 'vertical' | 'horizontal'
   /** Checkbox (or Switch) rows; each keeps its own name/checked. `disabled` reaches them natively. */
   children: ReactNode

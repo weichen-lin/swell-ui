@@ -18,6 +18,7 @@ export type CheckboxProps = NativeCheckboxProps &
      * Partly selected (a "select all" over some rows): drawn as a dash, announced as mixed.
      * A visual state only; the form still submits `checked`. The browser clears it on click, so
      * derive it from the children's state and it stays right after every change.
+     * @defaultValue false
      */
     indeterminate?: boolean
     /** Classes for the `<input>`; `className` goes to the row. */
