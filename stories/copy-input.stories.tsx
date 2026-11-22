@@ -1,5 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { CopyInput } from '../src/components/input'
+import { CopyInput, type CopyInputProps } from '../src/components/input'
+
+// Stories use the visible-label form: Storybook's arg inference collapses the label/aria-label union
+type StoryArgs = Extract<CopyInputProps, { label: string }>
 
 const sizes = ['sm', 'md', 'lg'] as const
 
@@ -33,10 +36,10 @@ const meta = {
     mono: { control: 'boolean' },
     disabled: { control: 'boolean' },
   },
-} satisfies Meta<typeof CopyInput>
+} satisfies Meta<StoryArgs>
 
 export default meta
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<Meta<StoryArgs>>
 
 export const Playground: Story = {}
 

@@ -66,3 +66,37 @@ test('CopyInput requires a string value', () => {
   // @ts-expect-error value is required
   render(<CopyInput label="Image" />)
 })
+
+test('takes localized labels for the button and announcements', async () => {
+  writeText.mockResolvedValue(undefined)
+  const { container, rerender } = render(
+    <CopyInput
+      label="映像檔"
+      value={SHA}
+      copyLabel="複製"
+      copiedLabel="已複製"
+      copyFailedLabel="複製失敗"
+    />,
+  )
+  await act(async () => {
+    fireEvent.click(screen.getByRole('button', { name: '複製' }))
+  })
+  expect(live(container)).toHaveTextContent('已複製')
+
+  writeText.mockRejectedValue(new Error('denied'))
+  rerender(<CopyInput label="映像檔" value={SHA} copyLabel="複製" copyFailedLabel="複製失敗" />)
+  await act(async () => {
+    fireEvent.click(screen.getByRole('button', { name: '複製' }))
+  })
+  expect(live(container)).toHaveTextContent('複製失敗')
+})
+
+test('CopyInput takes a visible label or only an aria-label', () => {
+  render(<CopyInput aria-label="Commit SHA" value={SHA} />)
+  expect(screen.getByRole('textbox', { name: 'Commit SHA' })).toHaveValue(SHA)
+  render(<CopyInput label="Image" floating value={SHA} />)
+  // @ts-expect-error needs label or aria-label
+  render(<CopyInput value={SHA} />)
+  // @ts-expect-error floating needs a visible label
+  render(<CopyInput aria-label="Commit SHA" floating value={SHA} />)
+})
