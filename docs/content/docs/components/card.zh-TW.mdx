@@ -1,0 +1,141 @@
+---
+title: 卡片 Card
+description: 有邊框的表面，用來容納一組相關內容。
+---
+
+<ComponentPreview name="card-demo" />
+
+<WhenToUse
+  use={[
+    '把相關內容收在同一個標題下。',
+    '放一份要貼齊卡片邊緣的清單或表格。',
+    '用 `as="section"` 或 `as="article"` 做出有名稱的頁面區塊。',
+  ]}
+  alternatives={[
+    { name: 'Alert', href: '/components/alert', when: '狀態訊息，而不是一組內容。' },
+    {
+      name: 'Accordion',
+      href: '/components/accordion',
+      when: '讀者可以收合的區段。',
+    },
+    { name: 'Dialog', href: '/components/dialog', when: '會佔滿畫面的內容。' },
+  ]}
+/>
+
+## 安裝
+
+```tsx
+import { Card, CardContent, CardHeader } from '@weichenlin/swell-ui'
+```
+
+CSS 包含在 `styles.css` 裡，在 Tailwind 之後引入一次即可（見[安裝](/installation)）：
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
+## 用法
+
+Card 本身沒有內距，由 `CardHeader` 與 `CardContent` 提供，所以清單與表格可以貼齊卡片邊緣。
+
+```tsx
+import { Card, CardContent, CardHeader } from '@weichenlin/swell-ui'
+
+export function Example() {
+  return (
+    <Card as="section">
+      <CardHeader title="Resources" description="Managed in shop-prod" />
+      <CardContent>Any content goes here.</CardContent>
+    </Card>
+  )
+}
+```
+
+## 範例
+
+### 標題列動作
+
+`action` 會放在標題列的尾端。
+
+<ComponentPreview name="card-action" />
+
+### 滿版清單
+
+在 `CardContent` 設定 `p-0`，讓清單貼齊卡片邊緣。
+
+<ComponentPreview name="card-full-bleed" />
+
+## API
+
+每個部件都另外接受標準的 `div` props。
+
+### Card
+
+<AutoTypeTable path="src/components/card/card.tsx" name="CardProps" />
+
+### CardHeader
+
+用下列 props 取代 `children`。
+
+<AutoTypeTable path="src/components/card/card.tsx" name="CardHeaderProps" />
+
+### CardContent
+
+有內距的內容區。只接受標準的 `div` props，沒有自己的 props。
+
+## 狀態
+
+卡片是靜態的，沒有滑鼠移入、按下或聚焦狀態。
+
+<StatesTable
+  rows={[
+    {
+      state: '具名區塊',
+      attribute: 'aria-labelledby',
+      notes:
+        '設在有 `CardHeader` 的 `section` 或 `article` 卡片上，指向標題。`div`、沒有標題列、或已設定 `aria-label` 時不會設。',
+    },
+    { state: '根元素', attribute: 'data-slot="card"', notes: '在卡片元素上。' },
+    { state: '標題列', attribute: 'data-slot="card-header"', notes: '在標題列上。' },
+    {
+      state: '內容',
+      attribute: 'data-slot="card-content"',
+      notes: '在內容區上；緊接在標題列後時，上方內距會縮小。',
+    },
+  ]}
+/>
+
+## 鍵盤操作
+
+卡片不可聚焦，也不接收按鍵。放在裡面的控制項（例如 `action` 連結）沿用各自的按鍵。
+
+## 無障礙
+
+- 使用 `as="section"` 或 `as="article"` 時，卡片是以 `CardHeader` 標題命名的區塊。
+- 卡片上明確設定的 `aria-label` 優先於標題。
+- `div` 卡片不會被命名，沒有標題列的卡片也不會設定 `aria-labelledby`。
+- 標題是 heading 元素：預設 `h2`，傳 `headingLevel={3}` 則是 `h3`。請依頁面大綱選擇層級。
+
+## 主題
+
+把上方任一預覽切到 **Flat**，就能看到 `themes/flat.css` 的效果：卡片邊框變成清楚可見的線條，`--radius-surface` 從 12px 變 8px。卡片沒有用到陰影。
+
+<TokenList
+  tokens={[
+    { name: '--color-surface', description: '卡片底色。' },
+    { name: '--color-border-strong', description: '卡片邊框。' },
+    { name: '--radius-surface', description: '圓角。' },
+    { name: '--color-fg-muted', description: '標題列的說明文字。' },
+  ]}
+/>
+
+## 相關元件
+
+<Related
+  items={[
+    { title: 'Table', href: '/components/table', description: '可貼齊卡片邊緣的資料表格。' },
+    { title: 'Badge', href: '/components/badge', description: '卡片內的狀態標籤。' },
+    { title: 'Alert', href: '/components/alert', description: '用狀態訊息取代內容群組。' },
+  ]}
+/>

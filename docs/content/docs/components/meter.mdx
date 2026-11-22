@@ -1,9 +1,41 @@
 ---
 title: Meter
-description: A stacked proportion bar with a legend for counts that add up to a whole.
+description: A stacked proportion bar with a legend, for counts that add up to a whole.
 ---
 
 <ComponentPreview name="meter-demo" />
+
+<WhenToUse
+  use={[
+    'Show how a total splits into a few states: healthy, degraded, missing.',
+    'A compact summary above a table or inside a card.',
+  ]}
+  alternatives={[
+    {
+      name: 'Badge',
+      href: '/components/badge',
+      when: 'a single status rather than a distribution.',
+    },
+    {
+      name: 'Table',
+      href: '/components/table',
+      when: 'exact values for each item.',
+    },
+  ]}
+/>
+
+## Installation
+
+```tsx
+import { Meter } from '@weichenlin/swell-ui'
+```
+
+The CSS comes with `styles.css`, imported once after Tailwind (see [Installation](/installation)):
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
 
 ## Usage
 
@@ -32,33 +64,106 @@ export function Example() {
 
 ### Small segment
 
-One small segment still shows: segments have a 4px minimum.
+One small segment still shows: segments have a 4px minimum width.
 
 <ComponentPreview name="meter-sliver" />
 
 ### Empty
 
+With no segments, or only zeros, you get the empty track and no legend.
+
 <ComponentPreview name="meter-empty" />
 
 ## API
 
-`Meter` also accepts the standard `div` props except `children`.
+Own props only; every other `<div>` attribute passes through to the root.
 
-| Prop       | Type             | Default | Description                                                              |
-| ---------- | ---------------- | ------- | ------------------------------------------------------------------------ |
-| `label`    | `ReactNode`      | -       | Label of the meter (required).                                           |
-| `summary`  | `ReactNode`      | -       | Short trailing text on the label row, e.g. "9 of 13 report health".      |
-| `segments` | `MeterSegment[]` | -       | Drawn in order; zero values are left out of both the bar and the legend. |
+### Meter
+
+<AutoTypeTable path="src/components/meter/meter.tsx" name="MeterProps" />
 
 ### MeterSegment
 
-| Field   | Type                                                        | Description                       |
-| ------- | ----------------------------------------------------------- | --------------------------------- |
-| `label` | `string`                                                    | Legend text. Must be unique.      |
-| `value` | `number`                                                    | Size of the segment (its weight). |
-| `tone`  | `'neutral' \| 'info' \| 'success' \| 'warning' \| 'danger'` | Color of the segment.             |
+<AutoTypeTable path="src/components/meter/meter.tsx" name="MeterSegment" />
+
+## States
+
+<StatesTable
+  rows={[
+    {
+      state: 'Segment',
+      attribute: 'style="flex: <value>"',
+      notes:
+        'Widths follow the values as weights, in order. A segment with a value of 0 or less is left out of the bar and the legend.',
+    },
+    {
+      state: 'Empty',
+      attribute: 'no <ul>',
+      notes: 'With nothing to show, only the track and the label row render.',
+    },
+    {
+      state: 'Bar',
+      attribute: 'aria-hidden="true"',
+      notes: 'Decorative; the legend carries the numbers.',
+    },
+    {
+      state: 'Legend',
+      attribute: 'aria-labelledby',
+      notes: 'On the `<ul>`, pointing at the `label`.',
+    },
+    {
+      state: 'Root',
+      attribute: 'data-slot="meter"',
+      notes: 'On the root `div`, for styling from a parent.',
+    },
+  ]}
+/>
+
+## Keyboard
+
+Meter is not interactive and takes no focus, so it has no keyboard behavior.
 
 ## Accessibility
 
-The bar is decorative. The legend list, labelled by `label`, carries the numbers for assistive
-tech, so nothing is conveyed by color alone.
+- The bar is decorative (`aria-hidden`). The legend is a list named by `label`, with each value and label as a list item, so nothing is conveyed by color alone.
+- Meter is not a `role="meter"` or `progressbar` and has no minimum or maximum. It describes a split, not progress toward a goal.
+- Segment `label` doubles as the React key, so it must be unique.
+- `summary` is plain text on the label row; put the figure people care about there.
+
+## Theming
+
+`themes/flat.css` changes nothing in Meter: it uses no shadow and no theme radius.
+
+<TokenList
+  tokens={[
+    { name: '--color-surface-muted', description: 'Empty track behind the segments.' },
+    {
+      name: '--color-neutral-border',
+      description: '`neutral` segment and swatch; a neutral fill that recedes.',
+    },
+    { name: '--color-info', description: '`info` segment and swatch.' },
+    { name: '--color-success', description: '`success` segment and swatch.' },
+    { name: '--color-warning', description: '`warning` segment and swatch.' },
+    { name: '--color-danger', description: '`danger` segment and swatch.' },
+    { name: '--color-fg', description: 'Legend values.' },
+    { name: '--color-fg-muted', description: 'Legend labels and `summary`.' },
+  ]}
+/>
+
+## Related
+
+<Related
+  items={[
+    {
+      title: 'Badge',
+      href: '/components/badge',
+      description: 'A single status; shares the tone names.',
+    },
+    {
+      title: 'Card',
+      href: '/components/card',
+      description: 'A container for a Meter and its context.',
+    },
+    { title: 'Table', href: '/components/table', description: 'Exact values for each item.' },
+  ]}
+/>

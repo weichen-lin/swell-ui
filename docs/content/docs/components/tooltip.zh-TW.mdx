@@ -1,0 +1,176 @@
+---
+title: 工具提示 Tooltip
+description: 包在任何元素外面的簡短提示，滑鼠移入與鍵盤聚焦時開啟。
+---
+
+<ComponentPreview name="tooltip-demo" />
+
+<WhenToUse
+  use={[
+    '為沒有空間放文字的控制項命名或說明。',
+    '說明控制項為什麼停用。',
+    '補充非必要的細節，例如時間戳記。',
+  ]}
+  alternatives={[
+    {
+      name: 'Dialog',
+      href: '/components/dialog',
+      when: '使用者一定要讀到的內容，或內容裡有連結與按鈕。',
+    },
+    {
+      name: 'Alert',
+      href: '/components/alert',
+      when: '必須一直顯示的訊息。',
+    },
+    {
+      name: 'DropdownMenu',
+      href: '/components/dropdown-menu',
+      when: '收在觸發按鈕後面的動作清單。',
+    },
+  ]}
+/>
+
+## 安裝
+
+```tsx
+import { Tooltip } from '@weichenlin/swell-ui'
+```
+
+CSS 包含在 `styles.css` 裡，在 Tailwind 之後引入一次即可（見[安裝](/installation)）：
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
+## 用法
+
+```tsx
+import { Button, Tooltip } from '@weichenlin/swell-ui'
+
+export function Example() {
+  return (
+    <Tooltip content="Pull the latest manifests from Git">
+      <Button intent="secondary">Sync</Button>
+    </Tooltip>
+  )
+}
+```
+
+[Button](/components/button) 已經用 tooltip 顯示自己的名稱（純圖示按鈕的 `aria-label`）與 `disabledReason`。其他觸發元素才需要直接使用 `Tooltip`。
+
+## 範例
+
+### 方向
+
+偏好的方向放不下時，tooltip 會翻到相反的一側。
+
+<ComponentPreview name="tooltip-sides" />
+
+### 非互動式的觸發元素
+
+非互動式的觸發元素需要 `tabIndex`，鍵盤使用者才能聚焦到它。
+
+<ComponentPreview name="tooltip-badge" />
+
+### 停用的按鈕
+
+`aria-disabled` 的按鈕仍能接收滑鼠移入與聚焦，所以原因一直讀得到。
+
+<ComponentPreview name="tooltip-disabled" />
+
+## API
+
+`Tooltip` 會用一個 `<span>` 包住子元素，由它作為 tooltip 的定位基準，並接收指標與聚焦事件。
+
+<AutoTypeTable path="src/components/tooltip.tsx" name="TooltipProps" />
+
+## 狀態
+
+<StatesTable
+  rows={[
+    {
+      state: '關閉',
+      attribute: 'hidden',
+      notes: '關閉時 tooltip 仍留在 DOM 裡，所以 `aria-describedby` 一定找得到目標。',
+    },
+    {
+      state: '滑鼠移入時開啟',
+      attribute: 'role="tooltip"',
+      notes: '指標進入 300ms 後開啟。指標離開或按下時關閉。指標停在 tooltip 上時會保持開啟。',
+    },
+    {
+      state: '聚焦時開啟',
+      attribute: ':focus-visible',
+      notes: '立即開啟，但只限鍵盤聚焦；用滑鼠點擊不會開啟。失焦時關閉。',
+    },
+    {
+      state: '位置',
+      attribute: 'data-side',
+      notes: '最後實際出現的方向（翻轉之後）。與視窗邊緣至少保持 8px。',
+    },
+    {
+      state: '附帶描述的觸發元素',
+      attribute: 'aria-describedby',
+      notes: '有 `content` 且 `describe` 開啟時，加到觸發元素上，並與它原有的值合併。',
+    },
+    {
+      state: '僅作名稱',
+      attribute: 'aria-hidden="true"',
+      notes: '`describe={false}` 時加在 tooltip 上，因為它只是重複觸發元素的名稱。',
+    },
+  ]}
+/>
+
+## 鍵盤操作
+
+<KeyboardTable
+  rows={[
+    {
+      keys: ['Tab', 'Shift+Tab'],
+      action: '聚焦到觸發元素時立即開啟 tooltip；焦點移開時關閉。',
+    },
+    { keys: 'Esc', action: '關閉開啟中的 tooltip，焦點維持在原處。' },
+  ]}
+/>
+
+## 無障礙
+
+- tooltip 的角色是 `role="tooltip"`，觸發元素用 `aria-describedby` 指向它，內容會作為觸發元素的描述被朗讀。
+- 當 tooltip 只是重複觸發元素的無障礙名稱（例如純圖示按鈕的標籤）時，把 `describe` 關掉。
+- 鍵盤使用者也看得到 tooltip：它在 `:focus-visible` 時開啟，按 Esc 關閉。
+- tooltip 本身不可聚焦，所以不要在裡面放按鈕或連結。
+- 非互動式的觸發元素需要 `tabIndex={0}` 才聚焦得到。
+- 事件綁在外層的 wrapper 上，所以 `aria-disabled` 的觸發元素也能開啟。
+- 沒有 `content` 時，不會渲染任何東西，也不會加 `aria-describedby`。
+- tooltip 以固定定位 portal 到 `<body>`，所以表格、抽屜等捲動容器不會裁掉它，且會跟著捲動與視窗大小調整位置。
+- 在伺服器端只會渲染觸發元素；tooltip 在 hydration 之後才出現。
+- 開啟 `prefers-reduced-motion: reduce` 時不播放轉場動畫。
+
+## 主題
+
+上方預覽的 Flat 切換碰不到 tooltip，因為它會 portal 到 `<body>`。要看效果，請在你的 app 引入 `themes/flat.css`：它會移除 `--shadow-whisper`、把 `--radius-item` 縮到 4px，並加深 `--color-border-strong`。
+
+<TokenList
+  tokens={[
+    { name: '--color-inverse', description: 'tooltip 的底色。' },
+    { name: '--color-inverse-fg', description: 'tooltip 的文字。' },
+    { name: '--color-border-strong', description: 'tooltip 的邊框。' },
+    { name: '--shadow-whisper', description: 'tooltip 的柔和陰影。' },
+    { name: '--radius-item', description: 'tooltip 的圓角。' },
+  ]}
+/>
+
+## 相關元件
+
+<Related
+  items={[
+    {
+      title: 'Button',
+      href: '/components/button',
+      description: '純圖示按鈕的名稱與 disabledReason 都用 tooltip 顯示。',
+    },
+    { title: 'Dialog', href: '/components/dialog', description: '一定要讀到的內容。' },
+    { title: 'Badge', href: '/components/badge', description: '常見的非互動式觸發元素。' },
+  ]}
+/>

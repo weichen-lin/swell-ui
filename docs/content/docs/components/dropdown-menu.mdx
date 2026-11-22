@@ -1,9 +1,52 @@
 ---
 title: Dropdown Menu
-description: A single-level action menu that opens from a trigger.
+description: Opens a single-level list of actions from a trigger.
 ---
 
 <ComponentPreview name="dropdown-menu-demo" />
+
+<WhenToUse
+  use={[
+    'Gather several related actions behind one trigger: row actions, an account menu.',
+    'Mark a destructive action with `tone="danger"`.',
+    'Items that are links, through `asChild`.',
+  ]}
+  alternatives={[
+    {
+      name: 'Button',
+      href: '/components/button',
+      when: 'one primary action that should always be visible.',
+    },
+    {
+      name: 'Select',
+      href: '/components/select',
+      when: 'choosing a value to store, not running an action.',
+    },
+    {
+      name: 'Combobox',
+      href: '/components/combobox',
+      when: 'choosing from a long list you need to search.',
+    },
+  ]}
+/>
+
+## Installation
+
+```tsx
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@weichenlin/swell-ui'
+```
+
+The CSS comes with `styles.css`, imported once after Tailwind (see [Installation](/installation)):
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
 
 ## Usage
 
@@ -30,13 +73,13 @@ export function Example() {
 }
 ```
 
-Compose `DropdownMenu`, `DropdownMenuTrigger`, `DropdownMenuContent` and `DropdownMenuItem`. Use
-`asChild` to render the trigger or an item as your own element, such as a `Button` or a router
-link.
+Put a `DropdownMenuTrigger` and a `DropdownMenuContent` inside `DropdownMenu`. Use `asChild` to render the trigger or an item as your own element, such as a `Button` or a router link. The menu is a single level: there are no submenus, checkbox or radio items.
 
 ## Examples
 
 ### Groups, labels and disabled items
+
+Name a group with `aria-label`: `DropdownMenuLabel` is visual text only.
 
 <ComponentPreview name="dropdown-menu-groups" />
 
@@ -50,58 +93,186 @@ Call `event.preventDefault()` in `onSelect` to keep the menu open.
 
 <ComponentPreview name="dropdown-menu-position" />
 
+### Link items
+
+`asChild` renders your `<a>` or router `Link` as the item; choosing it still closes the menu.
+
+<ComponentPreview name="dropdown-menu-link" />
+
 ## API
 
 ### DropdownMenu
 
-| Prop           | Type                                                        | Default | Description                                                                                                         |
-| -------------- | ----------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------- |
-| `open`         | `boolean`                                                   | -       | Controlled open state.                                                                                              |
-| `defaultOpen`  | `boolean`                                                   | `false` | Initial open state when uncontrolled.                                                                               |
-| `onOpenChange` | `(open: boolean, reason: DropdownMenuChangeReason) => void` | -       | Called when the menu opens or closes. `reason` is `'trigger'`, `'item-select'`, `'escape'`, `'outside'` or `'tab'`. |
+<AutoTypeTable path="src/components/dropdown-menu/dropdown-menu.tsx" name="DropdownMenuProps" />
 
 ### DropdownMenuTrigger
 
-Renders a `<button>` and accepts its props.
+Renders a `<button>`; every other button attribute passes through. A disabled trigger uses `aria-disabled` and stays focusable.
 
-| Prop      | Type      | Default | Description                                                      |
-| --------- | --------- | ------- | ---------------------------------------------------------------- |
-| `asChild` | `boolean` | `false` | Render the child element as the trigger instead of a `<button>`. |
+<AutoTypeTable
+  path="src/components/dropdown-menu/dropdown-menu.tsx"
+  name="DropdownMenuTriggerProps"
+  keep={['disabled']}
+/>
 
 ### DropdownMenuContent
 
-Renders the menu panel and accepts `<div>` props.
+Renders the menu panel; every other `<div>` attribute passes through. Pass `aria-label` to name the menu when the trigger's text is not enough.
 
-| Prop         | Type                                     | Default    | Description                                                         |
-| ------------ | ---------------------------------------- | ---------- | ------------------------------------------------------------------- |
-| `side`       | `'top' \| 'bottom' \| 'left' \| 'right'` | `'bottom'` | Preferred side of the trigger. Flips when there is not enough room. |
-| `align`      | `'start' \| 'center' \| 'end'`           | `'end'`    | Alignment against the trigger.                                      |
-| `sideOffset` | `number`                                 | `6`        | Gap to the trigger in pixels.                                       |
+<AutoTypeTable
+  path="src/components/dropdown-menu/dropdown-menu.tsx"
+  name="DropdownMenuContentProps"
+/>
 
 ### DropdownMenuItem
 
-Renders a `<button role="menuitem">` and accepts its props, except `onSelect`.
+Renders a `<button role="menuitem">`; every other button attribute passes through.
 
-| Prop        | Type                     | Default     | Description                                                                              |
-| ----------- | ------------------------ | ----------- | ---------------------------------------------------------------------------------------- |
-| `asChild`   | `boolean`                | `false`     | Render the child element (for example a link) as the item.                               |
-| `iconLeft`  | `ReactNode`              | -           | Decorative leading icon.                                                                 |
-| `tone`      | `'default' \| 'danger'`  | `'default'` | Visual tone for destructive actions.                                                     |
-| `textValue` | `string`                 | -           | Text used by typeahead when it differs from the content.                                 |
-| `disabled`  | `boolean`                | -           | Disabled items stay focusable but cannot be activated.                                   |
-| `onSelect`  | `(event: Event) => void` | -           | Runs for pointer and keyboard activation. Call `preventDefault()` to keep the menu open. |
+<AutoTypeTable
+  path="src/components/dropdown-menu/dropdown-menu.tsx"
+  name="DropdownMenuItemProps"
+  keep={['disabled']}
+/>
 
 ### DropdownMenuGroup, DropdownMenuLabel, DropdownMenuSeparator
 
-`DropdownMenuGroup` (`role="group"`) and `DropdownMenuLabel` accept `<div>` props;
-`DropdownMenuSeparator` accepts `<hr>` props.
+These have no props of their own. `DropdownMenuGroup` (`role="group"`) and `DropdownMenuLabel` take `<div>` attributes; `DropdownMenuSeparator` takes `<hr>` attributes.
+
+## States
+
+<StatesTable
+  rows={[
+    {
+      state: 'Open',
+      attribute: 'aria-expanded="true"',
+      notes: 'On the trigger, with `data-state="open"` and `aria-controls` pointing at the menu.',
+    },
+    {
+      state: 'Item focused',
+      attribute: ':focus',
+      notes:
+        'Fills with `--color-popover-highlight`. The pointer moving over an item focuses it, so hover and keyboard share one highlight.',
+    },
+    {
+      state: 'Focus ring',
+      attribute: ':focus-visible',
+      notes: '2px `--color-focus` outline, drawn inside the item.',
+    },
+    {
+      state: 'Disabled item',
+      attribute: 'aria-disabled="true"',
+      notes: '50% opacity. Stays focusable; click, keys and a child link are blocked.',
+    },
+    {
+      state: 'Disabled trigger',
+      attribute: 'aria-disabled="true"',
+      notes:
+        'Set from `disabled`, instead of native `disabled` on the `<button>`: it stays focusable and will not open.',
+    },
+    {
+      state: 'Danger tone',
+      attribute: 'data-tone="danger"',
+      notes: 'Danger text; focused fill uses `--color-danger-subtle-bg`.',
+    },
+    {
+      state: 'Slots',
+      attribute: 'data-slot',
+      notes:
+        '`dropdown-menu-trigger`, `dropdown-menu-content`, `dropdown-menu-item`, `dropdown-menu-group`, `dropdown-menu-label` and `dropdown-menu-separator`.',
+    },
+    {
+      state: 'Placement',
+      attribute: 'data-side',
+      notes:
+        'On the panel only where CSS anchor positioning is unavailable: the side it actually opened on.',
+    },
+  ]}
+/>
+
+## Keyboard
+
+<KeyboardTable
+  rows={[
+    {
+      keys: ['Enter', 'Space'],
+      action:
+        'On the trigger: toggles the menu and focuses the first item. On an item: activates it.',
+    },
+    {
+      keys: 'ArrowDown',
+      action:
+        'On the trigger: opens the menu on the first item. In the menu: next item, wrapping to the first.',
+    },
+    {
+      keys: 'ArrowUp',
+      action:
+        'On the trigger: opens the menu on the last item. In the menu: previous item, wrapping to the last.',
+    },
+    { keys: ['Home', 'End'], action: 'Moves to the first or last item.' },
+    {
+      keys: 'A-Z',
+      action:
+        'Typeahead: moves to the next item whose text starts with what you type; typing again within half a second extends the search.',
+    },
+    {
+      keys: 'Escape',
+      action: 'Closes the menu and returns focus to the trigger.',
+    },
+    {
+      keys: ['Tab', 'Shift+Tab'],
+      action: 'Closes the menu and moves focus to the next or previous control after the trigger.',
+    },
+  ]}
+/>
 
 ## Accessibility
 
-- Arrow Up and Arrow Down on the trigger open the menu on the first or last item.
-- Inside the menu: Arrow keys, Home and End move focus; typing a character jumps to a matching
-  item (typeahead); Escape closes and restores focus to the trigger; Tab closes the menu and moves
-  focus on.
-- Space and Enter activate the focused item.
-- The panel uses the native popover, so it stays above scroll containers, including inside a
-  dialog.
+- The trigger has `aria-haspopup="menu"` and `aria-expanded`; the panel is `role="menu"`, named by the trigger unless you pass `aria-label`, and items are `role="menuitem"`.
+- Focus moves into the menu on open and between items by arrow keys, one item at a time: items are not in the Tab order.
+- Focus returns to the trigger after Escape or choosing an item, but not after clicking outside, Tab, or when the selection moved focus elsewhere itself.
+- Disabled items and triggers keep focus and use `aria-disabled`; a link inside a disabled `asChild` item cannot be followed.
+- `iconLeft` is `aria-hidden`. Typeahead uses the item's text; set `textValue` when it differs.
+- `DropdownMenuLabel` is not wired to its group: name a group with `aria-label`.
+- The panel is a native popover, so it sits in the top layer above scroll containers, including inside a dialog. It closes on a click outside or focus moving out.
+- On touch screens items are at least 40px tall. The fade-in is skipped under `prefers-reduced-motion: reduce`.
+
+## Theming
+
+Switch a preview above to **Flat** to see `themes/flat.css`: it tightens `--radius-surface` and `--radius-control` and makes `--color-popover-border` stronger.
+
+<TokenList
+  tokens={[
+    { name: '--color-popover-bg', description: 'Panel fill.' },
+    { name: '--color-popover-border', description: 'Panel border and separator.' },
+    { name: '--color-popover-highlight', description: 'Focused item fill.' },
+    { name: '--color-fg', description: 'Item and panel text.' },
+    { name: '--color-fg-muted', description: 'Item icons and `DropdownMenuLabel` text.' },
+    { name: '--color-danger-subtle-fg', description: '`tone="danger"` text.' },
+    { name: '--color-danger-subtle-bg', description: 'Focused fill of a danger item.' },
+    { name: '--color-focus', description: 'Focus ring.' },
+    { name: '--radius-surface', description: 'Panel corner radius.' },
+    { name: '--radius-control', description: 'Item corner radius.' },
+  ]}
+/>
+
+## Related
+
+<Related
+  items={[
+    {
+      title: 'Button',
+      href: '/components/button',
+      description: 'The usual trigger, through `asChild`.',
+    },
+    {
+      title: 'Select',
+      href: '/components/select',
+      description: 'Pick a value rather than run an action.',
+    },
+    {
+      title: 'Router Links',
+      href: '/router-links',
+      description: "asChild items with your router's Link.",
+    },
+  ]}
+/>

@@ -5,6 +5,44 @@ description: An inline message that stays visible while its condition applies.
 
 <ComponentPreview name="alert-demo" />
 
+<WhenToUse
+  use={[
+    'Show a state of the page or a section for as long as it holds: sync is off, data is stale.',
+    'Report an error next to what failed, with a retry `action`.',
+    'A notice people can close, with `onDismiss`.',
+  ]}
+  alternatives={[
+    {
+      name: 'Toast',
+      href: '/components/toast',
+      when: 'the result of an action, which can fade away.',
+    },
+    {
+      name: 'Dialog',
+      href: '/components/dialog',
+      when: 'a message that must be acknowledged before going on.',
+    },
+    {
+      name: 'Badge',
+      href: '/components/badge',
+      when: 'a short status label in a row or a table.',
+    },
+  ]}
+/>
+
+## Installation
+
+```tsx
+import { Alert } from '@weichenlin/swell-ui'
+```
+
+The CSS comes with `styles.css`, imported once after Tailwind (see [Installation](/installation)):
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
 ## Usage
 
 ```tsx
@@ -23,26 +61,105 @@ export function Example() {
 
 ### Tones
 
+Neutral and info share an icon, so say what matters in the text.
+
 <ComponentPreview name="alert-tones" />
 
 ### Action and dismiss
+
+`onDismiss` shows the close button, and you decide whether the alert stays mounted.
 
 <ComponentPreview name="alert-action-dismiss" />
 
 ## API
 
-`Alert` also accepts the standard `div` props except `title`.
+Own props only; every other `<div>` attribute passes through to the root, except `title`.
 
-| Prop           | Type                                                        | Default           | Description                                                             |
-| -------------- | ----------------------------------------------------------- | ----------------- | ----------------------------------------------------------------------- |
-| `tone`         | `'neutral' \| 'info' \| 'success' \| 'warning' \| 'danger'` | `'neutral'`       | Color and icon of the alert.                                            |
-| `title`        | `ReactNode`                                                 | -                 | Heading line. `children` render as the description.                     |
-| `action`       | `ReactNode`                                                 | -                 | An action such as a retry button or a link to settings.                 |
-| `onDismiss`    | `MouseEventHandler<HTMLButtonElement>`                      | -                 | Shows the dismiss button. The caller controls whether it stays mounted. |
-| `dismissLabel` | `string`                                                    | `'Dismiss alert'` | Accessible name of the dismiss button.                                  |
+<AutoTypeTable path="src/components/alert/alert.tsx" name="AlertProps" />
 
-## Notes
+`children` render as the description, under the title.
 
-An alert is a persistent message shown next to the content it describes. It is not a live region;
-for updates that need announcing, put the message text in a live region. The caller controls
-visibility and can localize `dismissLabel`.
+## States
+
+<StatesTable
+  rows={[
+    {
+      state: 'Tone',
+      attribute: 'data-tone',
+      notes: 'Mirrors `tone`. It sets the icon and its color.',
+    },
+    {
+      state: 'Wide container',
+      attribute: '@container (width >= 28rem)',
+      notes:
+        'The action moves to its own column on the right and the dismiss button centers; below that, the action wraps under the text.',
+    },
+    {
+      state: 'Description',
+      attribute: 'data-slot="alert-description"',
+      notes: 'Muted under a title; the normal text color when there is no title.',
+    },
+    {
+      state: 'Parts',
+      attribute: 'data-slot',
+      notes:
+        '`alert` on the root, then `alert-icon`, `alert-title`, `alert-description` and `alert-action`.',
+    },
+  ]}
+/>
+
+## Keyboard
+
+<KeyboardTable
+  rows={[
+    {
+      keys: ['Tab', 'Shift+Tab'],
+      action: 'Moves between the action and the dismiss button, in that order.',
+    },
+    {
+      keys: ['Enter', 'Space'],
+      action: 'Activates the focused action or dismiss button.',
+    },
+  ]}
+/>
+
+## Accessibility
+
+- An alert has no role and is not a live region: it does not announce itself. For updates that need announcing, put the message in a live region.
+- The icon is `aria-hidden`. Tone never carries meaning alone: write it in the title or text.
+- The dismiss button is named `Dismiss alert`; pass `dismissLabel` to localize it.
+- The caller controls visibility: `onDismiss` only reports the click.
+- Long words wrap, so a narrow container does not overflow.
+- In forced colors mode the border is drawn in `CanvasText`.
+
+## Theming
+
+Switch a preview above to **Flat** to see `themes/flat.css`: it tightens `--radius-surface` to 8px. Nothing else in Alert changes.
+
+<TokenList
+  tokens={[
+    { name: '--color-ring-deep', description: 'Border.' },
+    { name: '--color-fg', description: 'Text and title.' },
+    { name: '--color-fg-muted', description: 'Description under a title, and the dismiss button.' },
+    { name: '--color-neutral', description: '`neutral` icon.' },
+    { name: '--color-info', description: '`info` icon.' },
+    { name: '--color-success', description: '`success` icon.' },
+    { name: '--color-warning', description: '`warning` icon.' },
+    { name: '--color-danger', description: '`danger` icon.' },
+    { name: '--radius-surface', description: 'Corner radius.' },
+  ]}
+/>
+
+## Related
+
+<Related
+  items={[
+    { title: 'Toast', href: '/components/toast', description: 'A message that fades away.' },
+    {
+      title: 'Button',
+      href: '/components/button',
+      description: 'The action and the dismiss button.',
+    },
+    { title: 'Badge', href: '/components/badge', description: 'A status label in a row.' },
+  ]}
+/>

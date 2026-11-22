@@ -1,0 +1,227 @@
+---
+title: 滑桿 Slider
+description: 用原生 range input 選擇數值；需要選範圍時，可用雙滑塊的 RangeSlider。
+---
+
+<ComponentPreview name="slider-demo" />
+
+<WhenToUse
+  use={[
+    '在已知範圍內挑一個數值，且大約的值就夠用：音量、亮度、品質。',
+    '同時選最小與最大值，用 `RangeSlider`：價格區間。',
+    '使用者調整後要立刻看到結果的數值，搭配 `onValueChange`。',
+  ]}
+  alternatives={[
+    { name: 'Input', href: '/components/input', when: '使用者要輸入精確的數值。' },
+    { name: 'Select', href: '/components/select', when: '從簡短的選項清單中選一項。' },
+    { name: 'Meter', href: '/components/meter', when: '顯示使用者無法設定的數值。' },
+  ]}
+/>
+
+## 安裝
+
+```tsx
+import { RangeSlider, Slider } from '@weichenlin/swell-ui'
+```
+
+CSS 包含在 `styles.css` 裡，在 Tailwind 之後引入一次即可（見[安裝](/installation)）：
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
+## 用法
+
+```tsx
+import { RangeSlider, Slider } from '@weichenlin/swell-ui'
+
+export function Example() {
+  return (
+    <>
+      <Slider label="Volume" defaultValue={40} />
+      <RangeSlider
+        label="Price range"
+        thumbLabels={['Minimum price', 'Maximum price']}
+        defaultValue={[200, 800]}
+        min={0}
+        max={1000}
+        step={50}
+      />
+    </>
+  )
+}
+```
+
+每個滑桿都需要可見的 `label`；若周圍的內容已經說明了它，也可以只給 `aria-label`。
+
+## 範例
+
+### 受控
+
+使用 `value` 與 `onValueChange`。`onValueCommit` 會在一次有變化的指標或鍵盤操作結束後執行一次。
+
+<ComponentPreview name="slider-controlled" />
+
+### 刻度標記
+
+標記只是視覺輔助；所有對齊 step 的值仍然都能選取。
+
+<ComponentPreview name="slider-marks" />
+
+### 停用與無效
+
+`error` 會取代輔助文字並把滑桿標為無效，但不會阻止調整。
+
+<ComponentPreview name="slider-states" />
+
+### RangeSlider
+
+兩個滑塊，各自有無障礙名稱與表單欄位。`minStepsBetweenThumbs` 讓兩者保持距離。
+
+<ComponentPreview name="range-slider-demo" />
+
+## API
+
+### Slider
+
+只列元件自己的 props；其他 `<div>` 屬性都會直接傳給根元素，`onChange`、`children` 與 `role` 除外。`className` 與 `ref` 指向根 `div`。
+
+<AutoTypeTable path="src/components/slider/types.ts" name="SliderProps" keep={['className']} />
+
+`label` 與 `aria-label` 二擇一：給可見的 `label`，或只給 `aria-label`。`value` 與 `defaultValue` 二擇一：只傳其中一個。省略 `defaultValue` 時為 `min`。
+
+`SliderChangeDetails` 是 `{ thumbIndex: 0 | 1; reason: 'pointer' | 'keyboard' | 'input' | 'cancel' }`。`SliderCommitDetails` 相同，但沒有 `cancel` 這個 reason。
+
+### RangeSlider
+
+接受與 `Slider` 相同的 props，但下列 props 會取代 `Slider` 中對應的項目。省略 `defaultValue` 時為 `[min, max]`。
+
+<AutoTypeTable
+  path="src/components/slider/types.ts"
+  name="RangeSliderOwnProps"
+  type={
+    "Pick<RangeSliderProps, 'value' | 'defaultValue' | 'onValueChange' | 'onValueCommit' | 'thumbLabels' | 'name' | 'minStepsBetweenThumbs'>"
+  }
+/>
+
+## 狀態
+
+<StatesTable
+  rows={[
+    {
+      state: '滑鼠移入',
+      attribute: ':hover',
+      notes: '滑塊邊框變成 `--color-input-border-hover`。停用或無效時不會。',
+    },
+    {
+      state: '聚焦',
+      attribute: ':focus-visible',
+      notes: '發生在隱藏的原生 input 上；在對應的滑塊外畫 2px 的 `--color-focus` 外框，間距 3px。',
+    },
+    {
+      state: '拖曳中',
+      attribute: 'data-dragging',
+      notes: '指標或鍵盤操作進行中時，設在根元素上。',
+    },
+    {
+      state: '作用中的滑塊',
+      attribute: 'data-active',
+      notes: '設在正在拖曳的滑塊上；加上 4px 的光暈。',
+    },
+    {
+      state: '停用',
+      attribute: 'disabled',
+      notes:
+        '每個 input 都是原生 `disabled`，停用的 fieldset 也會傳下來；滑桿變暗到 50%。根元素上有 `data-disabled`。',
+    },
+    {
+      state: '無效',
+      attribute: 'aria-invalid="true"',
+      notes: '`error` 為真值時設定。範圍條與滑塊變成 danger；根元素上有 `data-invalid`。仍可調整。',
+    },
+    {
+      state: '附描述',
+      attribute: 'aria-describedby',
+      notes: '指向輔助或錯誤文字，排在你傳入的 `aria-describedby` 之後。',
+    },
+    {
+      state: '範圍',
+      attribute: 'data-range',
+      notes: '設在 `RangeSlider` 的根元素上。',
+    },
+    {
+      state: '各部位',
+      attribute: 'data-slot="slider"',
+      notes:
+        '根元素。內部有 `slider-control`、`slider-track`、`slider-range`、`slider-thumb`、`slider-input`、`slider-marks` 與 `slider-value`。',
+    },
+  ]}
+/>
+
+## 鍵盤操作
+
+<KeyboardTable
+  rows={[
+    {
+      keys: ['Tab', 'Shift+Tab'],
+      action: '把焦點移到滑塊或移開。RangeSlider 有兩個停靠點，依序排列。',
+    },
+    {
+      keys: ['ArrowRight', 'ArrowUp'],
+      action: '數值增加一個 `step`。RTL 時改由 ArrowLeft 增加；ArrowUp 不會鏡像。',
+    },
+    {
+      keys: ['ArrowLeft', 'ArrowDown'],
+      action: '數值減少一個 `step`。RTL 時改由 ArrowRight 減少；ArrowDown 不會鏡像。',
+    },
+    { keys: 'PageUp', action: '數值增加 10 個 step。' },
+    { keys: 'PageDown', action: '數值減少 10 個 step。' },
+    { keys: 'Home', action: '跳到這個滑塊能取的最小值。' },
+    { keys: 'End', action: '跳到這個滑塊能取的最大值。' },
+  ]}
+/>
+
+按住按鍵時，每一步都會透過 `onValueChange` 預覽；`onValueCommit` 在放開按鍵或焦點離開時執行一次，且若操作結束時回到起點就不會執行。同時按住 Ctrl、Alt、Meta 或 Shift 的按鍵會被忽略。滑塊會停在相鄰滑塊之前，不會交換或推開對方，所以 Home 與 End 也會遵守 `minStepsBetweenThumbs`。
+
+## 無障礙
+
+- 每個滑塊都是原生的 `<input type="range">`，放在 `role="group"` 裡，所以角色、數值與表單送出都由瀏覽器提供。
+- 可見的 `label` 是群組與每個滑塊的名稱。`RangeSlider` 的每個滑塊，名稱是標籤加上對應的 `thumbLabels`；只有 `aria-label` 時，則是 `aria-label` 加上該滑塊的標籤。
+- 朗讀的數值是 `formatValue(value)`，傳了 `getValueText` 則以它為準。畫面上的數值、上下界與標記都是 `aria-hidden`。
+- 輔助與錯誤文字用 `aria-describedby` 連結；錯誤另外會設定 `aria-invalid`。
+- 指標被取消、失去 capture 或視窗失焦時，數值會還原，透過 `onValueChange` 以 `cancel` 這個 reason 通知，且不會 commit。
+- 不處理 Esc，所以它會傳給外層，例如對話框。
+- 點擊範圍高 44px；滑塊本身 18px，周圍有 44px 的觸控目標。
+- 原生表單重設會還原非受控的預設值；受控時是否重設由使用者端決定。
+- 強制色彩模式下，軌道、範圍條與滑塊使用 `CanvasText`、`Highlight` 與 `ButtonText`，停用則用 `GrayText`。
+- `min` 與 `max` 必須是有限數且 `min < max`；數值必須落在 step 格線上、順序正確並符合滑塊間距，否則滑桿會丟出錯誤。
+
+## 主題
+
+把上方任一預覽切到 **Flat**，外觀不會改變：Slider 沒有使用任何陰影或圓角 token。
+
+<TokenList
+  tokens={[
+    { name: '--color-control-checked', description: '已填色的範圍條與滑塊邊框。' },
+    { name: '--color-input-border', description: '軌道邊框與標記刻線。' },
+    { name: '--color-surface-muted', description: '軌道底色。' },
+    { name: '--color-surface-raised', description: '滑塊底色。' },
+    { name: '--color-input-border-hover', description: '滑鼠移入時的滑塊邊框。' },
+    { name: '--color-input-halo', description: '拖曳時，滑塊周圍 4px 的光暈。' },
+    { name: '--color-focus', description: '滑塊的聚焦外框。' },
+    { name: '--color-danger', description: '無效時的範圍條、滑塊邊框與錯誤文字。' },
+    { name: '--color-fg', description: '標籤與數值文字。' },
+    { name: '--color-fg-muted', description: '上下界、標記與輔助文字。' },
+  ]}
+/>
+
+## 相關元件
+
+<Related
+  items={[
+    { title: 'Input', href: '/components/input', description: '輸入精確的數值。' },
+    { title: 'Meter', href: '/components/meter', description: '顯示使用者無法設定的數值。' },
+    { title: 'Switch', href: '/components/switch', description: '開關設定。' },
+  ]}
+/>

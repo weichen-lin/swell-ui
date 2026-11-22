@@ -5,6 +5,36 @@ description: A compact, static label for status or metadata.
 
 <ComponentPreview name="badge-demo" />
 
+<WhenToUse
+  use={[
+    'Show a status next to a name: Healthy, Synced, Failed.',
+    'Mark metadata such as an environment, a version or a count.',
+    'Show that something is in progress, with `busy`.',
+  ]}
+  alternatives={[
+    {
+      name: 'Alert',
+      href: '/components/alert',
+      when: 'a message the reader has to notice or act on.',
+    },
+    { name: 'Meter', href: '/components/meter', when: 'a value within a known range.' },
+    { name: 'Button', href: '/components/button', when: 'the label has to run an action.' },
+  ]}
+/>
+
+## Installation
+
+```tsx
+import { Badge } from '@weichenlin/swell-ui'
+```
+
+The CSS comes with `styles.css`, imported once after Tailwind (see [Installation](/installation)):
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
 ## Usage
 
 ```tsx
@@ -23,6 +53,8 @@ export function Example() {
 
 ### Variants
 
+All three share the same box size, so you can swap them without moving the layout.
+
 <ComponentPreview name="badge-variants" />
 
 ### Sizes
@@ -31,22 +63,98 @@ export function Example() {
 
 ### Busy
 
+`busy` swaps the icon for a spinning ring.
+
 <ComponentPreview name="badge-busy" />
+
+### Screen reader context
+
+`context` is read before the label but not shown: "Health: Unknown".
+
+<ComponentPreview name="badge-context" />
 
 ## API
 
-`Badge` also accepts the standard `span` props except `onClick`.
+Own props only; every other `<span>` attribute passes through, except `onClick`. A `max-w-*` class in `className` truncates the label and keeps the icon.
 
-| Prop      | Type                                                        | Default     | Description                                                                          |
-| --------- | ----------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------ |
-| `tone`    | `'neutral' \| 'info' \| 'success' \| 'warning' \| 'danger'` | `'neutral'` | Color of the badge.                                                                  |
-| `variant` | `'subtle' \| 'outline' \| 'solid'`                          | `'subtle'`  | Visual style. All variants share the same box size.                                  |
-| `size`    | `'sm' \| 'md'`                                              | `'md'`      | Height and padding.                                                                  |
-| `icon`    | `ReactNode`                                                 | -           | Leading, decorative glyph (hidden from assistive tech). Ignored while `busy`.        |
-| `busy`    | `boolean`                                                   | `false`     | In-progress state: swaps the icon for a spinning ring (static under reduced motion). |
-| `context` | `string`                                                    | -           | Visually-hidden prefix for screen readers, e.g. "Health" reads as "Health: Unknown". |
+<AutoTypeTable path="src/components/badge/badge.tsx" name="BadgeProps" />
+
+## States
+
+A badge is static, so it has no hover, pressed or focus state.
+
+<StatesTable
+  rows={[
+    {
+      state: 'Busy',
+      attribute: 'busy',
+      notes:
+        'The icon slot shows a spinning ring; under `prefers-reduced-motion: reduce` a static dashed ring.',
+    },
+    {
+      state: 'Root',
+      attribute: 'data-slot="badge"',
+      notes: 'On the `<span>`, for styling from a parent.',
+    },
+    {
+      state: 'Icon',
+      attribute: 'data-slot="badge-icon"',
+      notes: 'Present only with `icon` or `busy`; `aria-hidden="true"`.',
+    },
+    {
+      state: 'Label',
+      attribute: 'data-slot="badge-label"',
+      notes: 'Holds the text and the `context` prefix; this is the part that truncates.',
+    },
+  ]}
+/>
+
+## Keyboard
+
+A badge is not focusable and takes no key input. Use a `Button` or a link when it needs an action.
 
 ## Accessibility
 
-A badge is static and not focusable, and `onClick` is omitted on purpose; use a `Button` or a link
-when it needs an action. Use `context` so screen readers announce what the status refers to.
+- A badge is a plain `<span>` with no role and no `tabindex`; the types reject `onClick` on purpose.
+- Use `context` so screen readers announce what the status refers to: it becomes "Health: Unknown" in the text content.
+- `icon` and the busy spinner sit in an `aria-hidden` slot, so the label is the whole accessible text.
+- Color is not the only signal: every variant keeps a 1px border, and in forced colors mode it is drawn in `CanvasText`.
+- The spinner is replaced by a static ring under `prefers-reduced-motion: reduce`.
+
+## Theming
+
+`themes/flat.css` only makes `--radius-item` smaller (6px to 4px); badges use no shadows.
+
+The tokens below are read once per tone; replace `{tone}` with `neutral`, `info`, `success`, `warning` or `danger`.
+
+<TokenList
+  tokens={[
+    {
+      name: '--color-{tone}',
+      description: '`solid` fill and border; icon color on `subtle` and `outline`.',
+    },
+    { name: '--color-{tone}-fg', description: 'Text and icon on `solid`.' },
+    { name: '--color-{tone}-subtle-bg', description: '`subtle` fill.' },
+    { name: '--color-{tone}-subtle-fg', description: 'Text on `subtle` and `outline`.' },
+    { name: '--color-{tone}-border', description: '`subtle` and `outline` border.' },
+    { name: '--radius-item', description: 'Corner radius.' },
+  ]}
+/>
+
+## Related
+
+<Related
+  items={[
+    {
+      title: 'Alert',
+      href: '/components/alert',
+      description: 'A status message the reader should notice.',
+    },
+    { title: 'Meter', href: '/components/meter', description: 'A value within a range.' },
+    {
+      title: 'Sidebar',
+      href: '/components/sidebar',
+      description: 'SidebarBadge shows a count on an item.',
+    },
+  ]}
+/>

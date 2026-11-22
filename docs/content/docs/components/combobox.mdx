@@ -1,9 +1,47 @@
 ---
 title: Combobox
-description: A searchable single-select with filtering, groups, clearing and async results.
+description: Searches a list as you type and selects one option by its stable ID.
 ---
 
 <ComponentPreview name="combobox-demo" />
+
+<WhenToUse
+  use={[
+    'Pick one value from a long list that is easier to search than to scroll.',
+    'Results that load as the user types, with loading and retry states.',
+    'Options that need a description, an icon or groups.',
+  ]}
+  alternatives={[
+    {
+      name: 'Select',
+      href: '/components/select',
+      when: 'a short list that the native picker handles well.',
+    },
+    {
+      name: 'Input',
+      href: '/components/input',
+      when: 'free text that does not have to match an option.',
+    },
+    {
+      name: 'DropdownMenu',
+      href: '/components/dropdown-menu',
+      when: 'actions to run, not a value to store.',
+    },
+  ]}
+/>
+
+## Installation
+
+```tsx
+import { Combobox } from '@weichenlin/swell-ui'
+```
+
+The CSS comes with `styles.css`, imported once after Tailwind (see [Installation](/installation)):
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
 
 ## Usage
 
@@ -24,8 +62,7 @@ export function Example() {
 }
 ```
 
-Selection is by option `value` (a stable ID), not by the typed text. Use `value` with
-`onValueChange` for controlled state, or `defaultValue` for uncontrolled state.
+Selection is by option `value`, a stable ID, never by the typed text. Use `value` with `onValueChange` for controlled state, or `defaultValue` for uncontrolled state. With `name`, the form submits the `value`.
 
 ## Examples
 
@@ -39,70 +76,224 @@ Selection is by option `value` (a stable ID), not by the typed text. Use `value`
 
 ### Async search
 
-Set `filter={false}` when results are filtered externally, and only issue a request for
-`reason === 'input'`.
+Set `filter={false}` when results are filtered elsewhere, and send a request only for `reason === 'input'`.
 
 <ComponentPreview name="combobox-async" />
 
+### Search failure
+
+`searchError` replaces the options and `onRetry` adds a retry button. Type to see it.
+
+<ComponentPreview name="combobox-search-error" />
+
+### Invalid, read-only and disabled
+
+<ComponentPreview name="combobox-states" />
+
 ## API
 
-Native `<input>` props are forwarded, except `size`, `type`, `value`, `defaultValue`, `onChange` and
-the ARIA combobox attributes, which the component manages.
+Every native `<input>` attribute passes through, except `size`, `type`, `value`, `defaultValue`, `onChange` and the ARIA combobox attributes, which the component manages. Pass `label` or, when the context already names the field, `aria-label`.
 
-| Prop                                      | Type                                                                   | Default                                                    | Description                                                                          |
-| ----------------------------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| `options`                                 | `readonly (ComboboxOption \| ComboboxGroup)[]`                         | -                                                          | Options and option groups.                                                           |
-| `label`                                   | `string`                                                               | -                                                          | Visible label. Omit it only when `aria-label` is provided.                           |
-| `floating`                                | `boolean`                                                              | `false`                                                    | Outlined floating label. Needs a visible `label`.                                    |
-| `value`                                   | `string \| null`                                                       | -                                                          | Controlled selected value.                                                           |
-| `defaultValue`                            | `string \| null`                                                       | -                                                          | Initial selected value when uncontrolled.                                            |
-| `onValueChange`                           | `(value: string \| null, details: ComboboxValueChangeDetails) => void` | -                                                          | Called on select or clear.                                                           |
-| `inputValue`                              | `string`                                                               | -                                                          | Controlled text in the input.                                                        |
-| `onInputValueChange`                      | `(text: string, details: ComboboxInputChangeDetails) => void`          | -                                                          | Called when the text changes. Only `reason="input"` should issue a search request.   |
-| `open`                                    | `boolean`                                                              | -                                                          | Controlled open state.                                                               |
-| `defaultOpen`                             | `boolean`                                                              | `false`                                                    | Initial open state when uncontrolled.                                                |
-| `onOpenChange`                            | `(open: boolean, details: ComboboxOpenChangeDetails) => void`          | -                                                          | Called when the list opens or closes.                                                |
-| `filter`                                  | `false \| ((option, query) => boolean)`                                | label + keywords                                           | `false` for externally filtered results. The default is case and accent insensitive. |
-| `selectedOption`                          | `ComboboxOption \| null`                                               | -                                                          | Supplies a label when the selected ID is not in the current results.                 |
-| `loading`                                 | `boolean`                                                              | `false`                                                    | Shows the loading state.                                                             |
-| `loadingText`                             | `string`                                                               | `'Loading…'`                                               | Loading message.                                                                     |
-| `searchError`                             | `ReactNode`                                                            | -                                                          | Error shown when a search fails.                                                     |
-| `onRetry`                                 | `() => void`                                                           | -                                                          | Called by the retry action shown with `searchError`.                                 |
-| `retryText`                               | `string`                                                               | `'Retry'`                                                  | Retry action label.                                                                  |
-| `emptyText`                               | `ReactNode`                                                            | `'No matching options.'`                                   | Shown when nothing matches.                                                          |
-| `clearable`                               | `boolean`                                                              | `true`                                                     | Shows a clear button when a value is selected.                                       |
-| `openOnFocus`                             | `boolean`                                                              | `false`                                                    | Opens the list when the input receives focus.                                        |
-| `clearLabel` / `openLabel` / `closeLabel` | `string`                                                               | `'Clear selection'` / `'Open options'` / `'Close options'` | Accessible names of the buttons.                                                     |
-| `requiredText`                            | `string`                                                               | -                                                          | Native validation message: a selection is required, not just typed text.             |
-| `unresolvedText`                          | `string`                                                               | -                                                          | Native validation message for text that matches no option.                           |
-| `getResultsText`                          | `(count: number) => string`                                            | -                                                          | Localizes the polite result-count announcement.                                      |
-| `helperText`                              | `ReactNode`                                                            | -                                                          | Supporting text below the field.                                                     |
-| `error`                                   | `ReactNode`                                                            | -                                                          | A truthy value puts the field in the error state; the text replaces `helperText`.    |
-| `size`                                    | `'sm' \| 'md' \| 'lg'`                                                 | `'md'`                                                     | Field size.                                                                          |
-| `start`                                   | `ReactNode`                                                            | -                                                          | Decorative leading icon.                                                             |
-| `mono`                                    | `boolean`                                                              | -                                                          | Monospace text.                                                                      |
-| `inputClassName`                          | `string`                                                               | -                                                          | Classes for the `<input>`.                                                           |
-| `contentClassName`                        | `string`                                                               | -                                                          | Classes for the options panel.                                                       |
+<AutoTypeTable
+  path="src/components/combobox/types.ts"
+  name="ComboboxProps"
+  keep={['disabled', 'readOnly', 'required', 'name', 'placeholder']}
+/>
 
 ### ComboboxOption
 
-| Field         | Type                | Description                                                        |
-| ------------- | ------------------- | ------------------------------------------------------------------ |
-| `value`       | `string`            | Stable, unique, non-empty submitted ID. Labels need not be unique. |
-| `label`       | `string`            | Display text.                                                      |
-| `description` | `ReactNode`         | Secondary text.                                                    |
-| `icon`        | `ReactNode`         | Decorative; hidden from assistive technology.                      |
-| `keywords`    | `readonly string[]` | Extra terms matched by the default filter.                         |
-| `disabled`    | `boolean`           | Prevents selecting the option.                                     |
+<AutoTypeTable path="src/components/combobox/types.ts" name="ComboboxOption" />
 
 ### ComboboxGroup
 
-| Field     | Type                        | Description           |
-| --------- | --------------------------- | --------------------- |
-| `label`   | `string`                    | Group title.          |
-| `options` | `readonly ComboboxOption[]` | Options in the group. |
+<AutoTypeTable path="src/components/combobox/types.ts" name="ComboboxGroup" />
+
+### ComboboxValueChangeDetails
+
+<AutoTypeTable path="src/components/combobox/types.ts" name="ComboboxValueChangeDetails" />
+
+### ComboboxInputChangeDetails
+
+<AutoTypeTable path="src/components/combobox/types.ts" name="ComboboxInputChangeDetails" />
+
+### ComboboxOpenChangeDetails
+
+<AutoTypeTable path="src/components/combobox/types.ts" name="ComboboxOpenChangeDetails" />
+
+## States
+
+<StatesTable
+  rows={[
+    {
+      state: 'Hover',
+      attribute: ':hover',
+      notes: 'Border moves to `--color-input-border-hover` and a faint drop shadow appears.',
+    },
+    {
+      state: 'Focus',
+      attribute: ':focus',
+      notes: 'Border becomes `--color-input-focus` with a 3px halo. DOM focus stays on the input.',
+    },
+    {
+      state: 'Open',
+      attribute: 'aria-expanded="true"',
+      notes: 'The root also has `data-state="open"`; `aria-controls` points at the listbox.',
+    },
+    {
+      state: 'Active option',
+      attribute: 'data-active',
+      notes:
+        'The option the arrow keys or pointer are on; the input points at it with `aria-activedescendant`.',
+    },
+    {
+      state: 'Selected option',
+      attribute: 'aria-selected="true"',
+      notes: 'Shows a check mark.',
+    },
+    {
+      state: 'Disabled option',
+      attribute: 'aria-disabled="true"',
+      notes: 'Dimmed to 50%; arrow keys skip it and clicks do nothing.',
+    },
+    {
+      state: 'Loading',
+      attribute: 'aria-busy="true"',
+      notes: 'On the listbox; `loadingText` replaces the options and selection is blocked.',
+    },
+    {
+      state: 'Invalid',
+      attribute: 'aria-invalid="true"',
+      notes:
+        'Set by a truthy `error`, or after a failed native validation (`required`, or a value that matches no option).',
+    },
+    {
+      state: 'Disabled',
+      attribute: 'disabled',
+      notes: 'Native `disabled`: no list, not focusable, not submitted; 50% opacity.',
+    },
+    {
+      state: 'Read-only',
+      attribute: 'readonly',
+      notes: 'Focusable and copyable; no list, no buttons, still submitted.',
+    },
+    {
+      state: 'Described',
+      attribute: 'aria-describedby',
+      notes: 'Points at the `helperText` or `error` message.',
+    },
+    {
+      state: 'Slots',
+      attribute: 'data-slot',
+      notes:
+        '`combobox` on the root, `combobox-content` on the panel, `combobox-group` and `combobox-option` inside.',
+    },
+  ]}
+/>
+
+## Keyboard
+
+<KeyboardTable
+  rows={[
+    {
+      keys: ['Tab', 'Shift+Tab'],
+      action: 'Moves focus to or from the input. Closes the list without choosing.',
+    },
+    {
+      keys: 'Type',
+      action: 'Opens the list and filters it. Nothing is chosen until you pick an option.',
+    },
+    {
+      keys: ['ArrowDown', 'ArrowUp'],
+      action:
+        'Closed: opens the list on the selected, first or last option. Open: moves to the next enabled option and stops at the ends.',
+    },
+    {
+      keys: 'Enter',
+      action:
+        'Chooses the active option and closes the list. It never submits the form while the list is open.',
+    },
+    {
+      keys: 'Escape',
+      action:
+        'Closes the list and discards unconfirmed text. It reaches a parent (a dialog, say) only when the list is already closed.',
+    },
+    {
+      keys: ['Home', 'End', 'ArrowLeft', 'ArrowRight'],
+      action: 'Edit the text, as in any input; they do not move through the options.',
+    },
+  ]}
+/>
 
 ## Accessibility
 
-The combobox keeps DOM focus on the text input and addresses options with `aria-activedescendant`.
-Result counts are announced politely, and all button labels can be localized through props.
+- It follows the combobox pattern with a list: the input has `role="combobox"`, `aria-autocomplete="list"`, `aria-expanded` and `aria-controls`. DOM focus never leaves the input; options are addressed with `aria-activedescendant`.
+- The listbox is named by `label` or `aria-label`; groups are named by their `label`. Options use `aria-selected` and `aria-disabled`, and an option `description` is its accessible description.
+- The result count is announced politely and so are `loadingText` and a string `searchError`; localize the count with `getResultsText`. The empty message is a status, never an option.
+- The clear and chevron buttons have accessible names (`clearLabel`, `openLabel`, `closeLabel`); the chevron is out of the Tab order, since the input already opens the list.
+- `required` checks for a selection, not just typed text. The message is `requiredText` or, when `value` matches no option, `unresolvedText`; supply `selectedOption` when the selected ID may be missing from the current results.
+- Option icons, `start` and the check mark are `aria-hidden`.
+- Typing with an IME is safe: Enter that completes a composition is not intercepted, and the finished text is searched.
+- On touch screens options and buttons get at least 44px. In forced colors mode the active option is outlined in `Highlight`.
+- The panel fade is skipped under `prefers-reduced-motion: reduce`.
+
+## Theming
+
+Switch a preview above to **Flat** to see `themes/flat.css`: it removes the field shadows, tightens `--radius-control` and `--radius-surface`, and makes `--color-popover-border` stronger. The field border is unchanged. The clear and chevron buttons are `ghost` [Buttons](/components/button) and follow its tokens.
+
+<TokenList
+  tokens={[
+    { name: '--color-input-bg', description: 'Field fill (not used by the floating label).' },
+    { name: '--color-input-bg-hover', description: 'Field fill on hover.' },
+    { name: '--color-input-border', description: 'Resting border; outline of the active option.' },
+    { name: '--color-input-border-hover', description: 'Border on hover.' },
+    {
+      name: '--color-input-focus',
+      description: 'Border while focused; floating label while focused.',
+    },
+    { name: '--color-input-placeholder', description: 'Placeholder text.' },
+    { name: '--color-input-halo', description: '3px halo while focused.' },
+    { name: '--color-input-halo-invalid', description: 'Halo of an invalid field.' },
+    {
+      name: '--color-input-halo-invalid-focus',
+      description: 'Halo of an invalid field while focused.',
+    },
+    {
+      name: '--color-danger',
+      description: 'Invalid border, label and message; search error text.',
+    },
+    { name: '--color-fg', description: 'Input and option text, and the label above the field.' },
+    {
+      name: '--color-fg-muted',
+      description: 'Helper text, option descriptions, group titles and icons.',
+    },
+    { name: '--color-popover-bg', description: 'Options panel fill.' },
+    { name: '--color-popover-border', description: 'Panel border and the rule between groups.' },
+    { name: '--color-popover-highlight', description: 'Active option fill.' },
+    { name: '--shadow-input', description: 'Inset highlight at the top of the field.' },
+    { name: '--shadow-input-lift', description: 'Faint drop shadow on hover.' },
+    { name: '--radius-control', description: 'Field and option corner radius.' },
+    { name: '--radius-surface', description: 'Panel corner radius.' },
+    {
+      name: '--spacing-control-sm',
+      description: 'Height of `sm` fields and the minimum option height; `-md` and `-lg` likewise.',
+    },
+  ]}
+/>
+
+## Related
+
+<Related
+  items={[
+    {
+      title: 'Select',
+      href: '/components/select',
+      description: 'A native single-select for short lists.',
+    },
+    { title: 'Input', href: '/components/input', description: 'Shares this field frame.' },
+    {
+      title: 'Button',
+      href: '/components/button',
+      description: 'The clear and chevron buttons are ghost Buttons.',
+    },
+  ]}
+/>

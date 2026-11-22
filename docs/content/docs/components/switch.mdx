@@ -1,9 +1,43 @@
 ---
 title: Switch
-description: A toggle for settings that take effect immediately.
+description: A toggle for settings that take effect immediately, with label, description, loading and error states.
 ---
 
 <ComponentPreview name="switch-demo" />
+
+<WhenToUse
+  use={[
+    'An on/off setting that applies at once: notifications, dark mode, auto-sync.',
+    'A setting that saves in the background, with `loading` while it does.',
+    'Dense rows and tables, with `size="sm"`.',
+  ]}
+  alternatives={[
+    {
+      name: 'Checkbox',
+      href: '/components/checkbox',
+      when: 'a choice that is applied later, with a submit button.',
+    },
+    {
+      name: 'RadioGroup',
+      href: '/components/radio-group',
+      when: 'exactly one option from a short list.',
+    },
+    { name: 'Button', href: '/components/button', when: 'an action rather than a setting.' },
+  ]}
+/>
+
+## Installation
+
+```tsx
+import { Switch } from '@weichenlin/swell-ui'
+```
+
+The CSS comes with `styles.css`, imported once after Tailwind (see [Installation](/installation)):
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
 
 ## Usage
 
@@ -14,6 +48,8 @@ export function Example() {
   return <Switch name="notifications" label="Notifications" />
 }
 ```
+
+Every switch needs a visible `label`, or an `aria-label` when the surrounding context already names it.
 
 ## Examples
 
@@ -27,31 +63,148 @@ export function Example() {
 
 ### Loading
 
+Click to see it: while the change is saving, toggles are ignored but focus stays put.
+
 <ComponentPreview name="switch-loading" />
 
-### Label position, disabled and invalid
+### Settings row, disabled and invalid
+
+`labelPosition="start"` puts the label first and pushes the switch to the far end.
 
 <ComponentPreview name="switch-label-position" />
 
 ## API
 
-Extends native `<input type="checkbox">` props, except `type`, `size`, `children`, `role`,
-`aria-checked` and `aria-label`.
+Own props only; every other `<input type="checkbox">` attribute passes through to the element, except `type`, `size`, `role` and `aria-checked`. `className` goes to the row.
 
-| Prop             | Type               | Default | Description                                                            |
-| ---------------- | ------------------ | ------- | ---------------------------------------------------------------------- |
-| `label`          | `ReactNode`        | -       | Visible label. Required unless `aria-label` is set.                    |
-| `aria-label`     | `string`           | -       | Accessible name when there is no visible `label`.                      |
-| `description`    | `ReactNode`        | -       | One muted line under the label, linked with `aria-describedby`.        |
-| `error`          | `ReactNode`        | -       | Truthy sets `aria-invalid`; text is shown under the label.             |
-| `size`           | `'sm' \| 'md'`     | `'md'`  | `sm` (28x14) for dense rows and tables, `md` (36x20) for settings.     |
-| `loading`        | `boolean`          | `false` | Shows a spinner in the thumb and ignores toggles without losing focus. |
-| `labelPosition`  | `'end' \| 'start'` | `'end'` | `start` puts the label first and pushes the switch to the far end.     |
-| `className`      | `string`           | -       | Classes for the row.                                                   |
-| `inputClassName` | `string`           | -       | Classes for the `<input>` (the track).                                 |
+<AutoTypeTable
+  path="src/components/switch/switch.tsx"
+  name="SwitchProps"
+  keep={['className', 'disabled']}
+/>
+
+`label` and `aria-label` are alternatives: pass a visible `label`, or only `aria-label`.
+
+## States
+
+<StatesTable
+  rows={[
+    {
+      state: 'Hover',
+      attribute: ':hover',
+      notes: 'An off track steps to `--color-input-border-hover`. Not while disabled or loading.',
+    },
+    {
+      state: 'Pressed',
+      attribute: ':active',
+      notes: 'The thumb stretches toward the side it will move to. Not while disabled or loading.',
+    },
+    {
+      state: 'Focus',
+      attribute: ':focus-visible',
+      notes:
+        'Off: input border plus a 3px halo. On: a 2px `--color-control-checked` ring, 2px out.',
+    },
+    {
+      state: 'On',
+      attribute: ':checked',
+      notes:
+        'The track fills with `--color-control-checked` and the thumb slides across. Mirrored in RTL.',
+    },
+    {
+      state: 'Loading',
+      attribute: 'aria-busy="true"',
+      notes:
+        'A spinner in the thumb; clicks and Space are swallowed. Not `disabled`, so it stays focusable. Reduced motion gets a still dashed ring.',
+    },
+    {
+      state: 'Invalid',
+      attribute: 'aria-invalid="true"',
+      notes:
+        'Set when `error` is truthy. Danger track border and halo; a text message shows under the label.',
+    },
+    {
+      state: 'Described',
+      attribute: 'aria-describedby',
+      notes:
+        'Points at the `description` and the error text, after any `aria-describedby` you pass.',
+    },
+    {
+      state: 'Disabled',
+      attribute: 'disabled',
+      notes: 'Native `disabled`, also through a disabled fieldset; the row dims to 50%.',
+    },
+    {
+      state: 'Role',
+      attribute: 'role="switch"',
+      notes:
+        'On the native checkbox. The on state comes from the input itself; there is no `aria-checked`.',
+    },
+    {
+      state: 'Root',
+      attribute: 'data-slot="switch"',
+      notes: 'On the row `<label>`, for styling from a parent.',
+    },
+  ]}
+/>
+
+## Keyboard
+
+<KeyboardTable
+  rows={[
+    {
+      keys: ['Tab', 'Shift+Tab'],
+      action: 'Moves focus to or from the switch, also while loading.',
+    },
+    { keys: 'Space', action: 'Toggles the focused switch. Enter does not. Nothing while loading.' },
+  ]}
+/>
+
+Clicking the track or the label text toggles it too, since the whole row is one `<label>`.
 
 ## Accessibility
 
-Switch is a native checkbox with `role="switch"`, so forms, `required`, reset and label clicks stay
-native. While `loading`, it sets `aria-busy` and swallows clicks and Space instead of using
-`disabled`, so keyboard focus stays put.
+- A native `<input type="checkbox">` with `role="switch"`, so forms, `required`, reset and label clicks stay native.
+- The visible label names the switch; `description` and the error text stay out of the name and are linked with `aria-describedby`.
+- While `loading`, it sets `aria-busy` and swallows clicks and Space instead of using `disabled`, so keyboard focus stays put.
+- The spinner is `aria-hidden`; it does not announce the saving state, so show the result in your own UI.
+- The row is at least 24px tall; on touch screens the hit area grows to 44px without changing the layout.
+- In forced colors mode the track and thumb use `Canvas`, `CanvasText` and `Highlight`, and disabled uses `GrayText`.
+
+## Theming
+
+Switch a preview above to **Flat** to see `themes/flat.css`: it zeroes `--shadow-switch-thumb`.
+
+<TokenList
+  tokens={[
+    { name: '--color-input-border', description: 'Off track.' },
+    { name: '--color-input-border-hover', description: 'Off track on hover.' },
+    { name: '--color-input-focus', description: 'Track border while focused, when off.' },
+    { name: '--color-input-halo', description: '3px focus halo.' },
+    { name: '--color-input-halo-invalid', description: '3px halo when invalid.' },
+    {
+      name: '--color-input-halo-invalid-focus',
+      description: '3px halo when invalid and focused.',
+    },
+    {
+      name: '--color-control-checked',
+      description: 'On track, its focus ring, and the loading spinner color.',
+    },
+    { name: '--color-switch-handle', description: 'Thumb while off.' },
+    { name: '--color-switch-handle-checked', description: 'Thumb while on.' },
+    { name: '--shadow-switch-thumb', description: 'Thumb hairline and drop shadow.' },
+    { name: '--color-danger', description: 'Invalid track border, ring and error text.' },
+    { name: '--color-fg', description: 'Label text.' },
+    { name: '--color-fg-muted', description: '`description` text.' },
+  ]}
+/>
+
+## Related
+
+<Related
+  items={[
+    { title: 'Checkbox', href: '/components/checkbox', description: 'A choice applied later.' },
+    { title: 'RadioGroup', href: '/components/radio-group', description: 'Exactly one option.' },
+    { title: 'Button', href: '/components/button', description: 'Run an action.' },
+  ]}
+/>

@@ -1,9 +1,47 @@
 ---
 title: Tooltip
-description: A hover and focus tooltip that wraps any element.
+description: A short hint that opens on hover and keyboard focus, around any element.
 ---
 
 <ComponentPreview name="tooltip-demo" />
+
+<WhenToUse
+  use={[
+    'Name or explain a control that has no room for text.',
+    'Say why a control is disabled.',
+    'Add detail that is nice to have, such as a timestamp.',
+  ]}
+  alternatives={[
+    {
+      name: 'Dialog',
+      href: '/components/dialog',
+      when: 'content people must read, or that holds links and buttons.',
+    },
+    {
+      name: 'Alert',
+      href: '/components/alert',
+      when: 'a message that has to stay visible.',
+    },
+    {
+      name: 'DropdownMenu',
+      href: '/components/dropdown-menu',
+      when: 'a list of actions behind a trigger.',
+    },
+  ]}
+/>
+
+## Installation
+
+```tsx
+import { Tooltip } from '@weichenlin/swell-ui'
+```
+
+The CSS comes with `styles.css`, imported once after Tailwind (see [Installation](/installation)):
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
 
 ## Usage
 
@@ -19,9 +57,13 @@ export function Example() {
 }
 ```
 
+[Button](/components/button) already wraps its own label (`aria-label` on an icon-only button) and `disabledReason` in a tooltip. Use `Tooltip` directly for any other trigger.
+
 ## Examples
 
 ### Sides
+
+The tooltip flips to the opposite side when the preferred one does not fit the viewport.
 
 <ComponentPreview name="tooltip-sides" />
 
@@ -39,16 +81,99 @@ A non-interactive trigger needs `tabIndex` so keyboard users can reach it.
 
 ## API
 
-| Prop        | Type                                     | Default | Description                                                                                                          |
-| ----------- | ---------------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------- |
-| `content`   | `ReactNode`                              | -       | Tooltip content. Nothing renders (and no `aria-describedby` is added) when empty.                                    |
-| `side`      | `'top' \| 'bottom' \| 'left' \| 'right'` | `'top'` | Preferred side; flips to the opposite one when it doesn't fit the viewport.                                          |
-| `describe`  | `boolean`                                | `true`  | Link the tooltip to the trigger via `aria-describedby`. Turn off when it only repeats the trigger's accessible name. |
-| `className` | `string`                                 | -       | Classes for the wrapper that anchors the tooltip.                                                                    |
-| `children`  | `ReactElement`                           | -       | The trigger element (required).                                                                                      |
+`Tooltip` wraps its child in a `<span>`, which anchors the bubble and reads the pointer and focus events.
 
-## Notes
+<AutoTypeTable path="src/components/tooltip.tsx" name="TooltipProps" />
 
-The bubble is portaled to `<body>` with fixed positioning, so scroll containers such as tables and
-drawers never clip it, and it is pulled back from the viewport edge instead of overflowing. It
-opens after a short delay on hover and immediately on keyboard focus, and closes on `Escape`.
+## States
+
+<StatesTable
+  rows={[
+    {
+      state: 'Closed',
+      attribute: 'hidden',
+      notes: 'The bubble stays in the DOM while closed, so `aria-describedby` always resolves.',
+    },
+    {
+      state: 'Open on hover',
+      attribute: 'role="tooltip"',
+      notes:
+        'Opens 300ms after the pointer enters. Closes when the pointer leaves or presses. Resting the pointer on the bubble keeps it open.',
+    },
+    {
+      state: 'Open on focus',
+      attribute: ':focus-visible',
+      notes:
+        'Opens at once, but only for keyboard focus; a mouse click does not open it. Closes on blur.',
+    },
+    {
+      state: 'Placement',
+      attribute: 'data-side',
+      notes: 'The side it settled on, after any flip. Pulled 8px back from the viewport edge.',
+    },
+    {
+      state: 'Described trigger',
+      attribute: 'aria-describedby',
+      notes:
+        'Added to the trigger, merged with its own value, while there is `content` and `describe` is on.',
+    },
+    {
+      state: 'Label only',
+      attribute: 'aria-hidden="true"',
+      notes: 'On the bubble with `describe={false}`, since it only repeats the trigger name.',
+    },
+  ]}
+/>
+
+## Keyboard
+
+<KeyboardTable
+  rows={[
+    {
+      keys: ['Tab', 'Shift+Tab'],
+      action: 'Focusing the trigger opens the tooltip at once; moving focus out closes it.',
+    },
+    { keys: 'Esc', action: 'Closes the open tooltip. Focus stays where it is.' },
+  ]}
+/>
+
+## Accessibility
+
+- The bubble has `role="tooltip"` and the trigger points at it with `aria-describedby`, so the content is read as the trigger's description.
+- Turn `describe` off when the tooltip only repeats the trigger's accessible name, such as an icon button's label.
+- Keyboard users get the tooltip too: it opens on `:focus-visible` and closes on Esc.
+- The bubble is not focusable, so keep buttons and links out of it.
+- A trigger that is not interactive needs `tabIndex={0}` to be reachable.
+- Events are read on the wrapper, so `aria-disabled` triggers still open it.
+- With no `content`, nothing renders and no `aria-describedby` is added.
+- The bubble is portaled to `<body>` with fixed positioning, so scroll containers such as tables and drawers never clip it. It follows scrolling and resizing.
+- On the server only the trigger renders; the bubble appears after hydration.
+- The transition is off under `prefers-reduced-motion: reduce`.
+
+## Theming
+
+The Flat switch on the previews above does not reach the bubble, which is portaled to `<body>`. Import `themes/flat.css` in your app to see it: it removes `--shadow-whisper`, tightens `--radius-item` to 4px, and strengthens `--color-border-strong`.
+
+<TokenList
+  tokens={[
+    { name: '--color-inverse', description: 'Bubble fill.' },
+    { name: '--color-inverse-fg', description: 'Bubble text.' },
+    { name: '--color-border-strong', description: 'Bubble border.' },
+    { name: '--shadow-whisper', description: 'Soft shadow of the bubble.' },
+    { name: '--radius-item', description: 'Bubble corner radius.' },
+  ]}
+/>
+
+## Related
+
+<Related
+  items={[
+    {
+      title: 'Button',
+      href: '/components/button',
+      description: 'Icon-only labels and disabledReason use a tooltip.',
+    },
+    { title: 'Dialog', href: '/components/dialog', description: 'Content that must be read.' },
+    { title: 'Badge', href: '/components/badge', description: 'A common non-interactive trigger.' },
+  ]}
+/>

@@ -1,0 +1,260 @@
+---
+title: 手風琴 Accordion
+description: 把區塊垂直堆疊，可展開或收合來顯示或隱藏內容。
+---
+
+<ComponentPreview name="accordion-demo" />
+
+<WhenToUse
+  use={[
+    '多半只會略讀的長內容：常見問題、設定群組、篩選面板。',
+    '一次只讓人展開一個區塊，或用 `type="multiple"` 同時展開多個。',
+    '標題搭配簡短說明，內容收合時說明仍然可見。',
+  ]}
+  alternatives={[
+    {
+      name: 'Tabs',
+      href: '/components/tabs',
+      when: '彼此對等、一次只顯示一個、並排切換的區塊。',
+    },
+    {
+      name: 'Card',
+      href: '/components/card',
+      when: '應該隨時可見的內容。',
+    },
+    {
+      name: 'Dialog',
+      href: '/components/dialog',
+      when: '會佔滿畫面的內容。',
+    },
+  ]}
+/>
+
+## 安裝
+
+```tsx
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@weichenlin/swell-ui'
+```
+
+CSS 包含在 `styles.css` 裡，在 Tailwind 之後引入一次即可（見[安裝](/installation)）：
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
+## 用法
+
+```tsx
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@weichenlin/swell-ui'
+
+export function Example() {
+  return (
+    <Accordion defaultValue="project">
+      <AccordionItem value="project">
+        <AccordionTrigger>Project</AccordionTrigger>
+        <AccordionContent>Project settings</AccordionContent>
+      </AccordionItem>
+      <AccordionItem value="members">
+        <AccordionTrigger>Members</AccordionTrigger>
+        <AccordionContent>Member settings</AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  )
+}
+```
+
+項目的 `value` 必須唯一且不可為空。每個 trigger 都會自己渲染一個標題，所以它的內容不能包含可互動的元素。單選模式的值是 `string | null`；`type="multiple"` 時是 `readonly string[]`。受控用 `value` 搭配 `onValueChange`，非受控用 `defaultValue`。掛載後不能更改 type：要切換請給元件新的 `key`。
+
+## 範例
+
+### 同時展開多個
+
+`type="multiple"` 可以同時展開任意數量的項目，也可以全部收合。
+
+<ComponentPreview name="accordion-multiple" />
+
+### 外框樣式
+
+<ComponentPreview name="accordion-outline" />
+
+### 受控
+
+`collapsible={false}` 會讓一個項目保持展開：展開中的 trigger 仍可聚焦，但不會收合。
+
+<ComponentPreview name="accordion-controlled" />
+
+### 停用項目
+
+在項目上設定 `disabled` 只會停用它的 trigger。設在 `Accordion` 上則會停用所有 trigger，且不改變目前的值。
+
+<ComponentPreview name="accordion-disabled" />
+
+## API
+
+### Accordion
+
+預設的單選模式。另外接受 `<div>` 屬性。
+
+<AutoTypeTable
+  path="src/components/accordion/accordion.tsx"
+  name="AccordionSingleProps"
+  type="Extract<AccordionProps, { type?: 'single' }>"
+/>
+
+### type="multiple" 的 Accordion
+
+這些會取代上方對應的 props；`collapsible` 不適用。其餘 props 相同。
+
+<AutoTypeTable
+  path="src/components/accordion/accordion.tsx"
+  name="AccordionMultipleProps"
+  type={
+    "Pick<Extract<AccordionProps, { type: 'multiple' }>, 'type' | 'value' | 'defaultValue' | 'onValueChange'>"
+  }
+/>
+
+### AccordionItem
+
+另外接受 `<div>` 屬性。
+
+<AutoTypeTable path="src/components/accordion/accordion.tsx" name="AccordionItemProps" />
+
+### AccordionTrigger
+
+在 `<button>` 外包一層標題；其他按鈕屬性都會直接傳入，但 `id`、`type`、`disabled` 與元件自己管理的 `aria-*` 屬性除外。
+
+<AutoTypeTable path="src/components/accordion/accordion.tsx" name="AccordionTriggerProps" />
+
+### AccordionContent
+
+另外接受 `<div>` 屬性，但 `id`、`hidden`、`inert`、`role` 與它自己管理的 ARIA 屬性除外。
+
+<AutoTypeTable path="src/components/accordion/accordion.tsx" name="AccordionContentProps" />
+
+## 狀態
+
+<StatesTable
+  rows={[
+    {
+      state: '展開',
+      attribute: '`aria-expanded="true"` `data-state="open"`',
+      notes: '設在 trigger 上；項目與內容也有 `data-state`。箭頭旋轉 180 度。',
+    },
+    {
+      state: '滑鼠移入',
+      attribute: ':hover',
+      notes: 'trigger 可用時，標題會出現底線。',
+    },
+    {
+      state: '聚焦',
+      attribute: ':focus-visible',
+      notes: '2px 的 `--color-focus` 外框，間距 2px。',
+    },
+    {
+      state: '停用',
+      attribute: '`disabled` `data-disabled`',
+      notes:
+        'trigger 上的原生 `disabled`，來自項目或整個群組；透明度 50%。`data-disabled` 在項目上，群組停用時根元素也有。',
+    },
+    {
+      state: '鎖定為展開',
+      attribute: 'aria-disabled="true"',
+      notes:
+        '設了 `collapsible={false}` 的單選 accordion 中，展開的 trigger：仍可聚焦，但沒有作用。',
+    },
+    {
+      state: '已收合的內容',
+      attribute: '`hidden` `inert` `aria-hidden="true"`',
+      notes: '收合動畫結束後設定；`inert` 會立即套用。`keepMounted={false}` 時，子元素也會移除。',
+    },
+    {
+      state: '說明文字',
+      attribute: 'aria-describedby',
+      notes: '設在 trigger 上，指向它的 `description`。',
+    },
+    {
+      state: '樣式',
+      attribute: 'data-variant',
+      notes: '`line` 或 `outline`，設在根元素上。',
+    },
+    {
+      state: '插槽',
+      attribute: 'data-slot',
+      notes:
+        '`accordion`、`accordion-item`、`accordion-heading`、`accordion-trigger`、`accordion-content` 與 `accordion-content-inner`。',
+    },
+  ]}
+/>
+
+## 鍵盤操作
+
+<KeyboardTable
+  rows={[
+    {
+      keys: ['Tab', 'Shift+Tab'],
+      action: '依頁面順序，在 trigger 與已展開項目內可聚焦的內容之間移動。',
+    },
+    {
+      keys: ['Enter', 'Space'],
+      action: '展開或收合聚焦的項目。停用或鎖定為展開時沒有作用。',
+    },
+    {
+      keys: ['ArrowDown', 'ArrowUp'],
+      action: '把焦點移到下一個或上一個可用的 trigger，到頭就停住。只移動焦點，不會展開。',
+    },
+    { keys: ['Home', 'End'], action: '把焦點移到第一個或最後一個可用的 trigger。' },
+  ]}
+/>
+
+## 無障礙
+
+- 每個 trigger 都是原生 `<button>`，放在 `headingLevel` 指定層級的標題裡（預設 3）：請選擇符合你頁面大綱的層級。
+- trigger 有 `aria-expanded` 與 `aria-controls`。它的名稱只有標題；`description` 以描述的方式朗讀。
+- 內容預設不是地標。內容複雜時，設定 `region` 就會以 trigger 命名它，請節制使用。
+- 已收合的內容會立即設為 `inert`，並對輔助技術隱藏，焦點不會落入其中。收合時如果焦點在內容裡，會移到該項目的 trigger，再不行就移到相鄰的可用 trigger。
+- `disabled` 只停用 trigger：內容裡的欄位仍可使用，`keepMounted`（預設）也會在項目收合時保留它們的值與表單資料。
+- 方向鍵、Home 與 End 會忽略搭配 Ctrl、Alt、Meta 或 Shift 的組合，巢狀的 accordion 處理自己的按鍵與選取。
+- 箭頭是 `aria-hidden`。強制色彩模式下，停用的 trigger 用 `GrayText`。
+- 高度動畫展開 200ms、收合 160ms；開啟 `prefers-reduced-motion: reduce` 時會立即切換。
+
+## 主題
+
+把上方任一預覽切到 **Flat**，就能看到 `themes/flat.css` 的效果：`--radius-surface` 與 `--radius-inset` 更小。邊框顏色不變。
+
+<TokenList
+  tokens={[
+    {
+      name: '--color-input-border',
+      description: '項目的邊框：`line` 是每個項目下方的線，`outline` 是外框。',
+    },
+    { name: '--color-surface', description: '`outline` 項目的底色。' },
+    { name: '--color-fg', description: 'trigger 的標題。' },
+    { name: '--color-fg-muted', description: '箭頭、說明文字與內容文字。' },
+    { name: '--color-focus', description: '聚焦外框。' },
+    { name: '--radius-surface', description: '`outline` 項目與 trigger 的圓角。' },
+    { name: '--radius-inset', description: '`line` trigger 的圓角，聚焦外框跟著它變圓。' },
+  ]}
+/>
+
+## 相關元件
+
+<Related
+  items={[
+    {
+      title: 'Tabs',
+      href: '/components/tabs',
+      description: '對等的區塊，一次顯示一個。',
+    },
+    {
+      title: 'Card',
+      href: '/components/card',
+      description: '隨時可見的內容。',
+    },
+    {
+      title: 'Dialog',
+      href: '/components/dialog',
+      description: '佔滿畫面的內容。',
+    },
+  ]}
+/>

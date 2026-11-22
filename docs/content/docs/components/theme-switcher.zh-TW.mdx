@@ -1,0 +1,161 @@
+---
+title: 主題切換 Theme Switcher
+description: 一鍵在亮色與暗色主題之間切換的按鈕。
+---
+
+<ComponentPreview name="theme-switcher-demo" />
+
+<WhenToUse
+  use={['讓讀者一鍵在亮色與暗色之間切換。', '讀者還沒選擇之前，跟隨系統主題。']}
+  alternatives={[
+    {
+      name: 'Switch',
+      href: '/components/switch',
+      when: '單純開或關的設定。',
+    },
+    {
+      name: 'Select',
+      href: '/components/select',
+      when: '讀者需要明確選擇「系統」。',
+    },
+  ]}
+/>
+
+## 安裝
+
+```tsx
+import { ThemeSwitcher, useTheme } from '@weichenlin/swell-ui'
+```
+
+CSS 包含在 `styles.css` 裡，在 Tailwind 之後引入一次即可（見[安裝](/installation)）：
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
+## 用法
+
+`ThemeSwitcher` 是受控的圖示按鈕。點一下就會切換目前看到的主題，即使目前的值是 `'system'` 也一樣。搭配 `useTheme` hook 使用：它會保存選擇，並在根元素設定 `data-theme`（`'system'` 會清除該屬性，交由 `prefers-color-scheme` 決定）。
+
+```tsx
+import { ThemeSwitcher, useTheme } from '@weichenlin/swell-ui'
+
+export function Header() {
+  const { theme, setTheme } = useTheme()
+  return <ThemeSwitcher value={theme} onChange={setTheme} />
+}
+```
+
+上方的範例改用單純的 state，所以不會改變本站的主題。
+
+## API
+
+### ThemeSwitcher
+
+另外接受 `button` 的 props，但不含 `children`、`value`、`defaultValue` 與 `onChange`。
+
+<AutoTypeTable path="src/components/theme-switcher/theme-switcher.tsx" name="ThemeSwitcherProps" />
+
+### useTheme(options?)
+
+回傳 `{ theme, setTheme }`。保存的值只在掛載時讀取一次；不是 `'light'` 或 `'dark'` 的值都視為 `'system'`。如果 `localStorage` 拋出錯誤，主題在當次瀏覽中仍可運作。
+
+<AutoTypeTable path="src/components/theme-switcher/use-theme.ts" name="UseThemeOptions" />
+
+## 狀態
+
+<StatesTable
+  rows={[
+    {
+      state: '亮色主題',
+      attribute: 'value="light"',
+      notes: '顯示月亮；動作是「Switch to dark theme」。',
+    },
+    {
+      state: '暗色主題',
+      attribute: 'value="dark"',
+      notes: '顯示太陽；動作是「Switch to light theme」。',
+    },
+    {
+      state: '系統',
+      attribute: 'value="system"',
+      notes: '顯示系統目前實際採用的主題所對應的圖示；在讀者做出選擇前，會跟著系統變化。',
+    },
+    {
+      state: '滑鼠移入',
+      attribute: ':hover',
+      notes: '圖示從 `--color-fg-muted` 變成 `--color-fg`，底下是 ghost Button 的底色。',
+    },
+    {
+      state: '按下',
+      attribute: 'data-pressed',
+      notes: '由 Button 在指標按下與按 Enter / Space 時設定。',
+    },
+    {
+      state: '聚焦',
+      attribute: ':focus-visible',
+      notes: '2px 的 `--color-focus` 外框，間距 2px。',
+    },
+    {
+      state: '停用',
+      attribute: 'aria-disabled="true"',
+      notes: '仍可聚焦；點擊不會呼叫 `onChange`。',
+    },
+    {
+      state: '根元素',
+      attribute: 'data-slot="theme-switcher"',
+      notes: '在 `<button>` 上，方便從父層設定樣式。',
+    },
+  ]}
+/>
+
+## 鍵盤操作
+
+<KeyboardTable
+  rows={[
+    { keys: ['Tab', 'Shift+Tab'], action: '把焦點移到按鈕或移開。' },
+    {
+      keys: ['Enter', 'Space'],
+      action: '切換主題；焦點留在按鈕上，名稱隨之更新。',
+    },
+  ]}
+/>
+
+## 無障礙
+
+- 按鈕的名稱描述它的動作（「Switch to dark theme」），並隨目前主題更新。要替換名稱（例如在地化）時傳入 `aria-label`。
+- 同樣的文字也會設為 `title`；tooltip 已關閉，所以名稱不會重複顯示。
+- 圖示是裝飾性的，並設為 `aria-hidden`。
+- 按鈕大小為 44×44px（`size-11`）。
+- 停用時用 `aria-disabled`，按鈕保留在 Tab 順序中。
+
+## 主題
+
+`themes/flat.css` 只影響按鈕的圓角（`--radius-control`），並讓滑鼠移入的底色以完整強度套用（`--hover-strength: 1`）。`data-theme` 與色彩 token 如何切換，請見[暗色模式](/dark-mode)。
+
+<TokenList
+  tokens={[
+    { name: '--color-fg-muted', description: '靜止時的圖示顏色。' },
+    { name: '--color-fg', description: '滑鼠移入時的圖示顏色。' },
+    { name: '--color-surface-muted', description: '滑鼠移入的底色。' },
+    { name: '--color-surface-inset', description: '按下時的底色。' },
+    { name: '--color-focus', description: '聚焦外框。' },
+    { name: '--radius-control', description: '圓角。' },
+    { name: '--hover-strength', description: '滑鼠移入時底色變化的比例，0 到 1。' },
+  ]}
+/>
+
+## 相關元件
+
+<Related
+  items={[
+    { title: 'Dark Mode', href: '/dark-mode', description: 'data-theme 與色彩 token 的運作方式。' },
+    {
+      title: 'Button',
+      href: '/components/button',
+      description: 'ThemeSwitcher 是 ghost 圖示 Button。',
+    },
+    { title: 'Switch', href: '/components/switch', description: '單純的開關設定。' },
+  ]}
+/>

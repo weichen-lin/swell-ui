@@ -5,12 +5,55 @@ description: App navigation that docks at wide widths and becomes a drawer on na
 
 <ComponentPreview name="sidebar-demo" />
 
+<WhenToUse
+  use={[
+    'Primary navigation for an app shell with several sections.',
+    'One navigation that is docked on desktop and a drawer on phones.',
+    'Group links under labels, with a pinned header and footer.',
+  ]}
+  alternatives={[
+    {
+      name: 'Tabs',
+      href: '/components/tabs',
+      when: 'switching views inside one page.',
+    },
+    {
+      name: 'DropdownMenu',
+      href: '/components/dropdown-menu',
+      when: 'a short list of actions behind one trigger.',
+    },
+    {
+      name: 'Drawer',
+      href: '/components/drawer',
+      when: 'a temporary panel that is not navigation.',
+    },
+  ]}
+/>
+
+## Installation
+
+```tsx
+import {
+  Sidebar,
+  SidebarBody,
+  SidebarGroup,
+  SidebarHeader,
+  SidebarItem,
+  SidebarProvider,
+  SidebarTrigger,
+} from '@weichenlin/swell-ui'
+```
+
+The CSS comes with `styles.css`, imported once after Tailwind (see [Installation](/installation)):
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
 ## Usage
 
-Wrap `Sidebar` and `SidebarTrigger` in a `SidebarProvider`, which shares the drawer's open state.
-From 960px up the sidebar is docked (240px wide, full height, sticky); below that it is hidden and
-`SidebarTrigger` opens the same content in a `Drawer`. The sidebar is `h-dvh` by default; pass a
-`className` such as `h-full` to size it to a container, as the demo does.
+Wrap `Sidebar` and `SidebarTrigger` in a `SidebarProvider`, which shares the drawer's open state. From 960px up the sidebar is docked (240px wide, full height, sticky); below that it is hidden and `SidebarTrigger` opens the same content in a `Drawer`. The sidebar is `h-dvh` by default; pass a `className` such as `h-full` to size it to a container, as the demo does.
 
 ```tsx
 import {
@@ -47,7 +90,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 ```
 
-With a router, use `<SidebarItem asChild><Link href="/">Overview</Link></SidebarItem>`.
+With a router, use `<SidebarItem asChild><Link href="/">Overview</Link></SidebarItem>`; the link sets `href` and `aria-current="page"`.
 
 ## API
 
@@ -57,44 +100,150 @@ Holds the drawer open state. Takes `children` only.
 
 ### Sidebar
 
-Also accepts `nav` props. One of `aria-label` or `aria-labelledby` is required.
+Also accepts `nav` props. Pass exactly one of `aria-label` or `aria-labelledby`; the types require it.
 
-| Prop              | Type     | Default | Description                    |
-| ----------------- | -------- | ------- | ------------------------------ |
-| `aria-label`      | `string` | -       | Names the navigation landmark. |
-| `aria-labelledby` | `string` | -       | Alternative to `aria-label`.   |
+<AutoTypeTable path="src/components/sidebar/sidebar.tsx" name="SidebarProps" />
 
 ### SidebarTrigger
 
-Menu button that opens the drawer; only shown below 960px. Focus returns to it on close.
+Menu button that opens the drawer; only shown below 960px. Also accepts `button` props except `children`, `type`, `aria-expanded` and `aria-controls`, which it sets.
 
-| Prop         | Type                   | Default             | Description   |
-| ------------ | ---------------------- | ------------------- | ------------- |
-| `aria-label` | `string`               | `'Open navigation'` | Button label. |
-| `size`       | `'sm' \| 'md' \| 'lg'` | -                   | Button size.  |
+<AutoTypeTable path="src/components/sidebar/sidebar.tsx" name="SidebarTriggerProps" />
 
 ### SidebarItem
 
-| Prop      | Type      | Default | Description                                                  |
-| --------- | --------- | ------- | ------------------------------------------------------------ |
-| `asChild` | `boolean` | `false` | Render the only child (usually a router `Link`) as the item. |
+Plain `a` props apply. Mark the current item with `aria-current="page"`. In the drawer, a click the link handles in place (`preventDefault`) closes the drawer; a modified click opens a new tab and leaves it open.
 
-Plain `a` props apply. Mark the current item with `aria-current="page"`. In the drawer, a click
-the link handles in place (`preventDefault`) closes the drawer.
+<AutoTypeTable path="src/components/sidebar/sidebar.tsx" name="SidebarItemProps" />
+
+### SidebarGroup
+
+<AutoTypeTable path="src/components/sidebar/sidebar.tsx" name="SidebarGroupProps" />
 
 ### Other parts
 
-| Part            | Description                                                               |
-| --------------- | ------------------------------------------------------------------------- |
-| `SidebarHeader` | Brand row pinned above the body; holds the close button in the drawer.    |
-| `SidebarBody`   | The groups; the only part that scrolls.                                   |
-| `SidebarFooter` | Pinned below the body.                                                    |
-| `SidebarGroup`  | List of items with an optional `label` (`ReactNode`) that names the list. |
-| `SidebarIcon`   | Decorative 16px leading icon for an item.                                 |
-| `SidebarBadge`  | Count at the end of an item, as a small `Badge`.                          |
+All take the standard props of their element.
+
+| Part            | Description                                                            |
+| --------------- | ---------------------------------------------------------------------- |
+| `SidebarHeader` | Brand row pinned above the body; holds the close button in the drawer. |
+| `SidebarBody`   | The groups; the only part that scrolls.                                |
+| `SidebarFooter` | Pinned below the body.                                                 |
+| `SidebarIcon`   | Decorative 16px leading icon for an item.                              |
+| `SidebarBadge`  | Count at the end of an item, as a small `Badge`; takes `BadgeProps`.   |
+
+## States
+
+<StatesTable
+  rows={[
+    {
+      state: 'Current item',
+      attribute: 'aria-current="page"',
+      notes: 'Fills the item and strengthens its text. Styled from the attribute, not a prop.',
+    },
+    {
+      state: 'Hover',
+      attribute: ':hover',
+      notes: 'Item text goes from muted to `--color-fg`.',
+    },
+    {
+      state: 'Hover pill',
+      attribute: 'data-hover',
+      notes:
+        'On `SidebarBody` while a mouse is over an item; the pill glides between items. Never set for touch or pen.',
+    },
+    {
+      state: 'Pill entering',
+      attribute: 'data-hover-enter',
+      notes: 'On `SidebarBody` for the first item only: the pill fades in instead of gliding.',
+    },
+    {
+      state: 'Pressed',
+      attribute: ':active',
+      notes: 'One step deeper fill; deeper again on the current item.',
+    },
+    {
+      state: 'Focus',
+      attribute: ':focus-visible',
+      notes: '2px `--color-focus` outline, inset so the scrolling body never clips it.',
+    },
+    {
+      state: 'Drawer open',
+      attribute: 'aria-expanded',
+      notes: 'On `SidebarTrigger`; `aria-controls` points at the drawer.',
+    },
+    {
+      state: 'In the drawer',
+      attribute: 'data-drawer',
+      notes: 'On the `<nav>` rendered inside the drawer.',
+    },
+    {
+      state: 'Parts',
+      attribute: 'data-slot',
+      notes:
+        '`sidebar`, `sidebar-header`, `sidebar-body`, `sidebar-footer`, `sidebar-group`, `sidebar-group-label`, `sidebar-item`, `sidebar-item-icon`.',
+    },
+  ]}
+/>
+
+## Keyboard
+
+<KeyboardTable
+  rows={[
+    {
+      keys: ['Tab', 'Shift+Tab'],
+      action:
+        'Moves through the trigger, then the items. In the open drawer, focus stays inside it.',
+    },
+    { keys: 'Enter', action: 'On an item: follows the link. On the trigger: opens the drawer.' },
+    { keys: 'Space', action: 'On the trigger or the close button: activates it.' },
+    {
+      keys: 'Esc',
+      action: 'Closes the drawer and returns focus to the trigger.',
+    },
+  ]}
+/>
 
 ## Accessibility
 
-- Renders a `nav` landmark that needs a name; groups are lists announced with their item count.
-- The drawer provides modal focus containment, Esc, and focus restoration to the trigger.
-- Items are links: use `aria-current="page"` for the current one.
+- The docked sidebar and the drawer both render a `nav` landmark that needs a name, so `aria-label` or `aria-labelledby` is required. The drawer is named the same.
+- Only one copy of the content is in the DOM at a time: the drawer renders nothing while it is closed.
+- Groups are lists, announced with their item count; a group `label` names the list.
+- Items are links: set `aria-current="page"` on the current one. A router `Link` does this for you.
+- `SidebarIcon` is `aria-hidden`. `SidebarBadge` is part of the item's name, with a space before it ("Projects 8").
+- The drawer is modal: focus moves in, stays inside, and Esc, the close button (`Close navigation`) or a click on the backdrop closes it and returns focus to the trigger.
+- Widening the window past 960px closes an open drawer.
+- In forced colors mode the current item uses `Highlight` and `HighlightText`.
+
+## Theming
+
+Switch a preview above to **Flat** to see `themes/flat.css`: the dividing line becomes clearly visible and `--radius-item` goes from 6px to 4px. The sidebar draws no shadows.
+
+<TokenList
+  tokens={[
+    { name: '--color-bg', description: 'Sidebar fill.' },
+    { name: '--color-border-strong', description: 'Line between the sidebar and the page.' },
+    {
+      name: '--color-fg',
+      description:
+        'Current and hovered item text; the pill and fills are `--color-fg` at 5%, 8% and 12%.',
+    },
+    { name: '--color-fg-muted', description: 'Item text at rest; group label.' },
+    { name: '--color-focus', description: 'Focus outline.' },
+    { name: '--radius-item', description: 'Corner radius of items and the hover pill.' },
+  ]}
+/>
+
+## Related
+
+<Related
+  items={[
+    { title: 'Drawer', href: '/components/drawer', description: 'Holds the sidebar below 960px.' },
+    {
+      title: 'Badge',
+      href: '/components/badge',
+      description: 'SidebarBadge is a small neutral Badge.',
+    },
+    { title: 'Router Links', href: '/router-links', description: 'asChild with your router Link.' },
+  ]}
+/>

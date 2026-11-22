@@ -1,14 +1,51 @@
 ---
 title: Toast
-description: Imperative notifications shown in a stack by a single Toaster.
+description: Imperative notifications, called from anywhere and shown in a stack by one Toaster.
 ---
 
 <ComponentPreview name="toast-demo" />
 
+<WhenToUse
+  use={[
+    'Confirm a result that needs no reply: saved, copied, synced.',
+    'Follow one async task from start to finish, with `toast.promise`.',
+    'Offer a short Undo, with `action`.',
+  ]}
+  alternatives={[
+    {
+      name: 'Alert',
+      href: '/components/alert',
+      when: 'a message that stays next to the content it describes.',
+    },
+    {
+      name: 'Dialog',
+      href: '/components/dialog',
+      when: 'a decision the user must make before going on.',
+    },
+    {
+      name: 'Badge',
+      href: '/components/badge',
+      when: 'a status that sits in a row or a table.',
+    },
+  ]}
+/>
+
+## Installation
+
+```tsx
+import { toast, Toaster } from '@weichenlin/swell-ui'
+```
+
+The CSS comes with `styles.css`, imported once after Tailwind (see [Installation](/installation)):
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
 ## Usage
 
-Mount one `<Toaster />` at the root of your app, then call `toast` from anywhere (event handlers,
-mutations, loaders). Every call returns the toast's id.
+Mount one `<Toaster />` near the root of your app, inside the router if an `action` renders a `<Link>`. Then call `toast` from anywhere: event handlers, mutations, loaders. Every call returns the toast's id.
 
 ```tsx
 import { Toaster } from '@weichenlin/swell-ui'
@@ -34,52 +71,229 @@ toast.success('Synced')
 
 ### Types
 
+`toast.error` renders the `danger` type and stays until dismissed.
+
 <ComponentPreview name="toast-types" />
 
 ### Action
+
+A `{ label, onClick }` action renders a small button that dismisses the toast, unless `onClick` calls `preventDefault()`.
 
 <ComponentPreview name="toast-action" />
 
 ### Promise
 
+The loading toast turns into success or error in place when the promise settles.
+
 <ComponentPreview name="toast-promise" />
+
+### Update in place
+
+`toast.update(id, patch)` merges into a toast still on screen and restarts its timer.
+
+<ComponentPreview name="toast-update" />
 
 ## API
 
-### toast(options)
+### toast
 
-| Option        | Type                                                                     | Default     | Description                                                                                                                                         |
-| ------------- | ------------------------------------------------------------------------ | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `title`       | `ReactNode`                                                              | -           | Main text.                                                                                                                                          |
-| `description` | `ReactNode`                                                              | -           | Secondary text.                                                                                                                                     |
-| `type`        | `'neutral' \| 'success' \| 'info' \| 'warning' \| 'danger' \| 'loading'` | `'neutral'` | Toast type.                                                                                                                                         |
-| `id`          | `string`                                                                 | -           | Reusing the id of a visible toast updates it in place.                                                                                              |
-| `action`      | `{ label: string; onClick?: (e) => void } \| ReactNode`                  | -           | A `{ label, onClick }` renders a small button that dismisses the toast unless `onClick` calls `preventDefault()`. Any other node is rendered as-is. |
-| `duration`    | `number`                                                                 | 5000        | Milliseconds on screen; `Infinity` keeps it. 10000 with an action; `danger` and `loading` never expire.                                             |
-| `dismissible` | `boolean`                                                                | `true`      | `false` hides the close button and disables swipe and Esc.                                                                                          |
-| `toasterId`   | `string`                                                                 | -           | The `<Toaster id>` that shows it; without one it goes to the Toaster without an id.                                                                 |
+`toast(options)` shows a toast and returns its id. Calling it with the id of a toast still on screen replaces that toast in place; fields left out go back to their defaults.
+
+```ts
+toast(options: ToastOptions): string
+```
+
+<AutoTypeTable path="src/components/toast/store.ts" name="ToastOptions" />
+
+### Action button
+
+An `action` that is an object with a `label` renders as a small secondary button. Any other node is rendered as it is and never dismisses the toast itself.
+
+<AutoTypeTable path="src/components/toast/store.ts" name="ToastActionButton" />
 
 ### Helpers
 
-| Function                         | Description                                                            |
-| -------------------------------- | ---------------------------------------------------------------------- |
-| `toast.success(title, options?)` | Success toast.                                                         |
-| `toast.info(title, options?)`    | Info toast.                                                            |
-| `toast.warning(title, options?)` | Warning toast.                                                         |
-| `toast.error(title, options?)`   | Renders as the `danger` type; stays until dismissed.                   |
-| `toast.loading(title, options?)` | Spinner; stays until updated or dismissed.                             |
-| `toast.update(id, patch)`        | Merges into a toast still on screen and restarts its timer.            |
-| `toast.dismiss(id?)`             | Dismisses one toast, or all without an id.                             |
-| `toast.promise(promise, steps)`  | Loading toast that becomes success or danger when the promise settles. |
+```ts
+toast.success(title: ReactNode, options?: Omit<ToastOptions, 'title' | 'type'>): string
+toast.info(title: ReactNode, options?: Omit<ToastOptions, 'title' | 'type'>): string
+toast.warning(title: ReactNode, options?: Omit<ToastOptions, 'title' | 'type'>): string
+toast.error(title: ReactNode, options?: Omit<ToastOptions, 'title' | 'type'>): string
+toast.loading(title: ReactNode, options?: Omit<ToastOptions, 'title' | 'type'>): string
+toast.update(id: string, patch: ToastPatch): void
+toast.dismiss(id?: string): void
+toast.promise<T>(promise: Promise<T> | (() => Promise<T>), steps: ToastPromiseOptions<T>): string
+```
 
-`toast.promise` takes a promise (or a function returning one) and `{ loading, success, error }`
-steps. Each step is a title or full options; `success` and `error` may be functions of the result
-or error.
+| Function        | Description                                                                                     |
+| --------------- | ----------------------------------------------------------------------------------------------- |
+| `toast.success` | Success toast.                                                                                  |
+| `toast.info`    | Info toast.                                                                                     |
+| `toast.warning` | Warning toast.                                                                                  |
+| `toast.error`   | Renders as the `danger` type; stays until dismissed.                                            |
+| `toast.loading` | Spinner; stays until updated or dismissed.                                                      |
+| `toast.update`  | Merges into a toast still on screen and restarts its timer. Does nothing for an unknown id.     |
+| `toast.dismiss` | Plays the exit of one toast, or of all of them without an id.                                   |
+| `toast.promise` | Loading toast that becomes success or danger in place when the promise settles. Returns the id. |
+
+`ToastPatch` is `Partial<ToastOptions>` without `id` and `toasterId`: a toast stays in the Toaster it was created for.
+
+### toast.promise
+
+Takes a promise, or a function that returns one, and the steps for each outcome. A step is a title or full options without `id` and `type`; `success` and `error` can also be functions of the result or the error. Each step replaces the fields of the one before, so a loading description or action never lingers. If the user closes the toast before the promise settles, it stays closed.
+
+<AutoTypeTable path="src/components/toast/store.ts" name="ToastPromiseOptions" />
 
 ### Toaster
 
-| Prop            | Type                                                                                              | Default          | Description                                               |
-| --------------- | ------------------------------------------------------------------------------------------------- | ---------------- | --------------------------------------------------------- |
-| `position`      | `'bottom-right' \| 'bottom-left' \| 'bottom-center' \| 'top-right' \| 'top-left' \| 'top-center'` | `'bottom-right'` | Corner or edge center the stack grows from.               |
-| `visibleToasts` | `number`                                                                                          | `3`              | Cards shown in the collapsed stack (at most 2 on phones). |
-| `id`            | `string`                                                                                          | -                | Shows only toasts created with this `toasterId`.          |
+<AutoTypeTable path="src/components/toast/toaster.tsx" name="ToasterProps" />
+
+Only one `Toaster` per `id` renders. A second one with the same `id` stays empty until the first unmounts, so a toast never shows twice.
+
+## States
+
+<StatesTable
+  rows={[
+    {
+      state: 'Type',
+      attribute: 'data-type',
+      notes:
+        'On each toast: `neutral`, `success`, `info`, `warning`, `danger` or `loading`. Neutral has no icon.',
+    },
+    {
+      state: 'Collapsed stack',
+      attribute: 'data-stacked',
+      notes:
+        'On cards behind the front one: 14px further back and 5% smaller each, content hidden. The newest has `data-front`.',
+    },
+    {
+      state: 'Expanded',
+      attribute: 'data-expanded',
+      notes:
+        'On the viewport, while a mouse or pen hovers it or keyboard focus is inside. Cards spread 14px apart and every timer pauses.',
+    },
+    {
+      state: 'Waiting',
+      attribute: 'data-visible="false"',
+      notes: 'Beyond `visibleToasts`: hidden and `inert`, with its timer held until it moves up.',
+    },
+    {
+      state: 'Closing',
+      attribute: 'data-removed',
+      notes:
+        'Dismissed and playing its exit (150ms, 200ms when swiped); `inert`. `data-swipe-out` holds the direction.',
+    },
+    {
+      state: 'Swiping',
+      attribute: 'data-swiping',
+      notes:
+        'While dragged. Past 45px, or a flick faster than 0.11px/ms, it slides out; otherwise it springs back.',
+    },
+    {
+      state: 'Dismissible',
+      attribute: 'data-dismissible',
+      notes: 'Absent with `dismissible: false`: no close button, swipe or Esc.',
+    },
+    {
+      state: 'Focus',
+      attribute: ':focus-visible',
+      notes: 'Each card takes focus (`tabindex="0"`), with a 2px `--color-focus` outline.',
+    },
+    {
+      state: 'Parts',
+      attribute: 'data-slot',
+      notes:
+        '`toast-viewport` (with `data-position`), `toast` (with `data-toast-id` and `data-index`), `toast-card`, `toast-body`, `toast-icon`, `toast-title`, `toast-description`, `toast-action` and `toast-announcer`.',
+    },
+  ]}
+/>
+
+## Keyboard
+
+<KeyboardTable
+  rows={[
+    {
+      keys: ['F6', 'Alt+T'],
+      action:
+        'Moves focus to the newest toast; pressed again from inside, returns it to where it was. Alt+T is ignored while typing in a field. With no toasts the keys are left to the browser.',
+    },
+    {
+      keys: ['Tab', 'Shift+Tab'],
+      action: 'Moves through the focusable cards and their buttons.',
+    },
+    {
+      keys: 'Esc',
+      action:
+        'Dismisses the focused toast and moves focus to the next one, or back to where it came from. Inside a dialog it does not close the dialog.',
+    },
+    {
+      keys: ['Enter', 'Space'],
+      action: 'Activates the focused action or close button.',
+    },
+  ]}
+/>
+
+## Accessibility
+
+- Two live regions exist from the start, so announcements work: `role="status"` (polite) for most toasts and `role="alert"` (assertive) for `danger`. Toasts that arrive in the same frame are read together, and the same text announces again.
+- A toast is announced when it appears. An update reads only its new state.
+- Each card is labelled by its title and described by its description, and takes focus through F6 so its whole text is read.
+- Hover, keyboard focus and a hidden tab pause the timers, so nothing expires while it is being read; the remaining time is kept, and only an update resets it. `danger` and `loading` never expire on their own.
+- Icons are `aria-hidden`; the text carries the meaning. The loading spinner turns into a dashed ring under `prefers-reduced-motion: reduce`.
+- With `dismissible: false` there is no close button, swipe or Esc: the toast leaves only by its timer or `toast.dismiss()`.
+- Swipe goes toward the edge the stack sits on, plus the side for corner positions. Selecting text is not a swipe, and buttons and links keep their clicks.
+- While a modal dialog is open, the stack moves into it, so toasts stay visible and reachable, and it moves back when the dialog closes.
+- Up to 600px wide, cards fill the width with a 16px inset and at most 2 show at once.
+- The viewport is labelled `Notifications (F6)` and the close button `Close`; both are English.
+- In forced colors mode the card border is drawn in `CanvasText`.
+- The server renders nothing: toasts exist only after a client call.
+
+## Theming
+
+The Flat switch on the previews above does not reach the stack, which is rendered into `<body>`. Import `themes/flat.css` in your app to see it: it removes `--shadow-popover`, tightens `--radius-surface` to 8px, and strengthens `--color-popover-border`.
+
+<TokenList
+  tokens={[
+    { name: '--color-popover-bg', description: '`neutral` and `loading` fill.' },
+    { name: '--color-popover-border', description: '`neutral` and `loading` border.' },
+    { name: '--color-fg', description: '`neutral` and `loading` text.' },
+    { name: '--color-fg-muted', description: 'Description text and the loading icon.' },
+    {
+      name: '--color-success-subtle-bg',
+      description: '`success` fill; `info`, `warning` and `danger` likewise.',
+    },
+    {
+      name: '--color-success-subtle-fg',
+      description: '`success` text; `info`, `warning` and `danger` likewise.',
+    },
+    {
+      name: '--color-success-border',
+      description: '`success` border; `info`, `warning` and `danger` likewise.',
+    },
+    {
+      name: '--color-success',
+      description:
+        '`success` icon; `--color-info`, `--color-warning` and `--color-danger` likewise.',
+    },
+    { name: '--shadow-popover', description: 'Drop shadow of the card.' },
+    { name: '--radius-surface', description: 'Card corner radius.' },
+    { name: '--color-focus', description: 'Focus outline.' },
+    {
+      name: '--spacing-control-sm',
+      description: 'Room kept for the close button, which is a `sm` Button.',
+    },
+  ]}
+/>
+
+## Related
+
+<Related
+  items={[
+    { title: 'Alert', href: '/components/alert', description: 'A message that stays on the page.' },
+    {
+      title: 'Dialog',
+      href: '/components/dialog',
+      description: 'A decision that blocks the page.',
+    },
+    { title: 'Button', href: '/components/button', description: 'The action and close buttons.' },
+  ]}
+/>

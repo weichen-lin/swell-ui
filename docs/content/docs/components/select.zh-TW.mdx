@@ -1,0 +1,277 @@
+---
+title: 下拉選單 Select
+description: 從清單中挑選一個選項，以原生 select 元素為基礎。
+---
+
+<ComponentPreview name="select-demo" />
+
+<WhenToUse
+  use={[
+    '從固定清單（最多幾十個選項）中挑選一個值。',
+    '需要原生驗證、自動填入與 `FormData` 的表單欄位。',
+    '選項需要分組、圖示或停用項目。',
+  ]}
+  alternatives={[
+    {
+      name: 'Combobox',
+      href: '/components/combobox',
+      when: '清單很長，或要邊輸入邊載入。',
+    },
+    {
+      name: 'RadioGroup',
+      href: '/components/radio-group',
+      when: '兩到四個選項，且希望全部直接看到。',
+    },
+    {
+      name: 'DropdownMenu',
+      href: '/components/dropdown-menu',
+      when: '要執行的動作，而不是要儲存的值。',
+    },
+  ]}
+/>
+
+## 安裝
+
+```tsx
+import { Select } from '@weichenlin/swell-ui'
+```
+
+CSS 包含在 `styles.css` 裡，在 Tailwind 之後引入一次即可（見[安裝](/installation)）：
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
+## 用法
+
+```tsx
+import { Select } from '@weichenlin/swell-ui'
+
+export function Example() {
+  return (
+    <Select
+      label="Region"
+      placeholder="Choose a region"
+      options={[
+        { value: 'us-east', label: 'US East' },
+        { value: 'eu-west', label: 'EU West' },
+      ]}
+    />
+  )
+}
+```
+
+`Select` 渲染的是真正的 `<select>`，所以原生的鍵盤操作、typeahead、表單、驗證與自動填入都能運作。瀏覽器支援 `appearance: base-select` 時，選單會套上對應的樣式；不支援時維持原生外觀。它與 `Input` 共用同一個外框。
+
+## 範例
+
+### 受控
+
+<ComponentPreview name="select-controlled" />
+
+### 分組與停用選項
+
+<ComponentPreview name="select-groups" />
+
+### 搭配圖示
+
+選取項目的圖示也會顯示在觸發區。
+
+<ComponentPreview name="select-icons" />
+
+### 浮動標籤
+
+標籤平時在欄位內，聚焦或有值時移到邊框上；`placeholder` 會被忽略。
+
+<ComponentPreview name="select-floating" />
+
+### 尺寸
+
+<ComponentPreview name="select-sizes" />
+
+### 錯誤與停用
+
+<ComponentPreview name="select-states" />
+
+## API
+
+所有原生 `<select>` 屬性都會傳入，但 `size`、`children`、`multiple` 與 `readOnly` 除外。請傳 `label`；若上下文已經說明欄位用途，改傳 `aria-label`。
+
+<AutoTypeTable
+  path="src/components/select/select.tsx"
+  name="SelectProps"
+  keep={['disabled', 'required', 'name']}
+/>
+
+### SelectOption
+
+<AutoTypeTable path="src/components/select/select.tsx" name="SelectOption" />
+
+### SelectGroup
+
+<AutoTypeTable path="src/components/select/select.tsx" name="SelectGroup" />
+
+## 狀態
+
+<StatesTable
+  rows={[
+    {
+      state: '滑鼠移入',
+      attribute: ':hover',
+      notes: '邊框變為 `--color-input-border-hover`，並出現淡淡的投影。',
+    },
+    {
+      state: '聚焦',
+      attribute: ':focus',
+      notes: '邊框變為 `--color-input-focus`，外圍有 3px 光暈；選單 `:open` 時也一樣。',
+    },
+    {
+      state: '展開',
+      attribute: ':open',
+      notes: '箭頭旋轉 180 度；浮動標籤維持在上方。',
+    },
+    {
+      state: '尚未選擇',
+      attribute: 'option[value=""]:checked',
+      notes: '選中的是隱藏且停用的空選項：文字使用 placeholder 顏色，浮動標籤停在欄位內。',
+    },
+    {
+      state: '錯誤',
+      attribute: 'aria-invalid="true"',
+      notes: '由有值的 `error` 設定：邊框與光暈變為 danger 色，訊息取代 `helperText`。',
+    },
+    {
+      state: '停用',
+      attribute: 'disabled',
+      notes: '原生 `disabled`：無法聚焦，透明度 50%，游標為 `not-allowed`。',
+    },
+    {
+      state: '必填',
+      attribute: 'required',
+      notes: '選擇選項前，原生驗證都不會通過；標籤旁有 `aria-hidden` 的星號。',
+    },
+    {
+      state: '說明文字',
+      attribute: 'aria-describedby',
+      notes: '指向 `helperText` 或 `error` 訊息。',
+    },
+    {
+      state: '前置圖示',
+      attribute: 'data-start',
+      notes: '`start` 或選取項目有圖示時，設在控制項上；浮動標籤因此維持在上方。',
+    },
+    {
+      state: '選項已選取',
+      attribute: ':checked',
+      notes: '被選取的選項使用 `font-medium`。',
+    },
+    {
+      state: '選項停用',
+      attribute: ':disabled',
+      notes: '在樣式化的選單中：透明度 50%，滑鼠移入時不會反白。',
+    },
+    {
+      state: '選項反白',
+      attribute: ':hover :focus-visible',
+      notes: '在樣式化的選單中：填入 `--color-popover-highlight`，滑鼠與鍵盤共用同一個反白。',
+    },
+    {
+      state: '根元素',
+      attribute: 'data-slot="input-field"',
+      notes: '在最外層容器上；有邊框的外框是 `data-slot="input-control"`。',
+    },
+  ]}
+/>
+
+## 鍵盤操作
+
+元件沒有自己處理按鍵，以下是瀏覽器原生的行為，各瀏覽器的細節略有不同。
+
+<KeyboardTable
+  rows={[
+    { keys: ['Tab', 'Shift+Tab'], action: '把焦點移到 select 或移開。' },
+    {
+      keys: ['Space', 'Alt+ArrowDown'],
+      action: '開啟選單。點擊外框任何位置也會開啟。',
+    },
+    {
+      keys: ['ArrowDown', 'ArrowUp'],
+      action: '在選項間移動；多數瀏覽器在關閉時也會直接改變值。',
+    },
+    { keys: ['Home', 'End'], action: '跳到第一個或最後一個選項。' },
+    {
+      keys: 'A-Z, 0-9',
+      action: 'Typeahead：跳到 `label` 以你輸入的文字開頭的選項。',
+    },
+    { keys: 'Escape', action: '關閉選單，不改變值。' },
+  ]}
+/>
+
+## 無障礙
+
+- 它是原生的 `<select>`：角色、值、typeahead 與表單行為都由瀏覽器提供。
+- 可見的 `label` 是這個 select 真正的 `<label>`。只有 `aria-label` 時就沒有 label 元素；型別要求二選一，而 `floating` 必須搭配可見的 `label`。
+- `helperText` 與 `error` 透過 `aria-describedby` 連結；錯誤時還會設定 `aria-invalid`，並顯示 `aria-hidden` 的圖示。
+- 「尚未選擇」的空選項是隱藏且停用的，不會出現在清單裡；`required` 的 select 在選好真正的選項前，驗證都不會通過。
+- 選項圖示、`start` 與箭頭都是 `aria-hidden`。圖示不加文字，所以無障礙名稱與 typeahead 只看 `label`。
+- `form.reset()` 會還原成初始選項，觸發區的圖示也會跟著還原。
+- 樣式化的選單只套用在精細指標（fine pointer）；觸控裝置保留系統選單，文字放大到 16px，點擊範圍至少 44px。
+- 強制色彩模式下，停用的邊框用 `GrayText`，聚焦以外框繪製。
+- 選單以短暫的淡入呈現，開啟 `prefers-reduced-motion: reduce` 時不播放。
+
+## 主題
+
+把上方任一預覽切到 **Flat**，就能看到 `themes/flat.css` 的效果：欄位與選單的陰影移除，`--radius-control` 與 `--radius-surface` 更小，`--color-popover-border` 更明顯。欄位邊框不變。
+
+<TokenList
+  tokens={[
+    { name: '--color-input-bg', description: '欄位底色（浮動標籤不使用）。' },
+    { name: '--color-input-bg-hover', description: '滑鼠移入時的欄位底色。' },
+    { name: '--color-input-border', description: '靜止時的邊框。' },
+    { name: '--color-input-border-hover', description: '滑鼠移入時的邊框。' },
+    {
+      name: '--color-input-focus',
+      description: '聚焦或展開時的邊框；聚焦時的浮動標籤。',
+    },
+    { name: '--color-input-placeholder', description: '尚未選擇時的文字。' },
+    { name: '--color-input-halo', description: '聚焦時的 3px 光暈。' },
+    { name: '--color-input-halo-invalid', description: '錯誤欄位的光暈。' },
+    { name: '--color-input-halo-invalid-focus', description: '錯誤欄位聚焦時的光暈。' },
+    { name: '--color-danger', description: '錯誤時的邊框、標籤與訊息。' },
+    { name: '--color-fg', description: '選取的文字與欄位上方的標籤。' },
+    { name: '--color-fg-strong', description: '浮動標籤升起且未聚焦時的顏色。' },
+    { name: '--color-fg-muted', description: '說明文字、圖示與箭頭。' },
+    { name: '--color-fg-subtle', description: '原生選單中停用選項的文字。' },
+    { name: '--color-popover-bg', description: '選單與選項的底色。' },
+    { name: '--color-popover-border', description: '選單的邊框。' },
+    { name: '--color-popover-highlight', description: '滑鼠移入或鍵盤聚焦的選項。' },
+    { name: '--shadow-input', description: '欄位頂部的內側高光。' },
+    { name: '--shadow-input-lift', description: '滑鼠移入時的淡淡投影。' },
+    { name: '--shadow-popover', description: '選單的投影。' },
+    { name: '--radius-control', description: '欄位與選項的圓角。' },
+    { name: '--radius-surface', description: '選單的圓角。' },
+    {
+      name: '--spacing-control-sm',
+      description: '`sm` 的高度；`-md`、`-lg` 同理。含邊框。',
+    },
+  ]}
+/>
+
+## 相關元件
+
+<Related
+  items={[
+    { title: 'Input', href: '/components/input', description: '與它共用同一個欄位外框。' },
+    {
+      title: 'Combobox',
+      href: '/components/combobox',
+      description: '可搜尋的選單，適合長清單或遠端資料。',
+    },
+    {
+      title: 'RadioGroup',
+      href: '/components/radio-group',
+      description: '選項不多，全部直接顯示。',
+    },
+  ]}
+/>

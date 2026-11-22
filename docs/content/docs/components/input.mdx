@@ -1,9 +1,40 @@
 ---
 title: Input
-description: Text fields with labels, helper text and error states, plus search, password and copy variants.
+description: A single-line text field with label, helper text and error state, plus search, password and copy variants.
 ---
 
 <ComponentPreview name="input-demo" />
+
+<WhenToUse
+  use={[
+    'A short, single-line value: a name, an email, a URL, a phone number.',
+    'A search box, with `SearchInput`.',
+    'A secret the user can reveal, with `PasswordInput`.',
+    'A read-only value to copy, with `CopyInput`.',
+  ]}
+  alternatives={[
+    { name: 'Textarea', href: '/components/textarea', when: 'a value that spans several lines.' },
+    { name: 'Select', href: '/components/select', when: 'one choice from a short, fixed list.' },
+    {
+      name: 'Combobox',
+      href: '/components/combobox',
+      when: 'one choice from a long or searchable list.',
+    },
+  ]}
+/>
+
+## Installation
+
+```tsx
+import { CopyInput, Input, PasswordInput, SearchInput } from '@weichenlin/swell-ui'
+```
+
+The CSS comes with `styles.css`, imported once after Tailwind (see [Installation](/installation)):
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
 
 ## Usage
 
@@ -15,13 +46,13 @@ export function Example() {
 }
 ```
 
-Every input needs a visible `label`, or an `aria-label` when the surrounding context already names
-the field. `Input` supports `text`, `email`, `url` and `tel`; use `SearchInput`, `PasswordInput`
-and `CopyInput` for the other cases.
+Every input needs a visible `label`, or an `aria-label` when the surrounding context already names the field. `Input` supports `text`, `email`, `url` and `tel`.
 
 ## Examples
 
 ### Floating label
+
+The label rests inside the field and moves onto the border when you focus or fill it.
 
 <ComponentPreview name="input-floating" />
 
@@ -29,11 +60,27 @@ and `CopyInput` for the other cases.
 
 <ComponentPreview name="input-sizes" />
 
-### States
+### Error, disabled and read-only
+
+`error` replaces the helper text and marks the field invalid. Read-only fields stay focusable and look calmer than editable ones.
 
 <ComponentPreview name="input-states" />
 
+### Adornments
+
+`start` and `end` take an icon or a plain text prefix or suffix. `mono` suits tags, SHAs and hostnames.
+
+<ComponentPreview name="input-adornments" />
+
+### Validating
+
+The field stays editable; `validatingText` is announced politely.
+
+<ComponentPreview name="input-validating" />
+
 ### SearchInput
+
+A leading search icon and a clear button while the field has a value. Esc clears it too.
 
 <ComponentPreview name="input-search" />
 
@@ -43,62 +90,179 @@ and `CopyInput` for the other cases.
 
 ### CopyInput
 
+A read-only field with a copy button; the text is selected on focus.
+
 <ComponentPreview name="input-copy" />
 
 ## API
 
 ### Input
 
-All native `<input>` props are forwarded to the underlying element, except `size`.
+Own props only; every other `<input>` attribute passes through to the element, except `size`. `className` goes to the outer wrapper. There is no `number` type: use `inputMode="numeric"` instead.
 
-| Prop             | Type                                  | Default  | Description                                                                             |
-| ---------------- | ------------------------------------- | -------- | --------------------------------------------------------------------------------------- |
-| `label`          | `string`                              | -        | Visible label rendered as a real `<label>`. Omit it only when `aria-label` is provided. |
-| `aria-label`     | `string`                              | -        | Required when `label` is omitted.                                                       |
-| `floating`       | `boolean`                             | `false`  | Outlined floating label that rests inside the field. Needs a visible `label`.           |
-| `type`           | `'text' \| 'email' \| 'url' \| 'tel'` | `'text'` | Input type. There is no `number`; use `inputMode="numeric"` instead.                    |
-| `helperText`     | `ReactNode`                           | -        | Supporting text below the field.                                                        |
-| `error`          | `ReactNode`                           | -        | A truthy value puts the field in the error state; the text replaces `helperText`.       |
-| `size`           | `'sm' \| 'md' \| 'lg'`                | `'md'`   | Field size.                                                                             |
-| `start`          | `ReactNode`                           | -        | Decorative leading icon (aria-hidden) or plain text prefix such as `https://`.          |
-| `end`            | `ReactNode`                           | -        | Decorative trailing icon (aria-hidden) or plain text suffix.                            |
-| `mono`           | `boolean`                             | -        | Monospace with spellcheck and autocorrect off, for tags, SHAs and hostnames.            |
-| `validating`     | `boolean`                             | -        | Shows a spinner and announces `validatingText`; the field stays editable.               |
-| `validatingText` | `string`                              | -        | Text announced while `validating` is true.                                              |
-| `inputClassName` | `string`                              | -        | Classes for the `<input>`. `className` goes to the outer wrapper.                       |
+<AutoTypeTable
+  path="src/components/input/input.tsx"
+  name="InputProps"
+  keep={['className', 'disabled']}
+/>
+
+`label` and `aria-label` are alternatives: pass a visible `label`, or only `aria-label`. `floating` needs a visible `label`.
 
 ### SearchInput
 
 Takes the `Input` props except `type`, `label`, `floating` and `start`.
 
-| Prop         | Type         | Default | Description                                             |
-| ------------ | ------------ | ------- | ------------------------------------------------------- |
-| `aria-label` | `string`     | -       | Required: a search field has no visible label.          |
-| `onClear`    | `() => void` | -       | Called after the clear button or Esc empties the field. |
+<AutoTypeTable
+  path="src/components/input/search-input.tsx"
+  name="SearchInputOwnProps"
+  type={"Pick<SearchInputProps, 'aria-label' | 'onClear'>"}
+/>
 
 ### PasswordInput
 
-Takes the `Input` props except `type`. A toggle button shows or hides the password.
-
-| Prop           | Type     | Default              | Description                                      |
-| -------------- | -------- | -------------------- | ------------------------------------------------ |
-| `autoComplete` | `string` | `'current-password'` | Use `'new-password'` on sign-up and reset forms. |
+Takes the `Input` props except `type`. A toggle button shows or hides the password. `autoComplete` defaults to `current-password`; use `new-password` on sign-up and reset forms.
 
 ### CopyInput
 
-Read-only field with a copy button. Takes the `Input` props except `type`, `defaultValue`,
-`readOnly` and `onChange`.
+Takes the `Input` props except `type`, `defaultValue`, `readOnly` and `onChange`. Pass `label`, or `aria-label` alone when the context names the value.
 
-| Prop    | Type      | Default | Description                                           |
-| ------- | --------- | ------- | ----------------------------------------------------- |
-| `value` | `string`  | -       | Required. The text shown and copied to the clipboard. |
-| `mono`  | `boolean` | `true`  | Monospace display.                                    |
+<AutoTypeTable
+  path="src/components/input/copy-input.tsx"
+  name="CopyInputOwnProps"
+  type={"Pick<CopyInputProps, 'value' | 'mono' | 'copyLabel' | 'copiedLabel' | 'copyFailedLabel'>"}
+/>
+
+## States
+
+<StatesTable
+  rows={[
+    {
+      state: 'Hover',
+      attribute: ':hover',
+      notes:
+        'The border steps to `--color-input-border-hover` and a faint lift shadow appears. Not while invalid, disabled or read-only.',
+    },
+    {
+      state: 'Focus',
+      attribute: ':focus',
+      notes: 'The border becomes `--color-input-focus`, with a 3px halo outside it.',
+    },
+    {
+      state: 'Invalid',
+      attribute: 'aria-invalid="true"',
+      notes:
+        'Set when `error` is truthy. The message replaces `helperText`; `error={true}` shows only the outline.',
+    },
+    {
+      state: 'Described',
+      attribute: 'aria-describedby',
+      notes: 'Points at the helper or error text, after any `aria-describedby` you pass.',
+    },
+    {
+      state: 'Disabled',
+      attribute: 'disabled',
+      notes: 'Native `disabled`; the whole field dims to 50% and the cursor is `not-allowed`.',
+    },
+    {
+      state: 'Read only',
+      attribute: 'readonly',
+      notes: 'Stays focusable. No inset highlight, hover change or lift shadow.',
+    },
+    {
+      state: 'Required',
+      attribute: 'required',
+      notes: 'Native validation, plus an `aria-hidden` asterisk after the label.',
+    },
+    {
+      state: 'Validating',
+      attribute: 'aria-live="polite"',
+      notes:
+        'A spinner replaces the end adornment; `validatingText` goes to a live region outside the name.',
+    },
+    {
+      state: 'Floated label',
+      attribute: ':placeholder-shown',
+      notes:
+        'Derived in CSS from focus, a value, autofill or a `start` adornment, so `defaultValue` and form reset need no JavaScript.',
+    },
+    {
+      state: 'Root',
+      attribute: 'data-slot="input-field"',
+      notes: 'On the outer wrapper; the bordered control inside has `data-slot="input-control"`.',
+    },
+  ]}
+/>
+
+## Keyboard
+
+<KeyboardTable
+  rows={[
+    { keys: ['Tab', 'Shift+Tab'], action: 'Moves focus to or from the field.' },
+    {
+      keys: 'Esc',
+      action:
+        'SearchInput: clears a non-empty field. On an empty field it reaches outer handlers, such as a dialog.',
+    },
+    {
+      keys: ['Enter', 'Space'],
+      action: 'On the clear, show-password and copy buttons: activates them.',
+    },
+  ]}
+/>
+
+All other keys are the browser's native text editing. The clear, show-password and copy buttons are normal tab stops after the field.
 
 ## Accessibility
 
-- `SearchInput` pressing Esc clears a non-empty field; on an empty field Esc reaches outer
-  handlers, such as a dialog.
-- `PasswordInput` keeps a stable "Show password" button name and reflects state with
-  `aria-pressed`.
-- `CopyInput` selects its text on focus and announces "Copied" or "Copy failed" politely.
-- Buttons inside fields do not steal focus from the input on pointer press.
+- `label` renders a real `<label>` linked to the input. With `aria-label` only, the field has no visible label; `floating` needs a visible one.
+- Helper and error text are linked with `aria-describedby`; the error also sets `aria-invalid`. The error icon is `aria-hidden`.
+- In the floating notch, the repeated label text is `aria-hidden` and never joins the accessible name.
+- `start` and `end` icons are `aria-hidden`; plain text stays readable.
+- `validating` announces `validatingText` in a separate polite live region, so the name and description stay unchanged.
+- `PasswordInput` keeps a stable "Show password" button name and reflects the state with `aria-pressed`.
+- `CopyInput` selects its text on focus and announces "Copied" or "Copy failed" politely. Localize the button name and both announcements with `copyLabel`, `copiedLabel` and `copyFailedLabel`.
+- Buttons inside the field do not take focus from the input on pointer press.
+- On touch screens the field hit area grows to at least 44px high and the text is 16px.
+- In forced colors mode the floating outline shows only on focus, and a disabled border uses `GrayText`.
+
+## Theming
+
+Switch a preview above to **Flat** to see `themes/flat.css`: it zeroes `--shadow-input` and `--shadow-input-lift` and tightens `--radius-control`.
+
+<TokenList
+  tokens={[
+    { name: '--color-input-bg', description: 'Field fill; not used by the floating label.' },
+    { name: '--color-input-bg-hover', description: 'Field fill on hover.' },
+    { name: '--color-input-border', description: 'Resting border.' },
+    { name: '--color-input-border-hover', description: 'Border on hover.' },
+    { name: '--color-input-focus', description: 'Border while focused, and the floating label.' },
+    { name: '--color-input-halo', description: '3px focus halo.' },
+    { name: '--color-input-halo-invalid', description: '3px halo of an invalid field.' },
+    {
+      name: '--color-input-halo-invalid-focus',
+      description: '3px halo of an invalid field while focused.',
+    },
+    { name: '--color-input-placeholder', description: 'Placeholder text.' },
+    { name: '--color-fg', description: 'Value and label text.' },
+    { name: '--color-fg-strong', description: 'Floated label while the field is not focused.' },
+    { name: '--color-fg-muted', description: 'Helper text and adornments.' },
+    { name: '--color-danger', description: 'Error border, text and asterisk.' },
+    { name: '--radius-control', description: 'Corner radius.' },
+    {
+      name: '--spacing-control-sm',
+      description: 'Height of `sm`; `-md` and `-lg` likewise. Border included.',
+    },
+    { name: '--shadow-input', description: 'Inset top highlight at rest.' },
+    { name: '--shadow-input-lift', description: 'Faint drop shadow on hover.' },
+  ]}
+/>
+
+## Related
+
+<Related
+  items={[
+    { title: 'Textarea', href: '/components/textarea', description: 'The multi-line field.' },
+    { title: 'Select', href: '/components/select', description: 'One choice from a fixed list.' },
+    { title: 'Button', href: '/components/button', description: 'Submit the form.' },
+  ]}
+/>

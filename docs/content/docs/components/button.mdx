@@ -1,10 +1,272 @@
 ---
 title: Button
-description: Triggers an action.
+description: Triggers an action or submits a form; with asChild, styles a link as a button.
 ---
 
 <ComponentPreview name="button-demo" />
 
-## Intents
+<WhenToUse
+  use={[
+    'Run an action in place: save, deploy, open a dialog.',
+    'Submit a form, with `type="submit"`.',
+    'A link that must look like a button, through `asChild`.',
+  ]}
+  alternatives={[
+    { name: 'Switch', href: '/components/switch', when: 'an on/off setting that applies at once.' },
+    {
+      name: 'DropdownMenu',
+      href: '/components/dropdown-menu',
+      when: 'several related actions behind one trigger.',
+    },
+    { name: 'Router Links', href: '/router-links', when: 'navigation in menus and tab bars.' },
+  ]}
+/>
+
+## Installation
+
+```tsx
+import { Button } from '@weichenlin/swell-ui'
+```
+
+The CSS comes with `styles.css`, imported once after Tailwind (see [Installation](/installation)):
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
+## Usage
+
+```tsx
+import { Button } from '@weichenlin/swell-ui'
+
+export function Example() {
+  return <Button onClick={() => save()}>Save</Button>
+}
+```
+
+## Examples
+
+### Intents
+
+One `primary` per view; `secondary` for everything else.
 
 <ComponentPreview name="button-intents" />
+
+### Sizes
+
+<ComponentPreview name="button-sizes" />
+
+### With icon
+
+<ComponentPreview name="button-icons" />
+
+### Icon only
+
+`aria-label` is required and shows as a tooltip; pass `tooltip={false}` to hide it.
+
+<ComponentPreview name="button-icon-only" />
+
+### Loading
+
+Click to see it: the width holds and `loadingText` is announced.
+
+<ComponentPreview name="button-loading" />
+
+### Disabled
+
+`disabledReason` explains why in a tooltip, on hover and on keyboard focus.
+
+<ComponentPreview name="button-disabled" />
+
+### Destructive
+
+<ComponentPreview name="button-danger" />
+
+### Link button
+
+`asChild` renders your `<a>` or router `Link` with the button's styles.
+
+<ComponentPreview name="button-link" />
+
+### Full width
+
+<ComponentPreview name="button-full-width" />
+
+### Aligned to an edge
+
+`hang` pulls a `ghost` button out by its own padding, so its label lines up with the content edge.
+
+<ComponentPreview name="button-hang" />
+
+## API
+
+Own props only; every other `<button>` attribute passes through to the element.
+
+<AutoTypeTable
+  path="src/components/button/button.tsx"
+  name="ButtonTextProps"
+  type="TextButtonProps"
+  keep={['disabled']}
+/>
+
+### Icon-only props
+
+With `icon`, these replace `children`, `iconLeft`, `iconRight` and `fullWidth`.
+
+<AutoTypeTable
+  path="src/components/button/button.tsx"
+  name="ButtonIconOnlyProps"
+  type={"Pick<IconOnlyButtonProps, 'icon' | 'aria-label' | 'tooltip' | 'tooltipSide'>"}
+/>
+
+## States
+
+<StatesTable
+  rows={[
+    {
+      state: 'Hover',
+      attribute: ':hover',
+      notes: 'Filled intents rise by `--lift`; the fill shifts by `--hover-strength`.',
+    },
+    {
+      state: 'Pressed',
+      attribute: 'data-pressed',
+      notes:
+        'Set on pointer down and Enter / Space; cleared on release, pointer leave or cancel, and blur.',
+    },
+    {
+      state: 'Focus',
+      attribute: ':focus-visible',
+      notes: '2px `--color-focus` outline, 2px offset.',
+    },
+    {
+      state: 'Disabled',
+      attribute: 'aria-disabled="true"',
+      notes: 'Never native `disabled`: stays focusable, click and form submit are blocked.',
+    },
+    {
+      state: 'Disabled with reason',
+      attribute: 'aria-describedby',
+      notes: 'Points at the `disabledReason` tooltip, only while disabled.',
+    },
+    {
+      state: 'Loading',
+      attribute: '`aria-busy="true"` `aria-disabled="true"`',
+      notes: 'Spinner over the hidden label, which keeps the width and the accessible name.',
+    },
+    {
+      state: 'Ripple',
+      attribute: 'data-ripple',
+      notes: 'On the inner press layer; absent with `ripple={false}`.',
+    },
+    {
+      state: 'Root',
+      attribute: 'data-slot="button"',
+      notes: 'On the `<button>` or the `asChild` element, for styling from a parent.',
+    },
+  ]}
+/>
+
+## Keyboard
+
+<KeyboardTable
+  rows={[
+    {
+      keys: ['Tab', 'Shift+Tab'],
+      action: 'Moves focus to or from the button, also while disabled or loading.',
+    },
+    {
+      keys: ['Enter', 'Space'],
+      action:
+        'Activates it and shows the pressed state until the key is released. Nothing while disabled or loading.',
+    },
+    {
+      keys: 'Enter',
+      action: 'With `asChild` on a link: follows it. Space scrolls the page, as on any link.',
+    },
+  ]}
+/>
+
+## Accessibility
+
+- Icon-only buttons must have `aria-label`; the types reject an `icon` without one. The label tooltip is not wired as a description, since it repeats the name.
+- Disabled and loading use `aria-disabled`, not native `disabled`, so keyboard and screen reader users keep their place.
+- Loading sets `aria-busy`. `loadingText` is announced through a polite live region next to the button, outside its name.
+- `iconLeft`, `iconRight` and the spinner are `aria-hidden`; the label is the name.
+- `type` is `button` unless set: pass `type="submit"` for a form's submit button.
+- On touch screens the hit area grows to at least 44×44px without changing the visual size.
+- In forced colors mode the border is drawn in `ButtonText`, pressed uses `Highlight`, disabled `GrayText`.
+- The ripple is skipped under `prefers-reduced-motion: reduce`.
+
+## Theming
+
+Switch a preview above to **Flat** to see `themes/flat.css`: it sets the shadow tokens to zero, `--lift` to `0px` and `--hover-strength` to `1`, and tightens `--radius-control`.
+
+<TokenList
+  tokens={[
+    { name: '--color-primary', description: '`primary` fill and border.' },
+    { name: '--color-primary-fg', description: 'Text on `primary`.' },
+    {
+      name: '--color-primary-pressed',
+      description: '`primary` pressed fill, computed with `--pressed-strength`.',
+    },
+    { name: '--color-surface-muted', description: '`secondary` fill; `ghost` hover fill.' },
+    { name: '--color-surface-raised', description: '`surface` fill.' },
+    {
+      name: '--color-surface-inset',
+      description: 'Pressed fill of `secondary`, `surface` and `ghost`.',
+    },
+    { name: '--color-fg-strong', description: '`secondary` text.' },
+    { name: '--color-fg', description: '`surface` and `ghost` text.' },
+    {
+      name: '--color-ring',
+      description: '`secondary` and `dark` border; mixed into the `secondary` hover fill.',
+    },
+    { name: '--color-inverse', description: '`dark` fill.' },
+    { name: '--color-inverse-fg', description: 'Text on `dark`.' },
+    { name: '--color-inverse-hover', description: '`dark` hover fill.' },
+    {
+      name: '--color-inverse-pressed',
+      description: '`dark` pressed fill, computed with `--pressed-strength`.',
+    },
+    { name: '--color-danger', description: '`tone="danger"` fill, border or text.' },
+    { name: '--color-danger-fg', description: 'Text on a danger fill.' },
+    { name: '--color-danger-pressed', description: 'Danger pressed fill.' },
+    { name: '--color-danger-inset', description: '`ghost` danger pressed fill.' },
+    { name: '--color-focus', description: 'Focus outline.' },
+    { name: '--radius-control', description: 'Corner radius.' },
+    {
+      name: '--spacing-control-sm',
+      description: 'Height of `sm`; `-md` and `-lg` likewise. Border included.',
+    },
+    { name: '--shadow-raised', description: 'Bevel of filled intents at rest (two inset layers).' },
+    { name: '--shadow-pressed', description: 'Sunken bevel while pressed (two inset layers).' },
+    { name: '--shadow-lift', description: 'Drop shadow of filled intents at rest.' },
+    { name: '--shadow-lift-hover', description: 'Drop shadow while hovered.' },
+    { name: '--lift', description: 'How far filled intents rise on hover.' },
+    { name: '--hover-strength', description: 'Share of the hover fill change, 0 to 1.' },
+    {
+      name: '--pressed-strength',
+      description: 'How far the `primary` and `dark` pressed fills move from rest.',
+    },
+  ]}
+/>
+
+## Related
+
+<Related
+  items={[
+    {
+      title: 'Tooltip',
+      href: '/components/tooltip',
+      description: 'The label of icon-only buttons and disabledReason.',
+    },
+    { title: 'Dialog', href: '/components/dialog', description: 'Confirm a destructive action.' },
+    {
+      title: 'Router Links',
+      href: '/router-links',
+      description: "asChild with your router's Link.",
+    },
+  ]}
+/>

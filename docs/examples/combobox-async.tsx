@@ -12,10 +12,9 @@ const catalog: ComboboxOption[] = [
 export default function ComboboxAsync() {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<ComboboxOption[]>([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    setLoading(true)
     const timer = setTimeout(() => {
       const text = query.trim().toLowerCase()
       setResults(catalog.filter((option) => option.label.toLowerCase().includes(text)))
@@ -33,7 +32,9 @@ export default function ComboboxAsync() {
         filter={false}
         loading={loading}
         onInputValueChange={(text, details) => {
-          if (details.reason === 'input') setQuery(text)
+          if (details.reason !== 'input') return
+          setLoading(true)
+          setQuery(text)
         }}
       />
     </div>

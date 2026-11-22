@@ -1,0 +1,258 @@
+---
+title: 輸入框 Input
+description: 單行文字欄位，附標籤、輔助文字與錯誤狀態，另有搜尋、密碼與複製變體。
+---
+
+<ComponentPreview name="input-demo" />
+
+<WhenToUse
+  use={[
+    '簡短的單行內容：名稱、Email、網址、電話。',
+    '搜尋框，用 `SearchInput`。',
+    '可以顯示明碼的密碼欄位，用 `PasswordInput`。',
+    '唯讀、供使用者複製的內容，用 `CopyInput`。',
+  ]}
+  alternatives={[
+    { name: 'Textarea', href: '/components/textarea', when: '需要多行輸入的內容。' },
+    { name: 'Select', href: '/components/select', when: '從一份簡短、固定的清單中選一項。' },
+    { name: 'Combobox', href: '/components/combobox', when: '從很長或需要搜尋的清單中選一項。' },
+  ]}
+/>
+
+## 安裝
+
+```tsx
+import { CopyInput, Input, PasswordInput, SearchInput } from '@weichenlin/swell-ui'
+```
+
+CSS 包含在 `styles.css` 裡，在 Tailwind 之後引入一次即可（見[安裝](/installation)）：
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
+## 用法
+
+```tsx
+import { Input } from '@weichenlin/swell-ui'
+
+export function Example() {
+  return <Input label="Project name" placeholder="payments-api" />
+}
+```
+
+每個輸入框都需要可見的 `label`；若周圍的內容已經說明了欄位，也可以只給 `aria-label`。`Input` 支援 `text`、`email`、`url` 與 `tel`。
+
+## 範例
+
+### 浮動標籤
+
+標籤平時停在欄位內，聚焦或有內容時移到邊框上。
+
+<ComponentPreview name="input-floating" />
+
+### 尺寸
+
+<ComponentPreview name="input-sizes" />
+
+### 錯誤、停用與唯讀
+
+`error` 會取代輔助文字並把欄位標為無效。唯讀欄位仍可聚焦，外觀比可編輯欄位平靜。
+
+<ComponentPreview name="input-states" />
+
+### 前後綴
+
+`start` 與 `end` 可放圖示，或純文字的前綴與後綴。`mono` 適合標籤、SHA 與主機名稱。
+
+<ComponentPreview name="input-adornments" />
+
+### 驗證中
+
+欄位仍可編輯；`validatingText` 會以 polite 方式朗讀。
+
+<ComponentPreview name="input-validating" />
+
+### SearchInput
+
+左側有搜尋圖示，有內容時會出現清除按鈕。按 Esc 也能清除。
+
+<ComponentPreview name="input-search" />
+
+### PasswordInput
+
+<ComponentPreview name="input-password" />
+
+### CopyInput
+
+附複製按鈕的唯讀欄位；聚焦時會選取全部文字。
+
+<ComponentPreview name="input-copy" />
+
+## API
+
+### Input
+
+只列元件自己的 props；其他 `<input>` 屬性都會直接傳給元素，`size` 除外。`className` 會套在最外層容器。沒有 `number` 類型，請改用 `inputMode="numeric"`。
+
+<AutoTypeTable
+  path="src/components/input/input.tsx"
+  name="InputProps"
+  keep={['className', 'disabled']}
+/>
+
+`label` 與 `aria-label` 二擇一：給可見的 `label`，或只給 `aria-label`。`floating` 需要可見的 `label`。
+
+### SearchInput
+
+接受 `Input` 的 props，但不含 `type`、`label`、`floating` 與 `start`。
+
+<AutoTypeTable
+  path="src/components/input/search-input.tsx"
+  name="SearchInputOwnProps"
+  type={"Pick<SearchInputProps, 'aria-label' | 'onClear'>"}
+/>
+
+### PasswordInput
+
+接受 `Input` 的 props，但不含 `type`。內建切換按鈕可顯示或隱藏密碼。`autoComplete` 預設為 `current-password`；註冊與重設密碼的表單請用 `new-password`。
+
+### CopyInput
+
+接受 `Input` 的 props，但不含 `type`、`defaultValue`、`readOnly` 與 `onChange`。傳 `label`；若上下文已說明這個值，也可以只傳 `aria-label`。
+
+<AutoTypeTable
+  path="src/components/input/copy-input.tsx"
+  name="CopyInputOwnProps"
+  type={"Pick<CopyInputProps, 'value' | 'mono' | 'copyLabel' | 'copiedLabel' | 'copyFailedLabel'>"}
+/>
+
+## 狀態
+
+<StatesTable
+  rows={[
+    {
+      state: '滑鼠移入',
+      attribute: ':hover',
+      notes:
+        '邊框變成 `--color-input-border-hover`，並出現淡淡的浮起陰影。無效、停用、唯讀時不會。',
+    },
+    {
+      state: '聚焦',
+      attribute: ':focus',
+      notes: '邊框變成 `--color-input-focus`，外側有 3px 的光暈。',
+    },
+    {
+      state: '無效',
+      attribute: 'aria-invalid="true"',
+      notes: '`error` 為真值時設定。訊息會取代 `helperText`；`error={true}` 只顯示外框。',
+    },
+    {
+      state: '附描述',
+      attribute: 'aria-describedby',
+      notes: '指向輔助或錯誤文字，排在你傳入的 `aria-describedby` 之後。',
+    },
+    {
+      state: '停用',
+      attribute: 'disabled',
+      notes: '原生 `disabled`；整個欄位變暗到 50%，游標為 `not-allowed`。',
+    },
+    {
+      state: '唯讀',
+      attribute: 'readonly',
+      notes: '仍可聚焦。沒有內側高光、滑鼠移入變化與浮起陰影。',
+    },
+    {
+      state: '必填',
+      attribute: 'required',
+      notes: '原生驗證，標籤後方另有 `aria-hidden` 的星號。',
+    },
+    {
+      state: '驗證中',
+      attribute: 'aria-live="polite"',
+      notes: '轉圈圖示取代尾端內容；`validatingText` 會送到名稱之外的 live region。',
+    },
+    {
+      state: '浮起的標籤',
+      attribute: ':placeholder-shown',
+      notes:
+        '由 CSS 根據聚焦、有值、自動填入或 `start` 前綴推導，所以 `defaultValue` 與表單重設都不需要 JavaScript。',
+    },
+    {
+      state: '根元素',
+      attribute: 'data-slot="input-field"',
+      notes: '在最外層容器上；內層有邊框的控制區是 `data-slot="input-control"`。',
+    },
+  ]}
+/>
+
+## 鍵盤操作
+
+<KeyboardTable
+  rows={[
+    { keys: ['Tab', 'Shift+Tab'], action: '把焦點移到欄位或移開。' },
+    {
+      keys: 'Esc',
+      action: 'SearchInput：清除非空的欄位。欄位為空時，事件會傳給外層處理，例如對話框。',
+    },
+    {
+      keys: ['Enter', 'Space'],
+      action: '在清除、顯示密碼與複製按鈕上：觸發按鈕。',
+    },
+  ]}
+/>
+
+其他按鍵是瀏覽器原生的文字編輯。清除、顯示密碼與複製按鈕是欄位之後一般的 Tab 停靠點。
+
+## 無障礙
+
+- `label` 會渲染成真正的 `<label>` 並連結到 input。只給 `aria-label` 時，欄位沒有可見標籤；`floating` 需要可見標籤。
+- 輔助與錯誤文字用 `aria-describedby` 連結；錯誤另外會設定 `aria-invalid`。錯誤圖示是 `aria-hidden`。
+- 浮動標籤缺口裡重複的標籤文字是 `aria-hidden`，不會混進無障礙名稱。
+- `start` 與 `end` 的圖示是 `aria-hidden`；純文字仍可被讀到。
+- `validating` 會把 `validatingText` 放在獨立的 polite live region 朗讀，名稱與描述不受影響。
+- `PasswordInput` 的按鈕名稱固定為「Show password」，狀態用 `aria-pressed` 表示。
+- `CopyInput` 聚焦時選取全部文字，並以 polite 方式朗讀「Copied」或「Copy failed」。按鈕名稱和這兩句朗讀文字可用 `copyLabel`、`copiedLabel`、`copyFailedLabel` 換成中文。
+- 在欄位內的按鈕上按下指標，不會把焦點從 input 搶走。
+- 在觸控螢幕上，欄位的點擊範圍至少 44px 高，文字為 16px。
+- 強制色彩模式下，浮動標籤的外框只在聚焦時顯示，停用的邊框用 `GrayText`。
+
+## 主題
+
+把上方任一預覽切到 **Flat**，就能看到 `themes/flat.css` 的效果：`--shadow-input` 與 `--shadow-input-lift` 歸零，`--radius-control` 也更小。
+
+<TokenList
+  tokens={[
+    { name: '--color-input-bg', description: '欄位底色；浮動標籤不使用。' },
+    { name: '--color-input-bg-hover', description: '滑鼠移入時的欄位底色。' },
+    { name: '--color-input-border', description: '靜止時的邊框。' },
+    { name: '--color-input-border-hover', description: '滑鼠移入時的邊框。' },
+    { name: '--color-input-focus', description: '聚焦時的邊框，以及浮動標籤的顏色。' },
+    { name: '--color-input-halo', description: '聚焦時 3px 的光暈。' },
+    { name: '--color-input-halo-invalid', description: '無效欄位 3px 的光暈。' },
+    {
+      name: '--color-input-halo-invalid-focus',
+      description: '無效欄位聚焦時 3px 的光暈。',
+    },
+    { name: '--color-input-placeholder', description: '預留文字（placeholder）。' },
+    { name: '--color-fg', description: '內容與標籤文字。' },
+    { name: '--color-fg-strong', description: '欄位未聚焦時，浮起標籤的文字。' },
+    { name: '--color-fg-muted', description: '輔助文字與前後綴。' },
+    { name: '--color-danger', description: '錯誤的邊框、文字與星號。' },
+    { name: '--radius-control', description: '圓角。' },
+    { name: '--spacing-control-sm', description: '`sm` 的高度；`-md`、`-lg` 同理。含邊框。' },
+    { name: '--shadow-input', description: '靜止時頂部的內側高光。' },
+    { name: '--shadow-input-lift', description: '滑鼠移入時淡淡的投影。' },
+  ]}
+/>
+
+## 相關元件
+
+<Related
+  items={[
+    { title: 'Textarea', href: '/components/textarea', description: '多行輸入欄位。' },
+    { title: 'Select', href: '/components/select', description: '從固定清單中選一項。' },
+    { title: 'Button', href: '/components/button', description: '送出表單。' },
+  ]}
+/>

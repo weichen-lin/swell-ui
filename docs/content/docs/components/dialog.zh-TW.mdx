@@ -1,0 +1,214 @@
+---
+title: 對話框 Dialog
+description: 以原生 dialog 元素實作的強制回應對話框，用於需要先處理才能繼續的決定與簡短任務。
+---
+
+<ComponentPreview name="dialog-demo" />
+
+<WhenToUse
+  use={[
+    '繼續之前需要使用者做決定或輸入少量資料：確認、編輯、同步。',
+    '確認破壞性操作，用 `alert`。',
+    '讓使用者專心完成一件事，用 `dismissible={false}`。',
+  ]}
+  alternatives={[
+    {
+      name: 'Drawer',
+      href: '/components/drawer',
+      when: '放在頁面旁邊的篩選條件或詳細資料。',
+    },
+    { name: 'Toast', href: '/components/toast', when: '不需要回應的操作結果。' },
+    {
+      name: 'Alert',
+      href: '/components/alert',
+      when: '固定顯示在相關內容旁邊的訊息。',
+    },
+  ]}
+/>
+
+## 安裝
+
+```tsx
+import {
+  Dialog,
+  DialogBody,
+  DialogFooter,
+  DialogHeader,
+  type DialogCloseReason,
+} from '@weichenlin/swell-ui'
+```
+
+CSS 包含在 `styles.css` 裡，在 Tailwind 之後引入一次即可（見[安裝](/installation)）：
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
+## 用法
+
+`Dialog` 是受控元件：由 `open` 決定開關，所有關閉請求（Esc、背景遮罩、關閉按鈕）都會經過 `onOpenChange`。
+
+```tsx
+import { Button, Dialog, DialogBody, DialogFooter, DialogHeader } from '@weichenlin/swell-ui'
+import { useState } from 'react'
+
+export function Example() {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>Open</Button>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogHeader title="Sync app" />
+        <DialogBody>Content</DialogBody>
+        <DialogFooter>
+          <Button onClick={() => setOpen(false)}>Done</Button>
+        </DialogFooter>
+      </Dialog>
+    </>
+  )
+}
+```
+
+## 範例
+
+### 破壞性操作確認
+
+`alert` 會使用 `role="alertdialog"`、隱藏關閉按鈕，點背景遮罩時不會關閉，而是彈跳一下。請在破壞性最小的按鈕上設定 `autoFocus`。
+
+<ComponentPreview name="dialog-alert" />
+
+### 尺寸
+
+<ComponentPreview name="dialog-sizes" />
+
+### 不可關閉
+
+`dismissible={false}` 會讓 Esc、背景遮罩與關閉按鈕都以彈跳拒絕關閉，例如請求進行中的時候。
+
+<ComponentPreview name="dialog-dismissible" />
+
+## API
+
+只列元件自己的 props；其他 `<dialog>` 屬性都會直接傳給元素。
+
+### Dialog
+
+<AutoTypeTable path="src/components/dialog/dialog.tsx" name="DialogProps" />
+
+`DialogCloseReason` 為 `'escape' | 'backdrop' | 'close-button' | 'programmatic'`。對話框自己不會送出 `programmatic`：當你要把自己的關閉動作（例如表單送出成功後）也交給同一個 handler 處理時，才使用它。
+
+### DialogHeader
+
+<AutoTypeTable path="src/components/dialog/dialog.tsx" name="DialogHeaderProps" />
+
+### DialogBody 與 DialogFooter
+
+都是單純的 `div` 包裝。內容比標題與頁尾之間的空間高時，`DialogBody` 會自己捲動。`DialogFooter` 讓動作靠右排列：取消在前，主要動作在最後。
+
+## 狀態
+
+<StatesTable
+  rows={[
+    {
+      state: '開啟',
+      attribute: 'open',
+      notes: '由 `showModal()` 設定。內容在開啟時掛載、退場後卸載，所以每次開啟都是全新狀態。',
+    },
+    {
+      state: '關閉中',
+      attribute: 'data-closing',
+      notes:
+        '退場動畫播放期間設定（120ms，底部面板為 180ms）；`close()` 會等它結束。這段時間內的關閉請求會被忽略。',
+    },
+    {
+      state: 'Alert',
+      attribute: 'role="alertdialog"',
+      notes: '設定 `alert` 時。點背景遮罩會彈跳；Esc 仍然會關閉。',
+    },
+    {
+      state: '拒絕關閉',
+      attribute: 'dismissible={false}',
+      notes:
+        'Esc、背景遮罩與關閉按鈕都會讓對話框彈跳 200ms（底部面板則是上抬 6px），且關閉按鈕為 `disabled`。開啟 `prefers-reduced-motion: reduce` 時略過。',
+    },
+    {
+      state: '名稱與描述',
+      attribute: '`aria-labelledby` `aria-describedby`',
+      notes: '指向 `DialogHeader` 的標題與描述，只在它們有渲染時才設定。你自己傳的值優先。',
+    },
+    {
+      state: '底部面板',
+      attribute: '@media (width < 40rem)',
+      notes: '寬度低於 640px 時，對話框變成滿版寬度的底部面板；頁尾按鈕平分一列。',
+    },
+    {
+      state: '鎖定捲動',
+      attribute: 'overflow: hidden',
+      notes: '設定在 `<html>`，從開啟到退場結束為止。捲軸寬度以 padding 補回，頁面不會位移。',
+    },
+    {
+      state: '各部分',
+      attribute: 'data-slot',
+      notes:
+        '`<dialog>` 上是 `dialog`，其餘為 `dialog-panel`、`dialog-header`、`dialog-body`、`dialog-footer`。',
+    },
+  ]}
+/>
+
+## 鍵盤操作
+
+<KeyboardTable
+  rows={[
+    {
+      keys: ['Tab', 'Shift+Tab'],
+      action: '在對話框內可聚焦的元素之間移動焦點，焦點不會跑到對話框外。',
+    },
+    {
+      keys: 'Esc',
+      action:
+        '以 `escape` 為原因請求關閉。`dismissible={false}` 時改為彈跳；`alert` 對話框仍然會關閉。',
+    },
+    {
+      keys: ['Enter', 'Space'],
+      action: '觸發目前聚焦的按鈕，例如關閉按鈕或頁尾的動作。',
+    },
+  ]}
+/>
+
+## 無障礙
+
+- 以原生 `<dialog>` 搭配 `showModal()` 實作：背景頁面變成 inert，焦點留在對話框內，關閉後回到原本的位置。
+- `DialogHeader` 的標題作為對話框名稱，描述作為對話框描述。沒有使用時，請傳 `aria-label` 或 `aria-labelledby`。
+- 設定 `alert` 時角色為 `alertdialog`，且沒有關閉按鈕，回應動作放在頁尾。請在破壞性最小的按鈕上設定 `autoFocus`；對話框會在 React 套用 `autoFocus` 之前先開啟，所以焦點能落在該按鈕。沒有 `autoFocus` 時，焦點落在第一個可聚焦元素。
+- 背景遮罩的點擊必須在遮罩上按下並放開才算關閉，所以選取文字後在外面放開不會關閉對話框。
+- 關閉按鈕的名稱是 `Close`，且不加 tooltip，因為會和名稱重複。
+- 頁面捲動會鎖到退場結束，疊了多個 modal 時，鎖到最後一個關閉為止。
+- 強制色彩模式下，面板邊框用 `CanvasText` 繪製。
+- `DialogHeader`、`DialogBody`、`DialogFooter` 在 `Dialog` 之外，或放進 `Drawer` 裡，都會丟出錯誤。
+
+## 主題
+
+對話框在 DOM 上仍位於預覽框內，所以上方的 Flat 切換對它同樣有效。`themes/flat.css` 會移除 `--shadow-dialog`、把 `--radius-surface` 縮到 8px，並加深 `--color-popover-border` 與 `--color-dialog-backdrop`，用邊線和遮罩取代陰影的作用。
+
+<TokenList
+  tokens={[
+    { name: '--color-popover-bg', description: '面板底色。' },
+    { name: '--color-popover-border', description: '面板邊框。' },
+    { name: '--shadow-dialog', description: '面板的投影。' },
+    { name: '--color-dialog-backdrop', description: '面板後方的遮罩。' },
+    { name: '--radius-surface', description: '面板圓角；底部面板的下緣為直角。' },
+    { name: '--color-fg', description: '標題與內容文字。' },
+    { name: '--color-fg-muted', description: '描述文字。' },
+  ]}
+/>
+
+## 相關元件
+
+<Related
+  items={[
+    { title: 'Button', href: '/components/button', description: '頁尾動作與關閉按鈕。' },
+    { title: 'Drawer', href: '/components/drawer', description: '同樣的行為，改成側邊面板。' },
+    { title: 'Toast', href: '/components/toast', description: '對話框關閉後的回饋。' },
+  ]}
+/>

@@ -1,9 +1,47 @@
 ---
 title: Select
-description: A single-choice select built on the native select element.
+description: Picks one option from a list, built on the native select element.
 ---
 
 <ComponentPreview name="select-demo" />
+
+<WhenToUse
+  use={[
+    'Pick one value from a fixed list of up to a few dozen options.',
+    'A form field that must work with native validation, autofill and `FormData`.',
+    'Options that need groups, icons or disabled entries.',
+  ]}
+  alternatives={[
+    {
+      name: 'Combobox',
+      href: '/components/combobox',
+      when: 'the list is long or loaded as the user types.',
+    },
+    {
+      name: 'RadioGroup',
+      href: '/components/radio-group',
+      when: 'two to four options that should all stay visible.',
+    },
+    {
+      name: 'DropdownMenu',
+      href: '/components/dropdown-menu',
+      when: 'actions to run, not a value to store.',
+    },
+  ]}
+/>
+
+## Installation
+
+```tsx
+import { Select } from '@weichenlin/swell-ui'
+```
+
+The CSS comes with `styles.css`, imported once after Tailwind (see [Installation](/installation)):
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
 
 ## Usage
 
@@ -24,9 +62,7 @@ export function Example() {
 }
 ```
 
-`Select` renders a real `<select>`, so native keyboard support, typeahead, forms, validation and
-autofill all work. Where supported, the picker is customized with `appearance: base-select`;
-elsewhere the native picker is used. It shares its frame with `Input`.
+`Select` renders a real `<select>`, so native keyboard support, typeahead, forms, validation and autofill all work. Where the browser supports `appearance: base-select`, the picker is styled to match; elsewhere it stays native. It shares its frame with `Input`.
 
 ## Examples
 
@@ -40,7 +76,19 @@ elsewhere the native picker is used. It shares its frame with `Input`.
 
 ### With icons
 
+The selected option's icon also shows on the trigger.
+
 <ComponentPreview name="select-icons" />
+
+### Floating label
+
+The label rests inside the field and moves onto the border; `placeholder` is ignored.
+
+<ComponentPreview name="select-floating" />
+
+### Sizes
+
+<ComponentPreview name="select-sizes" />
 
 ### Invalid and disabled
 
@@ -48,42 +96,191 @@ elsewhere the native picker is used. It shares its frame with `Input`.
 
 ## API
 
-All native `<select>` props are forwarded, except `size`, `children`, `multiple` and `readOnly`.
+Every native `<select>` attribute passes through, except `size`, `children`, `multiple` and `readOnly`. Pass `label` or, when the context already names the field, `aria-label`.
 
-| Prop              | Type                                    | Default | Description                                                                       |
-| ----------------- | --------------------------------------- | ------- | --------------------------------------------------------------------------------- |
-| `options`         | `(SelectOption \| SelectGroup)[]`       | -       | Options and option groups.                                                        |
-| `label`           | `string`                                | -       | Visible label. Omit it only when `aria-label` is provided.                        |
-| `floating`        | `boolean`                               | `false` | Outlined floating label. Needs a visible `label`; replaces `placeholder`.         |
-| `value`           | `string`                                | -       | Controlled value. `''` means nothing chosen.                                      |
-| `defaultValue`    | `string`                                | -       | Initial value when uncontrolled.                                                  |
-| `onChange`        | `ChangeEventHandler<HTMLSelectElement>` | -       | Native change handler.                                                            |
-| `placeholder`     | `string`                                | -       | Shown while nothing is chosen.                                                    |
-| `helperText`      | `ReactNode`                             | -       | Supporting text below the field.                                                  |
-| `error`           | `ReactNode`                             | -       | A truthy value puts the field in the error state; the text replaces `helperText`. |
-| `size`            | `'sm' \| 'md' \| 'lg'`                  | `'md'`  | Field size.                                                                       |
-| `start`           | `ReactNode`                             | -       | Fixed decorative leading icon; the selected option's own icon wins.               |
-| `mono`            | `boolean`                               | `false` | Monospace text.                                                                   |
-| `selectClassName` | `string`                                | -       | Classes for the `<select>`. `className` goes to the outer wrapper.                |
+<AutoTypeTable
+  path="src/components/select/select.tsx"
+  name="SelectProps"
+  keep={['disabled', 'required', 'name']}
+/>
 
 ### SelectOption
 
-| Field      | Type        | Description                                                        |
-| ---------- | ----------- | ------------------------------------------------------------------ |
-| `value`    | `string`    | Must be non-empty; `''` is reserved for "nothing chosen".          |
-| `label`    | `string`    | Option text, also used by typeahead and screen readers.            |
-| `icon`     | `ReactNode` | Decorative; shown in the picker and on the trigger while selected. |
-| `disabled` | `boolean`   | Prevents selecting the option.                                     |
+<AutoTypeTable path="src/components/select/select.tsx" name="SelectOption" />
 
 ### SelectGroup
 
-| Field     | Type             | Description           |
-| --------- | ---------------- | --------------------- |
-| `label`   | `string`         | Group title.          |
-| `options` | `SelectOption[]` | Options in the group. |
+<AutoTypeTable path="src/components/select/select.tsx" name="SelectGroup" />
 
-## Notes
+## States
 
-- Single choice only: `multiple` is not supported.
-- A native select cannot be read-only; use `disabled` or a read-only `Input`.
-- The customized picker applies to fine pointers only; touch devices keep the OS picker.
+<StatesTable
+  rows={[
+    {
+      state: 'Hover',
+      attribute: ':hover',
+      notes: 'Border moves to `--color-input-border-hover` and a faint drop shadow appears.',
+    },
+    {
+      state: 'Focus',
+      attribute: ':focus',
+      notes:
+        'Border becomes `--color-input-focus` with a 3px halo; also while the picker is `:open`.',
+    },
+    {
+      state: 'Open',
+      attribute: ':open',
+      notes: 'The chevron turns 180 degrees; a floating label stays raised.',
+    },
+    {
+      state: 'Nothing chosen',
+      attribute: 'option[value=""]:checked',
+      notes:
+        'A hidden, disabled empty option is selected: the text uses the placeholder color and a floating label rests inside.',
+    },
+    {
+      state: 'Invalid',
+      attribute: 'aria-invalid="true"',
+      notes:
+        'Set by a truthy `error`: danger border and halo, and the message replaces `helperText`.',
+    },
+    {
+      state: 'Disabled',
+      attribute: 'disabled',
+      notes: 'Native `disabled`: not focusable, 50% opacity, `not-allowed` cursor.',
+    },
+    {
+      state: 'Required',
+      attribute: 'required',
+      notes:
+        'Native validation fails until an option is chosen; the label gets an `aria-hidden` asterisk.',
+    },
+    {
+      state: 'Described',
+      attribute: 'aria-describedby',
+      notes: 'Points at the `helperText` or `error` message.',
+    },
+    {
+      state: 'Leading icon',
+      attribute: 'data-start',
+      notes:
+        'On the control while `start` or the selected option has an icon; keeps a floating label raised.',
+    },
+    {
+      state: 'Option checked',
+      attribute: ':checked',
+      notes: 'The chosen option is `font-medium`.',
+    },
+    {
+      state: 'Option disabled',
+      attribute: ':disabled',
+      notes: 'In the styled picker: 50% opacity and no hover highlight.',
+    },
+    {
+      state: 'Option highlighted',
+      attribute: ':hover :focus-visible',
+      notes:
+        'In the styled picker: `--color-popover-highlight` fill, shared by pointer and keyboard.',
+    },
+    {
+      state: 'Root',
+      attribute: 'data-slot="input-field"',
+      notes: 'On the outer wrapper; the bordered frame is `data-slot="input-control"`.',
+    },
+  ]}
+/>
+
+## Keyboard
+
+The component adds no key handling: these are the browser's own, and small details differ between browsers.
+
+<KeyboardTable
+  rows={[
+    { keys: ['Tab', 'Shift+Tab'], action: 'Moves focus to or from the select.' },
+    {
+      keys: ['Space', 'Alt+ArrowDown'],
+      action: 'Opens the picker. Clicking anywhere on the frame opens it too.',
+    },
+    {
+      keys: ['ArrowDown', 'ArrowUp'],
+      action: 'Moves between options and, in most browsers, changes the value while closed.',
+    },
+    { keys: ['Home', 'End'], action: 'Jumps to the first or last option.' },
+    {
+      keys: 'A-Z, 0-9',
+      action: 'Typeahead: jumps to the option whose `label` starts with what you type.',
+    },
+    { keys: 'Escape', action: 'Closes the picker without changing the value.' },
+  ]}
+/>
+
+## Accessibility
+
+- It is a native `<select>`: the role, value, typeahead and form participation come from the browser.
+- A visible `label` is a real `<label>` for the select. With only `aria-label`, there is no label element; the types require one of the two, and `floating` needs a visible `label`.
+- `helperText` and `error` are linked with `aria-describedby`; an error also sets `aria-invalid` and shows an icon that is `aria-hidden`.
+- The empty "nothing chosen" option is hidden and disabled, so it is never offered in the list, and a `required` select fails validation until a real option is chosen.
+- Option icons, `start` and the chevron are `aria-hidden`. Icons add no text, so the accessible name and typeahead use `label` only.
+- `form.reset()` restores the initial option, and the trigger icon follows.
+- The styled picker applies to fine pointers only; on touch the OS picker is kept, the text grows to 16px and the hit area to at least 44px.
+- In forced colors mode, the disabled border is `GrayText` and focus is drawn as an outline.
+- The picker fades in with a short transition that is skipped under `prefers-reduced-motion: reduce`.
+
+## Theming
+
+Switch a preview above to **Flat** to see `themes/flat.css`: it removes the field and picker shadows, tightens `--radius-control` and `--radius-surface`, and makes `--color-popover-border` stronger. The field border is unchanged.
+
+<TokenList
+  tokens={[
+    { name: '--color-input-bg', description: 'Field fill (not used by the floating label).' },
+    { name: '--color-input-bg-hover', description: 'Field fill on hover.' },
+    { name: '--color-input-border', description: 'Resting border.' },
+    { name: '--color-input-border-hover', description: 'Border on hover.' },
+    {
+      name: '--color-input-focus',
+      description: 'Border while focused or open; floating label while focused.',
+    },
+    { name: '--color-input-placeholder', description: 'Text while nothing is chosen.' },
+    { name: '--color-input-halo', description: '3px halo while focused.' },
+    { name: '--color-input-halo-invalid', description: 'Halo of an invalid field.' },
+    {
+      name: '--color-input-halo-invalid-focus',
+      description: 'Halo of an invalid field while focused.',
+    },
+    { name: '--color-danger', description: 'Invalid border, label and message.' },
+    { name: '--color-fg', description: 'Selected text and label above the field.' },
+    { name: '--color-fg-strong', description: 'Floating label once raised and not focused.' },
+    { name: '--color-fg-muted', description: 'Helper text, icons and chevron.' },
+    { name: '--color-fg-subtle', description: 'Disabled option text in a native picker.' },
+    { name: '--color-popover-bg', description: 'Picker and option fill.' },
+    { name: '--color-popover-border', description: 'Picker border.' },
+    { name: '--color-popover-highlight', description: 'Hovered or keyboard-active option.' },
+    { name: '--shadow-input', description: 'Inset highlight at the top of the field.' },
+    { name: '--shadow-input-lift', description: 'Faint drop shadow on hover.' },
+    { name: '--shadow-popover', description: 'Drop shadow of the picker.' },
+    { name: '--radius-control', description: 'Field and option corner radius.' },
+    { name: '--radius-surface', description: 'Picker corner radius.' },
+    {
+      name: '--spacing-control-sm',
+      description: 'Height of `sm`; `-md` and `-lg` likewise. Border included.',
+    },
+  ]}
+/>
+
+## Related
+
+<Related
+  items={[
+    { title: 'Input', href: '/components/input', description: 'Shares this field frame.' },
+    {
+      title: 'Combobox',
+      href: '/components/combobox',
+      description: 'A searchable select for long or remote lists.',
+    },
+    {
+      title: 'RadioGroup',
+      href: '/components/radio-group',
+      description: 'A few options, all visible.',
+    },
+  ]}
+/>

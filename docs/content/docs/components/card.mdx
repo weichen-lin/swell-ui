@@ -5,10 +5,39 @@ description: A bordered surface for a group of related content.
 
 <ComponentPreview name="card-demo" />
 
+<WhenToUse
+  use={[
+    'Group related content under one title.',
+    'Hold a list or table that runs edge to edge.',
+    'Make a named region of the page, with `as="section"` or `as="article"`.',
+  ]}
+  alternatives={[
+    { name: 'Alert', href: '/components/alert', when: 'a status message, not a group of content.' },
+    {
+      name: 'Accordion',
+      href: '/components/accordion',
+      when: 'sections the reader can collapse.',
+    },
+    { name: 'Dialog', href: '/components/dialog', when: 'content that takes over the screen.' },
+  ]}
+/>
+
+## Installation
+
+```tsx
+import { Card, CardContent, CardHeader } from '@weichenlin/swell-ui'
+```
+
+The CSS comes with `styles.css`, imported once after Tailwind (see [Installation](/installation)):
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
 ## Usage
 
-Card has no padding of its own. `CardHeader` and `CardContent` add it, so lists and tables can run
-edge to edge.
+Card has no padding of its own. `CardHeader` and `CardContent` add it, so lists and tables can run edge to edge.
 
 ```tsx
 import { Card, CardContent, CardHeader } from '@weichenlin/swell-ui'
@@ -27,38 +56,94 @@ export function Example() {
 
 ### Header action
 
+`action` sits at the end of the header.
+
 <ComponentPreview name="card-action" />
 
 ### Full-bleed list
+
+Set `p-0` on `CardContent` to let the list touch the card's edges.
 
 <ComponentPreview name="card-full-bleed" />
 
 ## API
 
+Each part also takes the standard `div` props.
+
 ### Card
 
-Also accepts the standard `div` props.
-
-| Prop | Type                              | Default | Description                                                                       |
-| ---- | --------------------------------- | ------- | --------------------------------------------------------------------------------- |
-| `as` | `'div' \| 'section' \| 'article'` | `'div'` | Element to render. `section` and `article` are named by their `CardHeader` title. |
+<AutoTypeTable path="src/components/card/card.tsx" name="CardProps" />
 
 ### CardHeader
 
-Also accepts the standard `div` props except `title` and `children`.
+Replaces `children` with the props below.
 
-| Prop           | Type        | Default | Description                               |
-| -------------- | ----------- | ------- | ----------------------------------------- |
-| `title`        | `ReactNode` | -       | Heading text (required).                  |
-| `description`  | `ReactNode` | -       | Secondary text below the title.           |
-| `action`       | `ReactNode` | -       | Trailing control, e.g. a "View all" link. |
-| `headingLevel` | `2 \| 3`    | `2`     | Heading element rendered for the title.   |
+<AutoTypeTable path="src/components/card/card.tsx" name="CardHeaderProps" />
 
 ### CardContent
 
-Padded body of the card. Accepts the standard `div` props.
+The padded body. It takes only the standard `div` props and has no props of its own.
+
+## States
+
+A card is static, so it has no hover, pressed or focus state.
+
+<StatesTable
+  rows={[
+    {
+      state: 'Named region',
+      attribute: 'aria-labelledby',
+      notes:
+        'On a `section` or `article` card that has a `CardHeader`, pointing at its title. Not set on a `div`, without a header, or with an `aria-label`.',
+    },
+    { state: 'Root', attribute: 'data-slot="card"', notes: 'On the card element.' },
+    { state: 'Header', attribute: 'data-slot="card-header"', notes: 'On the header row.' },
+    {
+      state: 'Content',
+      attribute: 'data-slot="card-content"',
+      notes: 'On the body; its top padding is tighter right after a header.',
+    },
+  ]}
+/>
+
+## Keyboard
+
+A card is not focusable and takes no key input. Controls you put inside, such as the `action` link, keep their own keys.
 
 ## Accessibility
 
-With `as="section"` or `as="article"`, the card is a region named by its `CardHeader` title. An
-explicit `aria-label` on the card takes precedence over the title.
+- With `as="section"` or `as="article"`, the card is a region named by its `CardHeader` title.
+- An explicit `aria-label` on the card takes precedence over the title.
+- A `div` card is never labelled, and a card without a header sets no `aria-labelledby`.
+- The title is a heading: `h2` by default, `h3` with `headingLevel={3}`. Pick the level that fits the page outline.
+
+## Theming
+
+Switch a preview above to **Flat** to see `themes/flat.css`: the card's border gets a clearly visible line and `--radius-surface` goes from 12px to 8px. Cards use no shadows.
+
+<TokenList
+  tokens={[
+    { name: '--color-surface', description: 'Card fill.' },
+    { name: '--color-border-strong', description: 'Card border.' },
+    { name: '--radius-surface', description: 'Corner radius.' },
+    { name: '--color-fg-muted', description: 'Header description.' },
+  ]}
+/>
+
+## Related
+
+<Related
+  items={[
+    {
+      title: 'Table',
+      href: '/components/table',
+      description: 'A data table that fits full-bleed in a card.',
+    },
+    { title: 'Badge', href: '/components/badge', description: 'Status labels inside a card.' },
+    {
+      title: 'Alert',
+      href: '/components/alert',
+      description: 'A status message instead of a content group.',
+    },
+  ]}
+/>

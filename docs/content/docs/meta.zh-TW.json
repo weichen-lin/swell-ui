@@ -1,0 +1,12 @@
+{
+  "pages": [
+    "introduction",
+    "installation",
+    "---指南---",
+    "theming",
+    "dark-mode",
+    "router-links",
+    "---元件---",
+    "...components"
+  ]
+}

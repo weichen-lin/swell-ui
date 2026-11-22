@@ -5,10 +5,47 @@ description: A modal side panel that slides in from the left or right edge.
 
 <ComponentPreview name="drawer-demo" />
 
+<WhenToUse
+  use={[
+    'Filters, details or a form that sit beside the page it belongs to.',
+    'Navigation on small screens, from the left edge.',
+    'Content too long for a dialog: the body scrolls on its own.',
+  ]}
+  alternatives={[
+    {
+      name: 'Dialog',
+      href: '/components/dialog',
+      when: 'a short decision, or a confirmation that must be answered.',
+    },
+    {
+      name: 'Sidebar',
+      href: '/components/sidebar',
+      when: 'navigation that stays on screen.',
+    },
+    {
+      name: 'DropdownMenu',
+      href: '/components/dropdown-menu',
+      when: 'a short list of actions.',
+    },
+  ]}
+/>
+
+## Installation
+
+```tsx
+import { Drawer, DrawerBody, DrawerClose, DrawerFooter, DrawerHeader } from '@weichenlin/swell-ui'
+```
+
+The CSS comes with `styles.css`, imported once after Tailwind (see [Installation](/installation)):
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
 ## Usage
 
-`Drawer` is controlled through `open` and `onOpenChange`. It needs an accessible name: a
-`DrawerHeader` title, `aria-label`, or `aria-labelledby`.
+`Drawer` is controlled through `open` and `onOpenChange`. It needs an accessible name: a `DrawerHeader` title, `aria-label` or `aria-labelledby`.
 
 ```tsx
 import { Button, Drawer, DrawerBody, DrawerHeader } from '@weichenlin/swell-ui'
@@ -30,7 +67,9 @@ export function Example() {
 
 ## Examples
 
-### Side
+### Left side
+
+`side="left"` suits navigation.
 
 <ComponentPreview name="drawer-left" />
 
@@ -38,46 +77,145 @@ export function Example() {
 
 <ComponentPreview name="drawer-sizes" />
 
+### Custom header
+
+`DrawerHeader` always shows a close button. For your own header, name the drawer with `aria-label` and add `DrawerClose`.
+
+<ComponentPreview name="drawer-custom-header" />
+
 ## API
+
+Own props only; every other `<dialog>` attribute passes through to the element.
 
 ### Drawer
 
-Also accepts the props of the native `dialog` element, except `open`.
+<AutoTypeTable path="src/components/drawer/drawer.tsx" name="DrawerProps" />
 
-| Prop           | Type                                                 | Default   | Description                                                |
-| -------------- | ---------------------------------------------------- | --------- | ---------------------------------------------------------- |
-| `open`         | `boolean`                                            | -         | Whether the drawer is open.                                |
-| `onOpenChange` | `(open: boolean, reason: DrawerCloseReason) => void` | -         | Called for Esc, backdrop, close button, and `DrawerClose`. |
-| `side`         | `'left' \| 'right'`                                  | `'right'` | Edge it slides out of.                                     |
-| `size`         | `'sm' \| 'md' \| 'lg'`                               | `'md'`    | Width: sm 280px, md 384px, lg 480px.                       |
-
-`DrawerCloseReason` is `'escape' | 'backdrop' | 'close-button' | 'programmatic'`.
+`DrawerCloseReason` is `'escape' | 'backdrop' | 'close-button' | 'programmatic'`. The drawer never sends `programmatic` itself: use it when you route your own closes through the same handler.
 
 ### DrawerHeader
 
-| Prop          | Type        | Default | Description                     |
-| ------------- | ----------- | ------- | ------------------------------- |
-| `title`       | `ReactNode` | -       | Heading; also names the drawer. |
-| `description` | `ReactNode` | -       | Supporting text.                |
+<AutoTypeTable path="src/components/drawer/drawer.tsx" name="DrawerHeaderProps" />
 
 ### DrawerBody and DrawerFooter
 
-Plain `div` wrappers. `DrawerBody` fills the space between header and footer and scrolls on its
-own. `DrawerFooter` right-aligns actions.
+Plain `div` wrappers. `DrawerBody` fills the space between header and footer and scrolls on its own, so they stay put. `DrawerFooter` right-aligns actions.
 
 ### DrawerClose
 
 A ghost icon button that closes the drawer, for custom headers.
 
-| Prop         | Type                   | Default | Description                              |
-| ------------ | ---------------------- | ------- | ---------------------------------------- |
-| `aria-label` | `string`               | -       | Required: the button shows only an icon. |
-| `size`       | `'sm' \| 'md' \| 'lg'` | `'sm'`  | Button size.                             |
-| `icon`       | `ReactNode`            | `X`     | Icon to show.                            |
+<AutoTypeTable path="src/components/drawer/drawer.tsx" name="DrawerCloseProps" />
+
+## States
+
+<StatesTable
+  rows={[
+    {
+      state: 'Open',
+      attribute: 'open',
+      notes:
+        'Set by `showModal()`. The content mounts when it opens and unmounts after the exit, so each opening starts fresh.',
+    },
+    {
+      state: 'Closing',
+      attribute: 'data-closing',
+      notes:
+        'Set while the panel slides out (200ms); `close()` waits for it. Close requests in the meantime are ignored.',
+    },
+    {
+      state: 'Side and size',
+      attribute: '`data-side` `data-size`',
+      notes: 'Mirror the `side` and `size` props, for styling from a parent.',
+    },
+    {
+      state: 'Named',
+      attribute: '`aria-labelledby` `aria-describedby`',
+      notes:
+        'Point at the `DrawerHeader` title and description, only while they are rendered. Your own values win.',
+    },
+    {
+      state: 'Reduced motion',
+      attribute: '@media (prefers-reduced-motion: reduce)',
+      notes: 'The panel fades instead of sliding.',
+    },
+    {
+      state: 'Scroll lock',
+      attribute: 'overflow: hidden',
+      notes:
+        'On `<html>` from open until the exit has finished. The scrollbar width stays as padding, so the page does not shift.',
+    },
+    {
+      state: 'Parts',
+      attribute: 'data-slot',
+      notes:
+        '`drawer` on the `<dialog>`, then `drawer-panel`, `drawer-header`, `drawer-body` and `drawer-footer`.',
+    },
+  ]}
+/>
+
+## Keyboard
+
+<KeyboardTable
+  rows={[
+    {
+      keys: ['Tab', 'Shift+Tab'],
+      action: 'Moves focus between the focusable elements inside the drawer; it cannot leave.',
+    },
+    { keys: 'Esc', action: 'Asks to close with reason `escape`.' },
+    {
+      keys: ['Enter', 'Space'],
+      action: 'Activates the focused button, such as the close button or a footer action.',
+    },
+  ]}
+/>
 
 ## Accessibility
 
-- Built on the native `dialog` with `showModal()`: the page is inert, focus is contained and
-  restored on close, and Esc closes it.
-- A missing accessible name logs a warning in development.
+- Built on the native `<dialog>` with `showModal()`: the page behind is inert, focus stays inside and goes back to the trigger on close.
+- The drawer needs a name: a `DrawerHeader` title, `aria-label` or `aria-labelledby`. A missing name logs a warning in development.
+- The title names the drawer and the description describes it, only while rendered.
+- `DrawerClose` requires `aria-label`; the types reject it without one. Both close buttons show only an icon and have no tooltip, since it would repeat the name.
+- A backdrop click closes only when the press and the release both land on the backdrop.
+- Page scroll is locked until the exit has finished.
 - With reduced motion, the panel fades instead of sliding.
+- In forced colors mode the panel border is drawn in `CanvasText`.
+- On narrow screens the panel is at most the viewport width minus 56px, so the backdrop stays reachable.
+- `DrawerHeader`, `DrawerBody`, `DrawerFooter` and `DrawerClose` throw outside a `Drawer`, and inside a `Dialog`.
+
+## Theming
+
+The drawer stays inside the preview in the DOM, so the Flat switch above applies to it too. `themes/flat.css` removes `--shadow-dialog` and strengthens `--color-popover-border` and `--color-dialog-backdrop`. The panel is already square, so the radius change does not touch it.
+
+<TokenList
+  tokens={[
+    { name: '--color-popover-bg', description: 'Panel fill.' },
+    { name: '--color-popover-border', description: 'Hairline on the inner edge of the panel.' },
+    { name: '--shadow-dialog', description: 'Drop shadow of the panel.' },
+    { name: '--color-dialog-backdrop', description: 'Dim behind the panel.' },
+    { name: '--color-fg', description: 'Title and body text.' },
+    { name: '--color-fg-muted', description: 'Description text.' },
+  ]}
+/>
+
+## Related
+
+<Related
+  items={[
+    {
+      title: 'Dialog',
+      href: '/components/dialog',
+      description: 'The same behavior as a centered dialog.',
+    },
+    {
+      title: 'Button',
+      href: '/components/button',
+      description: 'Footer actions and the close button.',
+    },
+    {
+      title: 'Sidebar',
+      href: '/components/sidebar',
+      description: 'Navigation that stays on screen.',
+    },
+  ]}
+/>

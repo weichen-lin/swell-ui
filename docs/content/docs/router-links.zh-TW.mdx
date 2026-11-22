@@ -1,0 +1,70 @@
+---
+title: 路由連結
+description: 在 SidebarItem、TabNavLink 與 Button 上用 asChild 渲染你的 router 的 Link。
+---
+
+`SidebarItem` 與 `TabNavLink` 預設渲染單純的 `<a>`。加上 `asChild` 後，它們會改為渲染唯一的子元素（也就是你的 router 的 Link），並把自己的 props、class、ref 與事件處理器合併進去。連結負責設定 `href` 與 `aria-current="page"`；目前項目的樣式就是依這個屬性套用。
+
+```tsx
+import { Link } from '@tanstack/react-router' // any router's Link
+import {
+  Sidebar,
+  SidebarBadge,
+  SidebarBody,
+  SidebarGroup,
+  SidebarIcon,
+  SidebarItem,
+  SidebarProvider,
+  SidebarTrigger,
+} from '@weichenlin/swell-ui'
+import { Box } from 'lucide-react'
+
+function Nav() {
+  return (
+    <SidebarProvider>
+      <SidebarTrigger />
+      <Sidebar aria-label="Main">
+        <SidebarBody>
+          <SidebarGroup>
+            <SidebarItem asChild>
+              <Link to="/projects">
+                <SidebarIcon>
+                  <Box />
+                </SidebarIcon>
+                Projects
+                <SidebarBadge>8</SidebarBadge>
+              </Link>
+            </SidebarItem>
+          </SidebarGroup>
+        </SidebarBody>
+      </Sidebar>
+    </SidebarProvider>
+  )
+}
+```
+
+這個項目的 accessible name 是「Projects 8」。純文字的子節點會成為會被截斷（truncate）的 label。寬度低於 960px 時，側邊欄會變成抽屜；連結在原地處理的點擊（像 router 的連結一樣會呼叫 `preventDefault`）會把它關閉。
+
+`TabNavLink` 的用法相同，並且和 `Tab` 一樣接受 `icon` 與 `badge` props：
+
+```tsx
+<TabNav aria-label="Sections">
+  <TabNavLink asChild icon={<Boxes />} badge={<Badge size="sm">12</Badge>}>
+    <Link to="/resources">Resources</Link>
+  </TabNavLink>
+</TabNav>
+```
+
+`Button` 也支援 `asChild`，適合長得像按鈕的導覽。它會保留按鈕的外觀、圖示與 ripple，同時仍是真正的連結（可以在新分頁開啟、複製網址）：
+
+```tsx
+<Button asChild intent="secondary" iconLeft={<Plus />}>
+  <Link to="/apps/new">New app</Link>
+</Button>
+
+<Button asChild icon={<Settings />} aria-label="Settings">
+  <Link to="/settings" />
+</Button>
+```
+
+`disabled`（無論有沒有 `disabledReason`）的行為和按鈕一致：連結仍可聚焦並帶有 `aria-disabled`，點擊會在抵達你的 Link 之前被攔下，所以不會導覽。`loading` 與 `type` 僅適用於按鈕。

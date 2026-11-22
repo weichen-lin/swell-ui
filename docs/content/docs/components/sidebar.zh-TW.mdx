@@ -1,0 +1,246 @@
+---
+title: 側邊欄 Sidebar
+description: 應用程式導覽：寬螢幕時固定在側邊，窄螢幕時變成抽屜。
+---
+
+<ComponentPreview name="sidebar-demo" />
+
+<WhenToUse
+  use={[
+    '有多個區段的應用程式外框的主要導覽。',
+    '桌面版固定在側邊、手機版變成抽屜的同一份導覽。',
+    '用標籤把連結分組，並固定頁首與頁尾。',
+  ]}
+  alternatives={[
+    {
+      name: 'Tabs',
+      href: '/components/tabs',
+      when: '在同一頁內切換檢視。',
+    },
+    {
+      name: 'DropdownMenu',
+      href: '/components/dropdown-menu',
+      when: '收在單一觸發按鈕後的少量動作。',
+    },
+    {
+      name: 'Drawer',
+      href: '/components/drawer',
+      when: '不是導覽用途的暫時性面板。',
+    },
+  ]}
+/>
+
+## 安裝
+
+```tsx
+import {
+  Sidebar,
+  SidebarBody,
+  SidebarGroup,
+  SidebarHeader,
+  SidebarItem,
+  SidebarProvider,
+  SidebarTrigger,
+} from '@weichenlin/swell-ui'
+```
+
+CSS 包含在 `styles.css` 裡，在 Tailwind 之後引入一次即可（見[安裝](/installation)）：
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
+## 用法
+
+用 `SidebarProvider` 包住 `Sidebar` 與 `SidebarTrigger`，它負責共用抽屜的開關狀態。螢幕寬度 960px 以上時，側邊欄固定在版面中（寬 240px、滿高、sticky）；低於 960px 則隱藏，由 `SidebarTrigger` 在 `Drawer` 裡開啟同一份內容。側邊欄預設是 `h-dvh`；傳入 `h-full` 之類的 `className` 就能配合容器高度，範例即是如此。
+
+```tsx
+import {
+  Sidebar,
+  SidebarBody,
+  SidebarGroup,
+  SidebarHeader,
+  SidebarItem,
+  SidebarProvider,
+  SidebarTrigger,
+} from '@weichenlin/swell-ui'
+
+export function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <SidebarProvider>
+      <div className="flex">
+        <Sidebar aria-label="Primary">
+          <SidebarHeader>Acme</SidebarHeader>
+          <SidebarBody>
+            <SidebarGroup label="Workspace">
+              <SidebarItem href="/" aria-current="page">
+                Overview
+              </SidebarItem>
+            </SidebarGroup>
+          </SidebarBody>
+        </Sidebar>
+        <main>
+          <SidebarTrigger />
+          {children}
+        </main>
+      </div>
+    </SidebarProvider>
+  )
+}
+```
+
+搭配 router 時，用 `<SidebarItem asChild><Link href="/">Overview</Link></SidebarItem>`；連結會自行設定 `href` 與 `aria-current="page"`。
+
+## API
+
+### SidebarProvider
+
+保存抽屜的開關狀態。只接受 `children`。
+
+### Sidebar
+
+另外接受 `nav` 的 props。`aria-label` 與 `aria-labelledby` 擇一傳入；型別會要求這點。
+
+<AutoTypeTable path="src/components/sidebar/sidebar.tsx" name="SidebarProps" />
+
+### SidebarTrigger
+
+開啟抽屜的選單按鈕；只在 960px 以下顯示。另外接受 `button` 的 props，但不含 `children`、`type`、`aria-expanded` 與 `aria-controls`，這些由元件自己設定。
+
+<AutoTypeTable path="src/components/sidebar/sidebar.tsx" name="SidebarTriggerProps" />
+
+### SidebarItem
+
+適用一般 `a` 的 props。用 `aria-current="page"` 標示目前所在的項目。在抽屜裡，連結自己處理的點擊（`preventDefault`）會關閉抽屜；帶修飾鍵的點擊會開新分頁，抽屜保持開啟。
+
+<AutoTypeTable path="src/components/sidebar/sidebar.tsx" name="SidebarItemProps" />
+
+### SidebarGroup
+
+<AutoTypeTable path="src/components/sidebar/sidebar.tsx" name="SidebarGroupProps" />
+
+### 其他部件
+
+都接受各自元素的標準 props。
+
+| 部件            | 說明                                                |
+| --------------- | --------------------------------------------------- |
+| `SidebarHeader` | 固定在主體上方的品牌列；在抽屜裡包含關閉按鈕。      |
+| `SidebarBody`   | 放群組的區域；唯一會捲動的部分。                    |
+| `SidebarFooter` | 固定在主體下方。                                    |
+| `SidebarIcon`   | 項目前方 16px 的裝飾性圖示。                        |
+| `SidebarBadge`  | 項目尾端的數量，是小型 `Badge`；接受 `BadgeProps`。 |
+
+## 狀態
+
+<StatesTable
+  rows={[
+    {
+      state: '目前項目',
+      attribute: 'aria-current="page"',
+      notes: '項目有底色，文字加強。樣式由屬性決定，不是 prop。',
+    },
+    {
+      state: '滑鼠移入',
+      attribute: ':hover',
+      notes: '項目文字從淡色變成 `--color-fg`。',
+    },
+    {
+      state: '移入光影',
+      attribute: 'data-hover',
+      notes: '滑鼠在項目上時設在 `SidebarBody`；光影會在項目間滑動。觸控與觸控筆不會設定。',
+    },
+    {
+      state: '光影進場',
+      attribute: 'data-hover-enter',
+      notes: '只在第一個項目時設在 `SidebarBody`：光影淡入而不是滑動。',
+    },
+    {
+      state: '按下',
+      attribute: ':active',
+      notes: '底色再深一階；目前項目再更深一階。',
+    },
+    {
+      state: '聚焦',
+      attribute: ':focus-visible',
+      notes: '2px 的 `--color-focus` 外框，向內縮，捲動區域不會裁掉它。',
+    },
+    {
+      state: '抽屜開啟',
+      attribute: 'aria-expanded',
+      notes: '在 `SidebarTrigger` 上；`aria-controls` 指向抽屜。',
+    },
+    {
+      state: '在抽屜內',
+      attribute: 'data-drawer',
+      notes: '在抽屜裡渲染的 `<nav>` 上。',
+    },
+    {
+      state: '部件',
+      attribute: 'data-slot',
+      notes:
+        '`sidebar`、`sidebar-header`、`sidebar-body`、`sidebar-footer`、`sidebar-group`、`sidebar-group-label`、`sidebar-item`、`sidebar-item-icon`。',
+    },
+  ]}
+/>
+
+## 鍵盤操作
+
+<KeyboardTable
+  rows={[
+    {
+      keys: ['Tab', 'Shift+Tab'],
+      action: '依序移動到觸發按鈕與各個項目。抽屜開啟時，焦點會留在抽屜內。',
+    },
+    { keys: 'Enter', action: '在項目上：前往連結。在觸發按鈕上：開啟抽屜。' },
+    { keys: 'Space', action: '在觸發按鈕或關閉按鈕上：觸發。' },
+    {
+      keys: 'Esc',
+      action: '關閉抽屜，並把焦點還給觸發按鈕。',
+    },
+  ]}
+/>
+
+## 無障礙
+
+- 固定的側邊欄與抽屜都會渲染 `nav` landmark，需要名稱，所以 `aria-label` 或 `aria-labelledby` 必填。抽屜沿用同一個名稱。
+- DOM 裡同一時間只有一份內容：抽屜關閉時不會渲染任何東西。
+- 群組是清單，會朗讀項目數量；群組的 `label` 是清單的名稱。
+- 項目是連結：目前所在的項目請設 `aria-current="page"`。router 的 `Link` 會自動設定。
+- `SidebarIcon` 是 `aria-hidden`。`SidebarBadge` 是項目名稱的一部分，前面有空格（「Projects 8」）。
+- 抽屜是 modal：焦點移入並留在裡面，按 Esc、關閉按鈕（`Close navigation`）或點擊背景都會關閉，並把焦點還給觸發按鈕。
+- 視窗放寬到 960px 以上時，開啟中的抽屜會自動關閉。
+- 強制色彩模式下，目前項目使用 `Highlight` 與 `HighlightText`。
+
+## 主題
+
+把上方任一預覽切到 **Flat**，就能看到 `themes/flat.css` 的效果：分隔線變得清楚可見，`--radius-item` 從 6px 變 4px。側邊欄沒有用到陰影。
+
+<TokenList
+  tokens={[
+    { name: '--color-bg', description: '側邊欄底色。' },
+    { name: '--color-border-strong', description: '側邊欄與頁面之間的線。' },
+    {
+      name: '--color-fg',
+      description: '目前與滑鼠移入項目的文字；光影與底色是 5%、8%、12% 的 `--color-fg`。',
+    },
+    { name: '--color-fg-muted', description: '項目靜止時的文字；群組標籤。' },
+    { name: '--color-focus', description: '聚焦外框。' },
+    { name: '--radius-item', description: '項目與移入光影的圓角。' },
+  ]}
+/>
+
+## 相關元件
+
+<Related
+  items={[
+    { title: 'Drawer', href: '/components/drawer', description: '在 960px 以下承載側邊欄。' },
+    { title: 'Badge', href: '/components/badge', description: 'SidebarBadge 是小型的中性 Badge。' },
+    {
+      title: 'Router Links',
+      href: '/router-links',
+      description: '用 asChild 搭配你的 router Link。',
+    },
+  ]}
+/>

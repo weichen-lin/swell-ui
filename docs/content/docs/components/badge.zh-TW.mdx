@@ -1,0 +1,155 @@
+---
+title: 徽章 Badge
+description: 精簡的靜態標籤，用來標示狀態或中繼資料。
+---
+
+<ComponentPreview name="badge-demo" />
+
+<WhenToUse
+  use={[
+    '在名稱旁標示狀態：Healthy、Synced、Failed。',
+    '標示環境、版本或數量等中繼資料。',
+    '用 `busy` 表示正在進行中。',
+  ]}
+  alternatives={[
+    {
+      name: 'Alert',
+      href: '/components/alert',
+      when: '讀者必須注意或處理的訊息。',
+    },
+    { name: 'Meter', href: '/components/meter', when: '已知範圍內的數值。' },
+    { name: 'Button', href: '/components/button', when: '標籤本身要觸發動作。' },
+  ]}
+/>
+
+## 安裝
+
+```tsx
+import { Badge } from '@weichenlin/swell-ui'
+```
+
+CSS 包含在 `styles.css` 裡，在 Tailwind 之後引入一次即可（見[安裝](/installation)）：
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
+## 用法
+
+```tsx
+import { Badge } from '@weichenlin/swell-ui'
+
+export function Example() {
+  return <Badge tone="success">Healthy</Badge>
+}
+```
+
+## 範例
+
+### Tone 色調
+
+<ComponentPreview name="badge-tones" />
+
+### Variant 樣式
+
+三種樣式的盒子大小相同，切換時版面不會位移。
+
+<ComponentPreview name="badge-variants" />
+
+### 尺寸
+
+<ComponentPreview name="badge-sizes" />
+
+### 進行中
+
+`busy` 會把圖示換成旋轉的圓環。
+
+<ComponentPreview name="badge-busy" />
+
+### 螢幕閱讀器語境
+
+`context` 會在標籤前朗讀但不顯示：「Health: Unknown」。
+
+<ComponentPreview name="badge-context" />
+
+## API
+
+只列元件自己的 props；其他 `<span>` 屬性都會直接傳入，但不含 `onClick`。在 `className` 加上 `max-w-*` 會截斷標籤文字，圖示不受影響。
+
+<AutoTypeTable path="src/components/badge/badge.tsx" name="BadgeProps" />
+
+## 狀態
+
+徽章是靜態的，沒有滑鼠移入、按下或聚焦狀態。
+
+<StatesTable
+  rows={[
+    {
+      state: '進行中',
+      attribute: 'busy',
+      notes: '圖示位置顯示旋轉圓環；開啟 `prefers-reduced-motion: reduce` 時改為靜態的虛線圓環。',
+    },
+    {
+      state: '根元素',
+      attribute: 'data-slot="badge"',
+      notes: '在 `<span>` 上，方便從父層設定樣式。',
+    },
+    {
+      state: '圖示',
+      attribute: 'data-slot="badge-icon"',
+      notes: '只有傳 `icon` 或 `busy` 時才存在；`aria-hidden="true"`。',
+    },
+    {
+      state: '標籤',
+      attribute: 'data-slot="badge-label"',
+      notes: '放文字與 `context` 前綴；截斷作用在這一層。',
+    },
+  ]}
+/>
+
+## 鍵盤操作
+
+徽章不可聚焦，也不接收按鍵。需要動作時請用 `Button` 或連結。
+
+## 無障礙
+
+- 徽章是沒有 role、沒有 `tabindex` 的 `<span>`；型別刻意不允許 `onClick`。
+- 用 `context` 讓螢幕閱讀器念出狀態所指的對象：文字內容會變成「Health: Unknown」。
+- `icon` 與進行中的圓環放在 `aria-hidden` 的容器裡，無障礙文字就是標籤本身。
+- 不只靠顏色傳達：每種樣式都有 1px 邊框，強制色彩模式下以 `CanvasText` 繪製。
+- 開啟 `prefers-reduced-motion: reduce` 時，旋轉圓環改為靜態圓環。
+
+## 主題
+
+`themes/flat.css` 只會讓 `--radius-item` 變小（6px 變 4px）；徽章沒有用到陰影。
+
+下列 token 每種 tone 各讀一組；把 `{tone}` 換成 `neutral`、`info`、`success`、`warning` 或 `danger`。
+
+<TokenList
+  tokens={[
+    {
+      name: '--color-{tone}',
+      description: '`solid` 的底色與邊框；`subtle`、`outline` 的圖示顏色。',
+    },
+    { name: '--color-{tone}-fg', description: '`solid` 上的文字與圖示。' },
+    { name: '--color-{tone}-subtle-bg', description: '`subtle` 的底色。' },
+    { name: '--color-{tone}-subtle-fg', description: '`subtle`、`outline` 的文字。' },
+    { name: '--color-{tone}-border', description: '`subtle`、`outline` 的邊框。' },
+    { name: '--radius-item', description: '圓角。' },
+  ]}
+/>
+
+## 相關元件
+
+<Related
+  items={[
+    { title: 'Alert', href: '/components/alert', description: '讀者應該注意的狀態訊息。' },
+    { title: 'Meter', href: '/components/meter', description: '範圍內的數值。' },
+    {
+      title: 'Sidebar',
+      href: '/components/sidebar',
+      description: 'SidebarBadge 在項目上顯示數量。',
+    },
+  ]}
+/>

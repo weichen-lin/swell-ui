@@ -1,0 +1,274 @@
+---
+title: 下拉選單 Dropdown Menu
+description: 從觸發按鈕展開單層的動作清單。
+---
+
+<ComponentPreview name="dropdown-menu-demo" />
+
+<WhenToUse
+  use={[
+    '把多個相關動作收進同一個觸發按鈕：列表上的操作、帳號選單。',
+    '用 `tone="danger"` 標示破壞性操作。',
+    '項目是連結時，用 `asChild`。',
+  ]}
+  alternatives={[
+    {
+      name: 'Button',
+      href: '/components/button',
+      when: '一個該隨時看得到的主要動作。',
+    },
+    {
+      name: 'Select',
+      href: '/components/select',
+      when: '選擇要儲存的值，而不是執行動作。',
+    },
+    {
+      name: 'Combobox',
+      href: '/components/combobox',
+      when: '從需要搜尋的長清單中選擇。',
+    },
+  ]}
+/>
+
+## 安裝
+
+```tsx
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@weichenlin/swell-ui'
+```
+
+CSS 包含在 `styles.css` 裡，在 Tailwind 之後引入一次即可（見[安裝](/installation)）：
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
+## 用法
+
+```tsx
+import {
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@weichenlin/swell-ui'
+
+export function Example() {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button intent="secondary">Actions</Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem onSelect={() => console.log('edit')}>Edit</DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
+```
+
+在 `DropdownMenu` 裡放一個 `DropdownMenuTrigger` 和一個 `DropdownMenuContent`。用 `asChild` 可以把觸發按鈕或項目換成你自己的元素，例如 `Button` 或 router 的連結。選單只有單層：沒有子選單，也沒有核取方塊或單選項目。
+
+## 範例
+
+### 分組、標籤與停用項目
+
+用 `aria-label` 為群組命名：`DropdownMenuLabel` 只是視覺上的文字。
+
+<ComponentPreview name="dropdown-menu-groups" />
+
+### 受控
+
+在 `onSelect` 裡呼叫 `event.preventDefault()`，選單就不會關閉。
+
+<ComponentPreview name="dropdown-menu-controlled" />
+
+### 位置
+
+<ComponentPreview name="dropdown-menu-position" />
+
+### 連結項目
+
+`asChild` 會把你的 `<a>` 或 router 的 `Link` 當成項目來渲染；選取後選單一樣會關閉。
+
+<ComponentPreview name="dropdown-menu-link" />
+
+## API
+
+### DropdownMenu
+
+<AutoTypeTable path="src/components/dropdown-menu/dropdown-menu.tsx" name="DropdownMenuProps" />
+
+### DropdownMenuTrigger
+
+渲染成 `<button>`；其他按鈕屬性都會直接傳入。停用的觸發按鈕使用 `aria-disabled`，仍可聚焦。
+
+<AutoTypeTable
+  path="src/components/dropdown-menu/dropdown-menu.tsx"
+  name="DropdownMenuTriggerProps"
+  keep={['disabled']}
+/>
+
+### DropdownMenuContent
+
+渲染選單面板；其他 `<div>` 屬性都會直接傳入。觸發按鈕的文字不足以說明選單時，傳 `aria-label` 為它命名。
+
+<AutoTypeTable
+  path="src/components/dropdown-menu/dropdown-menu.tsx"
+  name="DropdownMenuContentProps"
+/>
+
+### DropdownMenuItem
+
+渲染成 `<button role="menuitem">`；其他按鈕屬性都會直接傳入。
+
+<AutoTypeTable
+  path="src/components/dropdown-menu/dropdown-menu.tsx"
+  name="DropdownMenuItemProps"
+  keep={['disabled']}
+/>
+
+### DropdownMenuGroup、DropdownMenuLabel、DropdownMenuSeparator
+
+這三個元件沒有自己的 props。`DropdownMenuGroup`（`role="group"`）與 `DropdownMenuLabel` 接受 `<div>` 屬性；`DropdownMenuSeparator` 接受 `<hr>` 屬性。
+
+## 狀態
+
+<StatesTable
+  rows={[
+    {
+      state: '展開',
+      attribute: 'aria-expanded="true"',
+      notes: '設在觸發按鈕上，同時有 `data-state="open"`，`aria-controls` 指向選單。',
+    },
+    {
+      state: '項目聚焦',
+      attribute: ':focus',
+      notes:
+        '填入 `--color-popover-highlight`。指標移到項目上時會聚焦它，所以滑鼠與鍵盤共用同一個反白。',
+    },
+    {
+      state: '聚焦外框',
+      attribute: ':focus-visible',
+      notes: '2px 的 `--color-focus` 外框，畫在項目內側。',
+    },
+    {
+      state: '停用的項目',
+      attribute: 'aria-disabled="true"',
+      notes: '透明度 50%。仍可聚焦；點擊、按鍵與內層連結都會被擋下。',
+    },
+    {
+      state: '停用的觸發按鈕',
+      attribute: 'aria-disabled="true"',
+      notes:
+        '由 `disabled` 設定，而不是在 `<button>` 上使用原生 `disabled`：仍可聚焦，但不會開啟。',
+    },
+    {
+      state: 'Danger 色調',
+      attribute: 'data-tone="danger"',
+      notes: '文字為 danger 色；聚焦時的底色用 `--color-danger-subtle-bg`。',
+    },
+    {
+      state: '插槽',
+      attribute: 'data-slot',
+      notes:
+        '`dropdown-menu-trigger`、`dropdown-menu-content`、`dropdown-menu-item`、`dropdown-menu-group`、`dropdown-menu-label` 與 `dropdown-menu-separator`。',
+    },
+    {
+      state: '定位',
+      attribute: 'data-side',
+      notes: '只在不支援 CSS anchor positioning 時設在面板上：實際展開的那一側。',
+    },
+  ]}
+/>
+
+## 鍵盤操作
+
+<KeyboardTable
+  rows={[
+    {
+      keys: ['Enter', 'Space'],
+      action: '在觸發按鈕上：切換選單，並聚焦第一個項目。在項目上：觸發該項目。',
+    },
+    {
+      keys: 'ArrowDown',
+      action: '在觸發按鈕上：開啟選單並停在第一個項目。在選單中：下一個項目，到最後會繞回第一個。',
+    },
+    {
+      keys: 'ArrowUp',
+      action:
+        '在觸發按鈕上：開啟選單並停在最後一個項目。在選單中：上一個項目，到最前會繞到最後一個。',
+    },
+    { keys: ['Home', 'End'], action: '移到第一個或最後一個項目。' },
+    {
+      keys: 'A-Z',
+      action: 'Typeahead：移到下一個文字以你輸入內容開頭的項目；半秒內繼續輸入會延伸搜尋。',
+    },
+    {
+      keys: 'Escape',
+      action: '關閉選單，並把焦點還給觸發按鈕。',
+    },
+    {
+      keys: ['Tab', 'Shift+Tab'],
+      action: '關閉選單，並把焦點移到觸發按鈕之後或之前的下一個控制項。',
+    },
+  ]}
+/>
+
+## 無障礙
+
+- 觸發按鈕有 `aria-haspopup="menu"` 與 `aria-expanded`；面板是 `role="menu"`，名稱來自觸發按鈕（除非你傳了 `aria-label`），項目是 `role="menuitem"`。
+- 開啟時焦點會移進選單，並用方向鍵一次移動一個項目：項目不在 Tab 順序中。
+- 按 Escape 或選取項目後，焦點會回到觸發按鈕；但點擊選單外、按 Tab，或選取時自己把焦點移到別處，則不會。
+- 停用的項目與觸發按鈕保有焦點並使用 `aria-disabled`；停用的 `asChild` 項目裡的連結無法被點開。
+- `iconLeft` 是 `aria-hidden`。Typeahead 比對的是項目的文字；文字不同時請設定 `textValue`。
+- `DropdownMenuLabel` 並未和群組串起來：請用 `aria-label` 為群組命名。
+- 面板是原生的 popover，位於最上層，不會被捲動容器裁掉，在對話框內也一樣。點擊選單外或焦點移出時會關閉。
+- 在觸控螢幕上，項目高度至少 40px。開啟 `prefers-reduced-motion: reduce` 時不播放淡入。
+
+## 主題
+
+把上方任一預覽切到 **Flat**，就能看到 `themes/flat.css` 的效果：`--radius-surface` 與 `--radius-control` 更小，`--color-popover-border` 更明顯。
+
+<TokenList
+  tokens={[
+    { name: '--color-popover-bg', description: '面板的底色。' },
+    { name: '--color-popover-border', description: '面板的邊框與分隔線。' },
+    { name: '--color-popover-highlight', description: '聚焦項目的底色。' },
+    { name: '--color-fg', description: '項目與面板的文字。' },
+    { name: '--color-fg-muted', description: '項目圖示與 `DropdownMenuLabel` 的文字。' },
+    { name: '--color-danger-subtle-fg', description: '`tone="danger"` 的文字。' },
+    { name: '--color-danger-subtle-bg', description: 'danger 項目聚焦時的底色。' },
+    { name: '--color-focus', description: '聚焦外框。' },
+    { name: '--radius-surface', description: '面板的圓角。' },
+    { name: '--radius-control', description: '項目的圓角。' },
+  ]}
+/>
+
+## 相關元件
+
+<Related
+  items={[
+    {
+      title: 'Button',
+      href: '/components/button',
+      description: '最常見的觸發按鈕，透過 `asChild` 使用。',
+    },
+    {
+      title: 'Select',
+      href: '/components/select',
+      description: '選擇一個值，而不是執行動作。',
+    },
+    {
+      title: 'Router Links',
+      href: '/router-links',
+      description: '用 asChild 搭配你的 router Link 做成項目。',
+    },
+  ]}
+/>

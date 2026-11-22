@@ -1,0 +1,205 @@
+---
+title: 抽屜 Drawer
+description: 從左側或右側邊緣滑入的強制回應側邊面板。
+---
+
+<ComponentPreview name="drawer-demo" />
+
+<WhenToUse
+  use={[
+    '放在所屬頁面旁邊的篩選條件、詳細資料或表單。',
+    '小螢幕上的導覽，從左側滑出。',
+    '內容太長、放不進對話框：本體會自己捲動。',
+  ]}
+  alternatives={[
+    {
+      name: 'Dialog',
+      href: '/components/dialog',
+      when: '簡短的決定，或必須回答的確認。',
+    },
+    {
+      name: 'Sidebar',
+      href: '/components/sidebar',
+      when: '固定顯示在畫面上的導覽。',
+    },
+    {
+      name: 'DropdownMenu',
+      href: '/components/dropdown-menu',
+      when: '簡短的動作清單。',
+    },
+  ]}
+/>
+
+## 安裝
+
+```tsx
+import { Drawer, DrawerBody, DrawerClose, DrawerFooter, DrawerHeader } from '@weichenlin/swell-ui'
+```
+
+CSS 包含在 `styles.css` 裡，在 Tailwind 之後引入一次即可（見[安裝](/installation)）：
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
+## 用法
+
+`Drawer` 透過 `open` 與 `onOpenChange` 控制。它需要無障礙名稱：`DrawerHeader` 的標題、`aria-label` 或 `aria-labelledby`。
+
+```tsx
+import { Button, Drawer, DrawerBody, DrawerHeader } from '@weichenlin/swell-ui'
+import { useState } from 'react'
+
+export function Example() {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>Open</Button>
+      <Drawer open={open} onOpenChange={setOpen}>
+        <DrawerHeader title="Filters" />
+        <DrawerBody>Content</DrawerBody>
+      </Drawer>
+    </>
+  )
+}
+```
+
+## 範例
+
+### 左側
+
+`side="left"` 適合用在導覽。
+
+<ComponentPreview name="drawer-left" />
+
+### 尺寸
+
+<ComponentPreview name="drawer-sizes" />
+
+### 自訂標題列
+
+`DrawerHeader` 一定會顯示關閉按鈕。要用自己的標題列時，用 `aria-label` 為抽屜命名，再加上 `DrawerClose`。
+
+<ComponentPreview name="drawer-custom-header" />
+
+## API
+
+只列元件自己的 props；其他 `<dialog>` 屬性都會直接傳給元素。
+
+### Drawer
+
+<AutoTypeTable path="src/components/drawer/drawer.tsx" name="DrawerProps" />
+
+`DrawerCloseReason` 為 `'escape' | 'backdrop' | 'close-button' | 'programmatic'`。抽屜自己不會送出 `programmatic`：當你要把自己的關閉動作也交給同一個 handler 處理時，才使用它。
+
+### DrawerHeader
+
+<AutoTypeTable path="src/components/drawer/drawer.tsx" name="DrawerHeaderProps" />
+
+### DrawerBody 與 DrawerFooter
+
+都是單純的 `div` 包裝。`DrawerBody` 會填滿標題與頁尾之間的空間並自己捲動，標題與頁尾固定不動。`DrawerFooter` 讓動作靠右排列。
+
+### DrawerClose
+
+用於自訂標題列、能關閉抽屜的 ghost 純圖示按鈕。
+
+<AutoTypeTable path="src/components/drawer/drawer.tsx" name="DrawerCloseProps" />
+
+## 狀態
+
+<StatesTable
+  rows={[
+    {
+      state: '開啟',
+      attribute: 'open',
+      notes: '由 `showModal()` 設定。內容在開啟時掛載、退場後卸載，所以每次開啟都是全新狀態。',
+    },
+    {
+      state: '關閉中',
+      attribute: 'data-closing',
+      notes: '面板滑出期間設定（200ms）；`close()` 會等它結束。這段時間內的關閉請求會被忽略。',
+    },
+    {
+      state: '邊緣與尺寸',
+      attribute: '`data-side` `data-size`',
+      notes: '對應 `side` 與 `size` props，方便從父層設定樣式。',
+    },
+    {
+      state: '名稱與描述',
+      attribute: '`aria-labelledby` `aria-describedby`',
+      notes: '指向 `DrawerHeader` 的標題與描述，只在它們有渲染時才設定。你自己傳的值優先。',
+    },
+    {
+      state: '減少動態效果',
+      attribute: '@media (prefers-reduced-motion: reduce)',
+      notes: '面板改為淡入淡出，不再滑動。',
+    },
+    {
+      state: '鎖定捲動',
+      attribute: 'overflow: hidden',
+      notes: '設定在 `<html>`，從開啟到退場結束為止。捲軸寬度以 padding 補回，頁面不會位移。',
+    },
+    {
+      state: '各部分',
+      attribute: 'data-slot',
+      notes:
+        '`<dialog>` 上是 `drawer`，其餘為 `drawer-panel`、`drawer-header`、`drawer-body`、`drawer-footer`。',
+    },
+  ]}
+/>
+
+## 鍵盤操作
+
+<KeyboardTable
+  rows={[
+    {
+      keys: ['Tab', 'Shift+Tab'],
+      action: '在抽屜內可聚焦的元素之間移動焦點，焦點不會跑到抽屜外。',
+    },
+    { keys: 'Esc', action: '以 `escape` 為原因請求關閉。' },
+    {
+      keys: ['Enter', 'Space'],
+      action: '觸發目前聚焦的按鈕，例如關閉按鈕或頁尾的動作。',
+    },
+  ]}
+/>
+
+## 無障礙
+
+- 以原生 `<dialog>` 搭配 `showModal()` 實作：背景頁面變成 inert，焦點留在抽屜內，關閉後回到觸發按鈕。
+- 抽屜需要名稱：`DrawerHeader` 的標題、`aria-label` 或 `aria-labelledby`。缺少名稱時，開發模式會在 console 顯示警告。
+- 標題作為抽屜名稱，描述作為抽屜描述，且只在它們有渲染時才設定。
+- `DrawerClose` 必須有 `aria-label`；型別會擋下沒有它的用法。兩種關閉按鈕都只顯示圖示，且不加 tooltip，因為會和名稱重複。
+- 背景遮罩的點擊必須在遮罩上按下並放開才算關閉。
+- 頁面捲動會鎖到退場結束。
+- 減少動態效果時，面板改為淡入淡出，不再滑動。
+- 強制色彩模式下，面板邊框用 `CanvasText` 繪製。
+- 窄螢幕上面板寬度最多是視窗寬度減 56px，遮罩仍然點得到。
+- `DrawerHeader`、`DrawerBody`、`DrawerFooter`、`DrawerClose` 在 `Drawer` 之外，或放進 `Dialog` 裡，都會丟出錯誤。
+
+## 主題
+
+抽屜在 DOM 上仍位於預覽框內，所以上方的 Flat 切換對它同樣有效。`themes/flat.css` 會移除 `--shadow-dialog`，並加深 `--color-popover-border` 與 `--color-dialog-backdrop`。面板本來就是直角，所以圓角的調整不會影響它。
+
+<TokenList
+  tokens={[
+    { name: '--color-popover-bg', description: '面板底色。' },
+    { name: '--color-popover-border', description: '面板內側邊緣的細線。' },
+    { name: '--shadow-dialog', description: '面板的投影。' },
+    { name: '--color-dialog-backdrop', description: '面板後方的遮罩。' },
+    { name: '--color-fg', description: '標題與內容文字。' },
+    { name: '--color-fg-muted', description: '描述文字。' },
+  ]}
+/>
+
+## 相關元件
+
+<Related
+  items={[
+    { title: 'Dialog', href: '/components/dialog', description: '同樣的行為，改成置中的對話框。' },
+    { title: 'Button', href: '/components/button', description: '頁尾動作與關閉按鈕。' },
+    { title: 'Sidebar', href: '/components/sidebar', description: '固定顯示在畫面上的導覽。' },
+  ]}
+/>

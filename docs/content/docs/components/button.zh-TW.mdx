@@ -1,0 +1,261 @@
+---
+title: 按鈕 Button
+description: 觸發動作或送出表單；搭配 asChild，也能把連結做成按鈕的樣子。
+---
+
+<ComponentPreview name="button-demo" />
+
+<WhenToUse
+  use={[
+    '就地執行動作：儲存、部署、開啟對話框。',
+    '送出表單，設定 `type="submit"`。',
+    '需要長得像按鈕的連結，用 `asChild`。',
+  ]}
+  alternatives={[
+    { name: 'Switch', href: '/components/switch', when: '切換後立即生效的開關設定。' },
+    {
+      name: 'DropdownMenu',
+      href: '/components/dropdown-menu',
+      when: '把多個相關動作收進一個觸發按鈕。',
+    },
+    { name: 'Router Links', href: '/router-links', when: '選單與分頁列裡的導覽。' },
+  ]}
+/>
+
+## 安裝
+
+```tsx
+import { Button } from '@weichenlin/swell-ui'
+```
+
+CSS 包含在 `styles.css` 裡，在 Tailwind 之後引入一次即可（見[安裝](/installation)）：
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
+## 用法
+
+```tsx
+import { Button } from '@weichenlin/swell-ui'
+
+export function Example() {
+  return <Button onClick={() => save()}>Save</Button>
+}
+```
+
+## 範例
+
+### Intent 樣式
+
+每個畫面只放一個 `primary`，其他都用 `secondary`。
+
+<ComponentPreview name="button-intents" />
+
+### 尺寸
+
+<ComponentPreview name="button-sizes" />
+
+### 搭配圖示
+
+<ComponentPreview name="button-icons" />
+
+### 純圖示
+
+`aria-label` 為必填，並會顯示成 tooltip；傳 `tooltip={false}` 可以關掉。
+
+<ComponentPreview name="button-icon-only" />
+
+### 載入中
+
+點一下試試：寬度不變，且會朗讀 `loadingText`。
+
+<ComponentPreview name="button-loading" />
+
+### 停用
+
+`disabledReason` 會用 tooltip 說明停用原因，滑鼠移入與鍵盤聚焦時都會顯示。
+
+<ComponentPreview name="button-disabled" />
+
+### 破壞性操作
+
+<ComponentPreview name="button-danger" />
+
+### 連結按鈕
+
+`asChild` 會把你的 `<a>` 或 router 的 `Link` 套上按鈕樣式來渲染。
+
+<ComponentPreview name="button-link" />
+
+### 滿版寬度
+
+<ComponentPreview name="button-full-width" />
+
+### 對齊邊緣
+
+`hang` 會把 `ghost` 按鈕往外拉出自己的內距，讓文字對齊內容邊緣。
+
+<ComponentPreview name="button-hang" />
+
+## API
+
+只列元件自己的 props；其他 `<button>` 屬性都會直接傳給元素。
+
+<AutoTypeTable
+  path="src/components/button/button.tsx"
+  name="ButtonTextProps"
+  type="TextButtonProps"
+  keep={['disabled']}
+/>
+
+### 純圖示的 props
+
+使用 `icon` 時，改用這些 props，取代 `children`、`iconLeft`、`iconRight` 與 `fullWidth`。
+
+<AutoTypeTable
+  path="src/components/button/button.tsx"
+  name="ButtonIconOnlyProps"
+  type={"Pick<IconOnlyButtonProps, 'icon' | 'aria-label' | 'tooltip' | 'tooltipSide'>"}
+/>
+
+## 狀態
+
+<StatesTable
+  rows={[
+    {
+      state: '滑鼠移入',
+      attribute: ':hover',
+      notes: '有底色的 intent 會上浮 `--lift`；底色依 `--hover-strength` 變化。',
+    },
+    {
+      state: '按下',
+      attribute: 'data-pressed',
+      notes: '指標按下或按 Enter / Space 時設定；放開、指標移出或取消、失焦時清除。',
+    },
+    {
+      state: '聚焦',
+      attribute: ':focus-visible',
+      notes: '2px 的 `--color-focus` 外框，間距 2px。',
+    },
+    {
+      state: '停用',
+      attribute: 'aria-disabled="true"',
+      notes: '不用原生 `disabled`：仍可聚焦，但會擋下點擊與表單送出。',
+    },
+    {
+      state: '停用並附原因',
+      attribute: 'aria-describedby',
+      notes: '指向 `disabledReason` 的 tooltip，只在停用時存在。',
+    },
+    {
+      state: '載入中',
+      attribute: '`aria-busy="true"` `aria-disabled="true"`',
+      notes: '轉圈圖示蓋在隱藏的文字上，文字保留寬度與無障礙名稱。',
+    },
+    {
+      state: '漣漪效果',
+      attribute: 'data-ripple',
+      notes: '在內層的按壓圖層上；`ripple={false}` 時不存在。',
+    },
+    {
+      state: '根元素',
+      attribute: 'data-slot="button"',
+      notes: '在 `<button>` 或 `asChild` 元素上，方便從父層設定樣式。',
+    },
+  ]}
+/>
+
+## 鍵盤操作
+
+<KeyboardTable
+  rows={[
+    { keys: ['Tab', 'Shift+Tab'], action: '把焦點移到按鈕或移開，停用與載入中時也一樣。' },
+    {
+      keys: ['Enter', 'Space'],
+      action: '觸發按鈕，並顯示按下狀態直到放開按鍵。停用或載入中時沒有作用。',
+    },
+    { keys: 'Enter', action: '`asChild` 搭配連結時：前往連結。Space 和一般連結一樣會捲動頁面。' },
+  ]}
+/>
+
+## 無障礙
+
+- 純圖示按鈕必須有 `aria-label`；型別會擋下沒有 `aria-label` 的 `icon`。顯示名稱的 tooltip 不會設成描述，因為內容和名稱重複。
+- 停用與載入中用 `aria-disabled`，不用原生 `disabled`，鍵盤與螢幕閱讀器使用者不會失去目前位置。
+- 載入中會設定 `aria-busy`。`loadingText` 透過按鈕旁的 polite live region 朗讀，不會混進按鈕名稱。
+- `iconLeft`、`iconRight` 與轉圈圖示都是 `aria-hidden`；按鈕名稱來自文字。
+- 沒設定時 `type` 是 `button`：表單的送出按鈕要傳 `type="submit"`。
+- 在觸控螢幕上，點擊範圍至少 44×44px，視覺大小不變。
+- 強制色彩模式下，邊框用 `ButtonText` 繪製，按下用 `Highlight`，停用用 `GrayText`。
+- 開啟 `prefers-reduced-motion: reduce` 時不播放漣漪效果。
+
+## 主題
+
+把上方任一預覽切到 **Flat**，就能看到 `themes/flat.css` 的效果：陰影 token 歸零、`--lift` 設為 `0px`、`--hover-strength` 設為 `1`，`--radius-control` 也更小。
+
+<TokenList
+  tokens={[
+    { name: '--color-primary', description: '`primary` 的底色與邊框。' },
+    { name: '--color-primary-fg', description: '`primary` 上的文字。' },
+    {
+      name: '--color-primary-pressed',
+      description: '`primary` 按下時的底色，由 `--pressed-strength` 計算。',
+    },
+    { name: '--color-surface-muted', description: '`secondary` 的底色；`ghost` 滑鼠移入的底色。' },
+    { name: '--color-surface-raised', description: '`surface` 的底色。' },
+    {
+      name: '--color-surface-inset',
+      description: '`secondary`、`surface`、`ghost` 按下時的底色。',
+    },
+    { name: '--color-fg-strong', description: '`secondary` 的文字。' },
+    { name: '--color-fg', description: '`surface` 與 `ghost` 的文字。' },
+    {
+      name: '--color-ring',
+      description: '`secondary` 與 `dark` 的邊框；也混進 `secondary` 滑鼠移入的底色。',
+    },
+    { name: '--color-inverse', description: '`dark` 的底色。' },
+    { name: '--color-inverse-fg', description: '`dark` 上的文字。' },
+    { name: '--color-inverse-hover', description: '`dark` 滑鼠移入的底色。' },
+    {
+      name: '--color-inverse-pressed',
+      description: '`dark` 按下時的底色，由 `--pressed-strength` 計算。',
+    },
+    { name: '--color-danger', description: '`tone="danger"` 的底色、邊框或文字。' },
+    { name: '--color-danger-fg', description: 'danger 底色上的文字。' },
+    { name: '--color-danger-pressed', description: 'danger 按下時的底色。' },
+    { name: '--color-danger-inset', description: '`ghost` danger 按下時的底色。' },
+    { name: '--color-focus', description: '聚焦外框。' },
+    { name: '--radius-control', description: '圓角。' },
+    { name: '--spacing-control-sm', description: '`sm` 的高度；`-md`、`-lg` 同理。含邊框。' },
+    { name: '--shadow-raised', description: '有底色的 intent 靜止時的立體斜面（兩層 inset）。' },
+    { name: '--shadow-pressed', description: '按下時的凹陷斜面（兩層 inset）。' },
+    { name: '--shadow-lift', description: '有底色的 intent 靜止時的投影。' },
+    { name: '--shadow-lift-hover', description: '滑鼠移入時的投影。' },
+    { name: '--lift', description: '有底色的 intent 滑鼠移入時上浮的距離。' },
+    { name: '--hover-strength', description: '滑鼠移入時底色變化的比例，0 到 1。' },
+    {
+      name: '--pressed-strength',
+      description: '`primary` 與 `dark` 按下時底色偏離靜止狀態的幅度。',
+    },
+  ]}
+/>
+
+## 相關元件
+
+<Related
+  items={[
+    {
+      title: 'Tooltip',
+      href: '/components/tooltip',
+      description: '純圖示按鈕的名稱與 disabledReason 都用它顯示。',
+    },
+    { title: 'Dialog', href: '/components/dialog', description: '確認破壞性操作。' },
+    {
+      title: 'Router Links',
+      href: '/router-links',
+      description: '用 asChild 搭配你的 router Link。',
+    },
+  ]}
+/>

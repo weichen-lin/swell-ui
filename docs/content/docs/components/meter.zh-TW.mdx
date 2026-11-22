@@ -1,0 +1,154 @@
+---
+title: 比例條 Meter
+description: 附圖例的堆疊比例條，用於加總成整體的數量。
+---
+
+<ComponentPreview name="meter-demo" />
+
+<WhenToUse
+  use={['顯示總數如何分成幾種狀態：健康、降級、缺少。', '放在表格上方或卡片裡的精簡摘要。']}
+  alternatives={[
+    {
+      name: 'Badge',
+      href: '/components/badge',
+      when: '單一狀態，而不是分布。',
+    },
+    {
+      name: 'Table',
+      href: '/components/table',
+      when: '每個項目的精確數值。',
+    },
+  ]}
+/>
+
+## 安裝
+
+```tsx
+import { Meter } from '@weichenlin/swell-ui'
+```
+
+CSS 包含在 `styles.css` 裡，在 Tailwind 之後引入一次即可（見[安裝](/installation)）：
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
+## 用法
+
+```tsx
+import { Meter } from '@weichenlin/swell-ui'
+
+export function Example() {
+  return (
+    <Meter
+      label="Health"
+      summary="9 of 13 report health"
+      segments={[
+        { label: 'Healthy', value: 9, tone: 'success' },
+        { label: 'No health', value: 4, tone: 'neutral' },
+      ]}
+    />
+  )
+}
+```
+
+## 範例
+
+### 多種 tone
+
+<ComponentPreview name="meter-mixed" />
+
+### 很小的區段
+
+再小的區段也看得到：每個區段的最小寬度是 4px。
+
+<ComponentPreview name="meter-sliver" />
+
+### 空狀態
+
+沒有區段，或值全為 0 時，只會顯示空的軌道，沒有圖例。
+
+<ComponentPreview name="meter-empty" />
+
+## API
+
+只列元件自己的 props；其他 `<div>` 屬性都會直接傳給根元素。
+
+### Meter
+
+<AutoTypeTable path="src/components/meter/meter.tsx" name="MeterProps" />
+
+### MeterSegment
+
+<AutoTypeTable path="src/components/meter/meter.tsx" name="MeterSegment" />
+
+## 狀態
+
+<StatesTable
+  rows={[
+    {
+      state: '區段',
+      attribute: 'style="flex: <value>"',
+      notes: '寬度依各區段的值按順序作為權重分配。值為 0 以下的區段，不會出現在比例條或圖例裡。',
+    },
+    {
+      state: '空',
+      attribute: 'no <ul>',
+      notes: '沒有可顯示的內容時，只渲染軌道與標籤列。',
+    },
+    {
+      state: '比例條',
+      attribute: 'aria-hidden="true"',
+      notes: '純裝飾；數字由圖例傳達。',
+    },
+    {
+      state: '圖例',
+      attribute: 'aria-labelledby',
+      notes: '在 `<ul>` 上，指向 `label`。',
+    },
+    {
+      state: '根元素',
+      attribute: 'data-slot="meter"',
+      notes: '在根 `div` 上，方便從父層設定樣式。',
+    },
+  ]}
+/>
+
+## 鍵盤操作
+
+Meter 不是互動元件，不會取得焦點，所以沒有鍵盤操作。
+
+## 無障礙
+
+- 比例條是裝飾（`aria-hidden`）。圖例是以 `label` 命名的清單，每個值與標籤是一個清單項目，所以沒有任何資訊只靠顏色傳達。
+- Meter 不是 `role="meter"` 或 `progressbar`，也沒有最小值與最大值。它描述的是比例分布，不是朝目標前進的進度。
+- 區段的 `label` 同時作為 React key，所以必須唯一。
+- `summary` 是標籤列上的純文字；把使用者最在意的數字放在這裡。
+
+## 主題
+
+`themes/flat.css` 不會改變 Meter：它沒有用到陰影，也沒有用到主題的圓角。
+
+<TokenList
+  tokens={[
+    { name: '--color-surface-muted', description: '區段後方的空軌道。' },
+    { name: '--color-neutral-border', description: '`neutral` 的區段與色塊；會往後退的中性色。' },
+    { name: '--color-info', description: '`info` 的區段與色塊。' },
+    { name: '--color-success', description: '`success` 的區段與色塊。' },
+    { name: '--color-warning', description: '`warning` 的區段與色塊。' },
+    { name: '--color-danger', description: '`danger` 的區段與色塊。' },
+    { name: '--color-fg', description: '圖例的數值。' },
+    { name: '--color-fg-muted', description: '圖例的標籤與 `summary`。' },
+  ]}
+/>
+
+## 相關元件
+
+<Related
+  items={[
+    { title: 'Badge', href: '/components/badge', description: '單一狀態；使用相同的 tone 名稱。' },
+    { title: 'Card', href: '/components/card', description: '放 Meter 與其說明的容器。' },
+    { title: 'Table', href: '/components/table', description: '每個項目的精確數值。' },
+  ]}
+/>

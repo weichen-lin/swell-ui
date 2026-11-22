@@ -1,0 +1,235 @@
+---
+title: 單選群組 Radio Group
+description: 由原生 radio 組成的群組，附標題、說明與錯誤，可用一般列或卡片呈現。
+---
+
+<ComponentPreview name="radio-group-demo" />
+
+<WhenToUse
+  use={[
+    '從簡短的清單中只選一項，且所有選項一次看得到。',
+    '選項需要說明時，用 `card` 變體。',
+    '隨表單送出的單選，值會放在群組的 `name` 下。',
+  ]}
+  alternatives={[
+    { name: 'Checkbox', href: '/components/checkbox', when: '從清單中選零個或多個。' },
+    { name: 'Select', href: '/components/select', when: '從很長的清單中選一項。' },
+    { name: 'Switch', href: '/components/switch', when: '單一的開關設定。' },
+  ]}
+/>
+
+## 安裝
+
+```tsx
+import { Radio, RadioGroup } from '@weichenlin/swell-ui'
+```
+
+CSS 包含在 `styles.css` 裡，在 Tailwind 之後引入一次即可（見[安裝](/installation)）：
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
+## 用法
+
+```tsx
+import { Radio, RadioGroup } from '@weichenlin/swell-ui'
+
+export function Example() {
+  return (
+    <RadioGroup name="plan" legend="Plan" defaultValue="pro">
+      <Radio value="free" label="Free" />
+      <Radio value="pro" label="Pro" />
+    </RadioGroup>
+  )
+}
+```
+
+`Radio` 必須放在 `RadioGroup` 裡。除非傳入 `defaultValue` 或 `value`，或使用者自己選了一項，否則不會有選取項。
+
+## 範例
+
+### 卡片變體
+
+`variant="card"` 會把每個選項畫成有邊框的卡片，很適合搭配 `description`。
+
+<ComponentPreview name="radio-group-card" />
+
+### 受控
+
+使用 `value` 與 `onValueChange`。把 `value` 設為 `null` 可以清除選取。
+
+<ComponentPreview name="radio-group-controlled" />
+
+### 停用與無效
+
+可以停用整個群組或單一選項。`error` 會顯示一則群組訊息，並把群組標為無效。
+
+<ComponentPreview name="radio-group-states" />
+
+## API
+
+### RadioGroup
+
+只列元件自己的 props；其他 `<fieldset>` 屬性都會直接傳給元素，`onChange` 除外。`className` 會套在 fieldset 上。
+
+<AutoTypeTable
+  path="src/components/radio-group/radio-group.tsx"
+  name="RadioGroupProps"
+  keep={['className', 'disabled']}
+/>
+
+`value` 與 `defaultValue` 二擇一：只傳其中一個。
+
+### Radio
+
+只列元件自己的 props；其他 `<input>` 屬性都會直接傳給元素。`name`、`checked`、`required`、`form` 與 `aria-invalid` 由群組管理。
+
+<AutoTypeTable
+  path="src/components/radio-group/radio-group.tsx"
+  name="RadioProps"
+  keep={['disabled']}
+/>
+
+`label` 與 `aria-label` 二擇一：給可見的 `label`，或只給 `aria-label`。`className` 會套在整列或卡片上。
+
+## 狀態
+
+<StatesTable
+  rows={[
+    {
+      state: '滑鼠移入',
+      attribute: ':hover',
+      notes:
+        '未勾選 radio 的邊框，或可用卡片的邊框，變成 `--color-input-border-hover`。無效時不會。',
+    },
+    {
+      state: '按下',
+      attribute: ':active',
+      notes: '按下時 radio 縮小到 0.92 倍。',
+    },
+    {
+      state: '聚焦',
+      attribute: ':focus-visible',
+      notes:
+        '預設變體：input 邊框加 3px 光暈；已勾選時改為 2px 的 `--color-control-checked` 外框，間距 2px。卡片：2px 外框畫在整張卡片外。',
+    },
+    {
+      state: '已勾選',
+      attribute: ':checked',
+      notes: '填上 `--color-control-checked` 並顯示圓點。卡片會有 4% 的底色，邊框同色。',
+    },
+    {
+      state: '無效',
+      attribute: 'aria-invalid="true"',
+      notes:
+        '設在群組上，`error` 為真值時設定。每個 radio 與卡片都會有 danger 邊框；`error={true}` 不顯示訊息。',
+    },
+    {
+      state: '附描述',
+      attribute: 'aria-describedby',
+      notes:
+        '設在群組與每個 radio 上：群組的 `description` 與錯誤，再加上選項自己的 `description`。',
+    },
+    {
+      state: '必填',
+      attribute: 'aria-required="true"',
+      notes:
+        '設在群組上；每個 radio 都有原生 `required`，所以需要選一項。標題後方另有 `aria-hidden` 的星號。',
+    },
+    {
+      state: '停用',
+      attribute: 'disabled',
+      notes:
+        '單一 radio 用原生 `disabled`，整個群組則設在 fieldset 上；整列變暗到 50%。停用的 radio 不會出現在 `FormData`。',
+    },
+    {
+      state: '變體',
+      attribute: 'data-variant',
+      notes: '設在群組上，值為 `default` 或 `card`。',
+    },
+    {
+      state: '方向',
+      attribute: 'aria-orientation',
+      notes: '設在群組上，值為 `vertical` 或 `horizontal`；選項容器上有 `data-orientation`。',
+    },
+    {
+      state: '根元素',
+      attribute: 'data-slot="radio-group"',
+      notes:
+        '在 `<fieldset role="radiogroup">` 上。選項是 `data-slot="radio"`，其 input 是 `data-slot="radio-input"`。',
+    },
+  ]}
+/>
+
+## 鍵盤操作
+
+<KeyboardTable
+  rows={[
+    {
+      keys: ['Tab', 'Shift+Tab'],
+      action: '把焦點移進群組、到已選取的 radio，再移出。整個群組只有一個停靠點。',
+    },
+    {
+      keys: ['ArrowDown', 'ArrowRight'],
+      action: '選取下一個 radio 並把焦點移過去。會跳過停用的選項，到底後繞回開頭。',
+    },
+    {
+      keys: ['ArrowUp', 'ArrowLeft'],
+      action: '選取上一個 radio 並把焦點移過去。',
+    },
+    { keys: 'Space', action: '若聚焦中的 radio 尚未選取，就選取它。' },
+  ]}
+/>
+
+這些是瀏覽器原生的 radio 按鍵；`orientation` 只影響版面。
+
+## 無障礙
+
+- 群組是帶 `role="radiogroup"` 的 `<fieldset>`，透過 `aria-labelledby` 以 `<legend>` 為名稱。每個 radio 都是原生 `<input type="radio">`，以自己的標籤為名稱。
+- 群組的 `description` 與錯誤，除了連結到群組，也用 `aria-describedby` 連結到每個 radio；錯誤圖示是 `aria-hidden`。
+- `error` 會在群組上設定 `aria-invalid`，`required` 會設定 `aria-required`。原生驗證會要求選一項，不需要自訂的送出處理函式。
+- 選取的值會放在群組的 `name` 下送出。原生表單重設會還原非受控的預設值，且不會呼叫 `onValueChange`。
+- `Radio` 放在 `RadioGroup` 之外會丟出錯誤，且值必須唯一、不能是空字串。
+- 在觸控螢幕上，每一列至少 44px 高，相鄰的點擊範圍不會重疊。
+- 強制色彩模式下，radio 使用 `Canvas` 與 `Highlight`，停用則用 `GrayText`。
+
+## 主題
+
+把上方任一預覽切到 **Flat**，就能看到 `themes/flat.css` 的效果：`--radius-control` 更小，卡片的圓角隨之變小。
+
+<TokenList
+  tokens={[
+    { name: '--color-input-bg', description: 'radio 的底色。' },
+    { name: '--color-input-border', description: '靜止時的邊框，卡片也用它。' },
+    { name: '--color-input-border-hover', description: '滑鼠移入時的邊框。' },
+    { name: '--color-input-focus', description: '未勾選時，聚焦的邊框。' },
+    { name: '--color-input-halo', description: '聚焦時 3px 的光暈。' },
+    { name: '--color-input-halo-invalid', description: '無效時 3px 的光暈。' },
+    {
+      name: '--color-input-halo-invalid-focus',
+      description: '無效且聚焦時 3px 的光暈。',
+    },
+    {
+      name: '--color-control-checked',
+      description: '已勾選時的底色與邊框；卡片的邊框與聚焦外框；卡片 4% 的底色。',
+    },
+    { name: '--color-control-checked-fg', description: '圓點。' },
+    { name: '--color-surface', description: '卡片的底色。' },
+    { name: '--color-danger', description: '無效的邊框、錯誤文字與星號。' },
+    { name: '--color-fg', description: '標籤文字。' },
+    { name: '--color-fg-muted', description: '說明文字。' },
+    { name: '--radius-control', description: '卡片的圓角。' },
+  ]}
+/>
+
+## 相關元件
+
+<Related
+  items={[
+    { title: 'Checkbox', href: '/components/checkbox', description: '選零個或多個。' },
+    { title: 'Select', href: '/components/select', description: '從很長的清單中選一項。' },
+    { title: 'Switch', href: '/components/switch', description: '開關設定。' },
+  ]}
+/>

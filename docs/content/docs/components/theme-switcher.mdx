@@ -5,11 +5,41 @@ description: A one-click button that toggles between light and dark themes.
 
 <ComponentPreview name="theme-switcher-demo" />
 
+<WhenToUse
+  use={[
+    'Let readers flip between light and dark in one click.',
+    'Follow the system theme until the reader makes a choice.',
+  ]}
+  alternatives={[
+    {
+      name: 'Switch',
+      href: '/components/switch',
+      when: 'a setting that is only on or off.',
+    },
+    {
+      name: 'Select',
+      href: '/components/select',
+      when: 'the reader must be able to pick System explicitly.',
+    },
+  ]}
+/>
+
+## Installation
+
+```tsx
+import { ThemeSwitcher, useTheme } from '@weichenlin/swell-ui'
+```
+
+The CSS comes with `styles.css`, imported once after Tailwind (see [Installation](/installation)):
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
 ## Usage
 
-`ThemeSwitcher` is a controlled icon button. It toggles the visible theme in one click, including
-when the current value is `'system'`. Pair it with the `useTheme` hook, which persists the choice
-and sets `data-theme` on the root element (`'system'` clears it so `prefers-color-scheme` decides).
+`ThemeSwitcher` is a controlled icon button. It toggles the visible theme in one click, including when the current value is `'system'`. Pair it with the `useTheme` hook, which persists the choice and sets `data-theme` on the root element (`'system'` clears it so `prefers-color-scheme` decides).
 
 ```tsx
 import { ThemeSwitcher, useTheme } from '@weichenlin/swell-ui'
@@ -20,7 +50,7 @@ export function Header() {
 }
 ```
 
-The demo above uses plain state so it does not change this site's theme.
+The demo above uses plain state instead, so it does not change this site's theme.
 
 ## API
 
@@ -28,21 +58,112 @@ The demo above uses plain state so it does not change this site's theme.
 
 Also accepts `button` props, except `children`, `value`, `defaultValue` and `onChange`.
 
-| Prop         | Type                            | Default                        | Description                         |
-| ------------ | ------------------------------- | ------------------------------ | ----------------------------------- |
-| `value`      | `'system' \| 'light' \| 'dark'` | -                              | Current theme.                      |
-| `onChange`   | `(value: Theme) => void`        | -                              | Called with the theme to switch to. |
-| `aria-label` | `string`                        | `'Switch to light/dark theme'` | Defaults to the action it performs. |
+<AutoTypeTable path="src/components/theme-switcher/theme-switcher.tsx" name="ThemeSwitcherProps" />
 
 ### useTheme(options?)
 
-Returns `{ theme, setTheme }`.
+Returns `{ theme, setTheme }`. The saved value is read once on mount; anything other than `'light'` or `'dark'` becomes `'system'`. If `localStorage` throws, the theme still works for the session.
 
-| Option       | Type     | Default            | Description                        |
-| ------------ | -------- | ------------------ | ---------------------------------- |
-| `storageKey` | `string` | `'swell-ui-theme'` | `localStorage` key for the choice. |
+<AutoTypeTable path="src/components/theme-switcher/use-theme.ts" name="UseThemeOptions" />
+
+## States
+
+<StatesTable
+  rows={[
+    {
+      state: 'Light theme',
+      attribute: 'value="light"',
+      notes: 'Shows a moon; the action is "Switch to dark theme".',
+    },
+    {
+      state: 'Dark theme',
+      attribute: 'value="dark"',
+      notes: 'Shows a sun; the action is "Switch to light theme".',
+    },
+    {
+      state: 'System',
+      attribute: 'value="system"',
+      notes:
+        'Shows the icon for the theme the system currently resolves to, and follows a system change until a choice is made.',
+    },
+    {
+      state: 'Hover',
+      attribute: ':hover',
+      notes: 'The icon goes from `--color-fg-muted` to `--color-fg`, on the ghost Button fill.',
+    },
+    {
+      state: 'Pressed',
+      attribute: 'data-pressed',
+      notes: 'Set by the Button on pointer down and Enter / Space.',
+    },
+    {
+      state: 'Focus',
+      attribute: ':focus-visible',
+      notes: '2px `--color-focus` outline, 2px offset.',
+    },
+    {
+      state: 'Disabled',
+      attribute: 'aria-disabled="true"',
+      notes: 'Stays focusable; clicks do not call `onChange`.',
+    },
+    {
+      state: 'Root',
+      attribute: 'data-slot="theme-switcher"',
+      notes: 'On the `<button>`, for styling from a parent.',
+    },
+  ]}
+/>
+
+## Keyboard
+
+<KeyboardTable
+  rows={[
+    { keys: ['Tab', 'Shift+Tab'], action: 'Moves focus to or from the button.' },
+    {
+      keys: ['Enter', 'Space'],
+      action: 'Switches the theme; focus stays on the button and its label updates.',
+    },
+  ]}
+/>
 
 ## Accessibility
 
-The button's label describes the action (for example "Switch to dark theme") and updates with the
-current theme.
+- The button's name describes the action ("Switch to dark theme") and updates with the current theme. Pass `aria-label` to replace it, for example to localize.
+- The same text is set as `title`; the tooltip is turned off, so the name is not shown twice.
+- The icon is decorative and `aria-hidden`.
+- The button is 44×44px (`size-11`), which meets the touch target size.
+- Disabled uses `aria-disabled`, so the button keeps its place in the tab order.
+
+## Theming
+
+`themes/flat.css` only affects the button's corners (`--radius-control`) and makes the hover fill apply at full strength (`--hover-strength: 1`). For how `data-theme` and the color tokens switch, see [Dark mode](/dark-mode).
+
+<TokenList
+  tokens={[
+    { name: '--color-fg-muted', description: 'Icon color at rest.' },
+    { name: '--color-fg', description: 'Icon color on hover.' },
+    { name: '--color-surface-muted', description: 'Hover fill.' },
+    { name: '--color-surface-inset', description: 'Pressed fill.' },
+    { name: '--color-focus', description: 'Focus outline.' },
+    { name: '--radius-control', description: 'Corner radius.' },
+    { name: '--hover-strength', description: 'Share of the hover fill change, 0 to 1.' },
+  ]}
+/>
+
+## Related
+
+<Related
+  items={[
+    {
+      title: 'Dark Mode',
+      href: '/dark-mode',
+      description: 'How data-theme and the color tokens work.',
+    },
+    {
+      title: 'Button',
+      href: '/components/button',
+      description: 'ThemeSwitcher is a ghost icon Button.',
+    },
+    { title: 'Switch', href: '/components/switch', description: 'A plain on/off setting.' },
+  ]}
+/>

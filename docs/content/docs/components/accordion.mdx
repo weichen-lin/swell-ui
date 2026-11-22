@@ -1,14 +1,266 @@
 ---
 title: Accordion
-description: Vertically stacked sections that expand and collapse.
+description: Stacks sections that expand and collapse to show or hide their content.
 ---
 
 <ComponentPreview name="accordion-demo" />
 
+<WhenToUse
+  use={[
+    'Long content that is mostly skimmed: FAQs, settings groups, a filter panel.',
+    'Let people open one section at a time, or several together with `type="multiple"`.',
+    'A title with a short description that stays visible while the content is closed.',
+  ]}
+  alternatives={[
+    {
+      name: 'Tabs',
+      href: '/components/tabs',
+      when: 'sections that are peers and should show one at a time, side by side.',
+    },
+    {
+      name: 'Card',
+      href: '/components/card',
+      when: 'content that should always be visible.',
+    },
+    {
+      name: 'Dialog',
+      href: '/components/dialog',
+      when: 'content that takes over the screen.',
+    },
+  ]}
+/>
+
+## Installation
+
+```tsx
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@weichenlin/swell-ui'
+```
+
+The CSS comes with `styles.css`, imported once after Tailwind (see [Installation](/installation)):
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
 ## Usage
 
-Compose `Accordion`, `AccordionItem`, `AccordionTrigger`, and `AccordionContent`. Item values must
-be unique and non-empty; triggers contain non-interactive content and include their own heading.
+```tsx
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@weichenlin/swell-ui'
 
-Single mode uses `string | null`; `type="multiple"` uses `readonly string[]`. Use `value` with
-`onValueChange` for controlled state, or `defaultValue` for uncontrolled state.
+export function Example() {
+  return (
+    <Accordion defaultValue="project">
+      <AccordionItem value="project">
+        <AccordionTrigger>Project</AccordionTrigger>
+        <AccordionContent>Project settings</AccordionContent>
+      </AccordionItem>
+      <AccordionItem value="members">
+        <AccordionTrigger>Members</AccordionTrigger>
+        <AccordionContent>Member settings</AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  )
+}
+```
+
+Item values must be unique and non-empty. Each trigger renders its own heading, so its content must not hold interactive elements. In single mode the value is a `string | null`; with `type="multiple"` it is a `readonly string[]`. Use `value` with `onValueChange` for controlled state, or `defaultValue` for uncontrolled state. The type cannot change while mounted: give the component a new `key` to switch.
+
+## Examples
+
+### Multiple open
+
+`type="multiple"` lets any number of items be open, or none.
+
+<ComponentPreview name="accordion-multiple" />
+
+### Outline
+
+<ComponentPreview name="accordion-outline" />
+
+### Controlled
+
+`collapsible={false}` keeps one item open: the open trigger stays focusable but does not close it.
+
+<ComponentPreview name="accordion-controlled" />
+
+### Disabled item
+
+`disabled` on an item turns off its trigger only. On `Accordion`, it turns off every trigger and leaves the values alone.
+
+<ComponentPreview name="accordion-disabled" />
+
+## API
+
+### Accordion
+
+The default single mode. Also accepts `<div>` attributes.
+
+<AutoTypeTable
+  path="src/components/accordion/accordion.tsx"
+  name="AccordionSingleProps"
+  type="Extract<AccordionProps, { type?: 'single' }>"
+/>
+
+### Accordion with type="multiple"
+
+These replace the matching props above; `collapsible` does not apply. The other props are the same.
+
+<AutoTypeTable
+  path="src/components/accordion/accordion.tsx"
+  name="AccordionMultipleProps"
+  type={
+    "Pick<Extract<AccordionProps, { type: 'multiple' }>, 'type' | 'value' | 'defaultValue' | 'onValueChange'>"
+  }
+/>
+
+### AccordionItem
+
+Also accepts `<div>` attributes.
+
+<AutoTypeTable path="src/components/accordion/accordion.tsx" name="AccordionItemProps" />
+
+### AccordionTrigger
+
+Renders a heading around a `<button>`; every other button attribute passes through, except `id`, `type`, `disabled` and the `aria-*` attributes the component manages.
+
+<AutoTypeTable path="src/components/accordion/accordion.tsx" name="AccordionTriggerProps" />
+
+### AccordionContent
+
+Also accepts `<div>` attributes, except `id`, `hidden`, `inert`, `role` and the ARIA attributes it manages.
+
+<AutoTypeTable path="src/components/accordion/accordion.tsx" name="AccordionContentProps" />
+
+## States
+
+<StatesTable
+  rows={[
+    {
+      state: 'Open',
+      attribute: '`aria-expanded="true"` `data-state="open"`',
+      notes:
+        'On the trigger; the item and the content also carry `data-state`. The chevron turns 180 degrees.',
+    },
+    {
+      state: 'Hover',
+      attribute: ':hover',
+      notes: 'The title is underlined while the trigger is enabled.',
+    },
+    {
+      state: 'Focus',
+      attribute: ':focus-visible',
+      notes: '2px `--color-focus` outline, 2px offset.',
+    },
+    {
+      state: 'Disabled',
+      attribute: '`disabled` `data-disabled`',
+      notes:
+        'Native `disabled` on the trigger, from the item or the whole group; 50% opacity. `data-disabled` is on the item, and on the root when the group is disabled.',
+    },
+    {
+      state: 'Locked open',
+      attribute: 'aria-disabled="true"',
+      notes:
+        'The open trigger of a single accordion with `collapsible={false}`: it stays focusable and does nothing.',
+    },
+    {
+      state: 'Closed content',
+      attribute: '`hidden` `inert` `aria-hidden="true"`',
+      notes:
+        'Set once the closing animation ends; `inert` applies at once. With `keepMounted={false}` the children are removed too.',
+    },
+    {
+      state: 'Described',
+      attribute: 'aria-describedby',
+      notes: 'On the trigger, pointing at its `description`.',
+    },
+    {
+      state: 'Variant',
+      attribute: 'data-variant',
+      notes: '`line` or `outline`, on the root.',
+    },
+    {
+      state: 'Slots',
+      attribute: 'data-slot',
+      notes:
+        '`accordion`, `accordion-item`, `accordion-heading`, `accordion-trigger`, `accordion-content` and `accordion-content-inner`.',
+    },
+  ]}
+/>
+
+## Keyboard
+
+<KeyboardTable
+  rows={[
+    {
+      keys: ['Tab', 'Shift+Tab'],
+      action: 'Moves between the triggers and the focusable content of open items, in page order.',
+    },
+    {
+      keys: ['Enter', 'Space'],
+      action: 'Opens or closes the focused item. Nothing while it is disabled or locked open.',
+    },
+    {
+      keys: ['ArrowDown', 'ArrowUp'],
+      action:
+        'Moves focus to the next or previous enabled trigger and stops at the ends. Focus only: nothing opens.',
+    },
+    { keys: ['Home', 'End'], action: 'Moves focus to the first or last enabled trigger.' },
+  ]}
+/>
+
+## Accessibility
+
+- Each trigger is a native `<button>` inside a heading of level `headingLevel` (3 by default): pick the level that fits your page outline.
+- A trigger has `aria-expanded` and `aria-controls`. Its name is the title only; `description` is announced as the description.
+- The content is not a landmark by default. Set `region` to name it after its trigger when it holds complex content, and use it sparingly.
+- Closed content is `inert` and hidden from assistive technology at once, so focus never lands in it. If focus was inside when it closed, it moves to the item's trigger, then to a neighbouring enabled trigger.
+- `disabled` turns off triggers only: fields inside the content stay usable, and `keepMounted` (the default) keeps their values and form data while the item is closed.
+- Arrow keys, Home and End ignore combinations with Ctrl, Alt, Meta or Shift, and a nested accordion handles its own keys and selection.
+- The chevron is `aria-hidden`. In forced colors mode a disabled trigger is `GrayText`.
+- The height animation runs 200ms to open and 160ms to close; with `prefers-reduced-motion: reduce` it switches immediately.
+
+## Theming
+
+Switch a preview above to **Flat** to see `themes/flat.css`: it tightens `--radius-surface` and `--radius-inset`. The border color is unchanged.
+
+<TokenList
+  tokens={[
+    {
+      name: '--color-input-border',
+      description: 'Item border: the rule under each item in `line`, the frame in `outline`.',
+    },
+    { name: '--color-surface', description: '`outline` item fill.' },
+    { name: '--color-fg', description: 'Trigger title.' },
+    { name: '--color-fg-muted', description: 'Chevron, description and content text.' },
+    { name: '--color-focus', description: 'Focus outline.' },
+    { name: '--radius-surface', description: '`outline` item and trigger corner radius.' },
+    {
+      name: '--radius-inset',
+      description: '`line` trigger corner radius, which rounds the focus outline.',
+    },
+  ]}
+/>
+
+## Related
+
+<Related
+  items={[
+    {
+      title: 'Tabs',
+      href: '/components/tabs',
+      description: 'Peer sections shown one at a time.',
+    },
+    {
+      title: 'Card',
+      href: '/components/card',
+      description: 'Content that stays visible.',
+    },
+    {
+      title: 'Dialog',
+      href: '/components/dialog',
+      description: 'Content that takes over the screen.',
+    },
+  ]}
+/>

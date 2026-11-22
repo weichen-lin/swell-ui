@@ -1,0 +1,151 @@
+---
+title: 主題 Theming
+description: 透過設計 token，為 swell-ui 換品牌色、換配色、換字型。
+---
+
+## 更換品牌色
+
+預設外觀是中性灰搭配近黑的 primary。換品牌只要兩個 token，在匯入之後設定一次：
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+
+@theme {
+  --color-primary: #f7a501; /* buttons, input focus, checked switches and checkboxes, halos */
+  --color-primary-fg: #141413; /* text and marks drawn on the primary fill */
+}
+```
+
+這同時涵蓋淺色、跟隨系統的深色，以及 `data-theme="dark"`。輸入框聚焦（`--color-input-focus`）、已勾選的控制項（`--color-control-checked`、`-fg`）與聚焦光暈（`--color-input-halo`）都是指向這兩個 token 的 `var()` 參照，在 runtime 才解析，所以會跟著變。
+
+若要依配色方案使用不同的值，用 `light-dark()` 把兩個值寫在同一行：
+
+```css
+@theme {
+  --color-primary: light-dark(#2563eb, #60a5fa);
+  --color-primary-fg: light-dark(#ffffff, #0b1220);
+}
+```
+
+偏亮的品牌色（黃、萊姆綠、青色）在淺色頁面上的對比可能低於 3:1。按鈕仍可透過 `--color-primary-fg` 維持可讀，但如果聚焦邊框或已勾選的方框需要更高對比，只要單獨覆寫那一個：
+
+```css
+@theme {
+  --color-input-focus: light-dark(#b37700, #f7a501); /* darker amber on light only */
+}
+```
+
+請在 `@theme`（或單純的 `:root` 規則）中設定 token，不要設在內層元素上：衍生 token 是在根元素解析的。
+
+## 更換配色
+
+顏色分成兩層。少數幾個**基礎色**帶有實際的值；其餘每個顏色 token 都是在 runtime 由它們計算而來（`var()` 與 `color-mix()`），所以覆寫一個基礎色，邊框、次要文字、輸入框、淡色底等都會跟著變：
+
+```css
+@theme {
+  --color-bg: light-dark(#f5f4ed, #141413);
+  --color-surface: light-dark(#faf9f5, #30302e);
+  --color-fg: light-dark(#141413, #faf9f5);
+}
+```
+
+混色的百分比經過調校，讓預設配色，以及像上面這種偏暖的配色，都能通過 WCAG 對比（文字 >=4.5:1、輸入框邊框 >=3:1）。如果配色和這些差距很大（中間色調的頁面、低對比的文字），就可能不達標，所以改了 `bg`、`surface` 或 `fg` 之後請檢查對比。任何計算出來的 token 仍然可以單獨覆寫。
+
+請在根層級（`@theme` 或 `:root`）覆寫：計算出來的 token 是在那裡解析的，設在內層元素上的基礎色不會影響到它們。
+
+## Token
+
+每一組都寫成 `light-dark(<light>, <dark>)`；覆寫時也用同樣的寫法，設定一次即可。所有顏色 token 同時也是 Tailwind utility（`bg-surface`、`text-fg-muted`、`border-input-border`……）。
+
+**基礎色**
+
+| Token                                   | 用途                                         |
+| --------------------------------------- | -------------------------------------------- |
+| `--color-bg`                            | 頁面背景                                     |
+| `--color-surface`                       | 卡片、面板與文字輸入框                       |
+| `--color-surface-raised`                | Popover 與對話框                             |
+| `--color-fg`                            | 文字                                         |
+| `--color-primary`, `--color-primary-fg` | 品牌填色與其上的文字。預設：`fg`（中性）     |
+| `--color-focus`                         | 鍵盤聚焦外框（藍色）                         |
+| `--color-{danger,success,warning,info}` | 狀態色調：實心填色、圖示，以及 danger 的文字 |
+
+**計算色**（由基礎色計算而來；只在需要微調時才覆寫）
+
+| Token                                                         | 用途                                                    | 計算來源                                                   |
+| ------------------------------------------------------------- | ------------------------------------------------------- | ---------------------------------------------------------- |
+| `--color-accent`                                              | 次要品牌色；元件未使用                                  | `primary`                                                  |
+| `--color-surface-muted`                                       | Hover 填色、次要按鈕                                    | fg 混入 bg                                                 |
+| `--color-fg-strong`, `-fg-muted`, `-fg-subtle`                | 由強到弱的文字（`fg-subtle` 在每種 surface 上 >=4.5:1） | fg 混入 bg                                                 |
+| `--color-border`, `-border-strong`, `-ring`, `-ring-deep`     | 分隔線、細線、1px 的按鈕與 tab 列外框                   | fg 混入 bg                                                 |
+| `--color-inverse`, `-inverse-fg`                              | `dark` 按鈕、tooltip                                    | fg 混入 bg；深色時用頁面色                                 |
+| `--color-input-bg`, `-input-bg-hover`                         | 文字輸入框填色（唯讀輸入框用 `bg`）                     | `surface`                                                  |
+| `--color-input-border`, `-input-border-hover`                 | 輸入框邊框；也是 Switch 的關閉軌道與 Checkbox 的方框    | fg 混入 bg；`fg-strong`                                    |
+| `--color-input-placeholder`                                   | Placeholder 文字                                        | fg 混入 bg                                                 |
+| `--color-input-focus`, `-input-halo`                          | 聚焦輸入框的邊框與其 3px 光環                           | `primary`；input-focus 取 14%                              |
+| `--color-input-halo-invalid`, `-invalid-focus`                | 無效輸入框的同款光環                                    | danger 取 12% / 22%                                        |
+| `--color-control-checked`, `-control-checked-fg`              | 已勾選的 Switch/Checkbox 填色與其上的勾號               | `primary` / `primary-fg`                                   |
+| `--color-switch-handle`, `-switch-handle-checked`             | Switch 滑塊，關 / 開                                    | 關：`surface-raised` / 深色用 `fg`；開：依軌道亮度用白或黑 |
+| `--color-popover-bg`, `-popover-border`, `-popover-highlight` | Select 選單與對話框；highlight 是目前作用的列           | `surface-raised`，fg 混入其中                              |
+| `--color-dialog-backdrop`                                     | Dialog 與 Drawer 後方變暗的頁面                         | fg 取 40%；深色時為黑色取 60%                              |
+| `--color-neutral`                                             | 中性狀態色調                                            | fg 混入 bg                                                 |
+| `--color-{tone}-fg`                                           | 實心狀態填色上的文字                                    | `surface` / `bg`                                           |
+| `--color-{tone}-subtle-bg`, `-border`                         | 淡色 badge 與其細線                                     | tone 混入 bg                                               |
+| `--color-{tone}-subtle-fg`                                    | 淡色 badge 上的文字（>=5:1）                            | tone 往 fg 推                                              |
+
+陰影（`--shadow-input`、`-input-lift`、`-switch-thumb`、`-popover`、`-dialog`、`-whisper`）與輸入框的高光，都是低不透明度的黑或白：它們只負責上陰影，所以沒有調色盤顏色。`--container-page` 就是 `max-w-page`（1200px）。
+
+## 襯線標題
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+@import '@weichenlin/swell-ui/typography.css'; /* h1-h3 in the serif stack, weight 500 */
+```
+
+## 字型
+
+swell-ui 不指定任何字型名稱：文字使用 Tailwind 的 `--font-sans`（系統 UI 字型堆疊），`font-serif` / `font-mono` 同樣是 Tailwind 的預設值。若要使用網頁字型，請把字型檔隨你的應用程式一起發佈，例如搭配 [Fontsource](https://fontsource.org)：
+
+```sh
+pnpm add @fontsource-variable/inter
+```
+
+```css
+@import 'tailwindcss';
+@import '@fontsource-variable/inter';
+@import '@weichenlin/swell-ui/styles.css';
+
+@theme {
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+}
+```
+
+## 圓角
+
+swell-ui 不會動 Tailwind 的圓角級距；元件使用原版的 `rounded-*` class，所以 `rounded-md` 在你的應用程式裡仍是 6px。在你的 `@theme` 中修改 `--radius-*`，元件也會跟著變。
+
+從 0.1 升級的話：0.1 取代了整組級距，每個 class 往上調一級就能維持原本的大小。
+
+| 0.1 class       | px  | 現在          |
+| --------------- | --- | ------------- |
+| `rounded-sharp` | 4   | `rounded-sm`  |
+| `rounded-sm`    | 6   | `rounded-md`  |
+| `rounded-md`    | 8   | `rounded-lg`  |
+| `rounded-lg`    | 12  | `rounded-xl`  |
+| `rounded-xl`    | 16  | `rounded-2xl` |
+| `rounded-2xl`   | 24  | `rounded-3xl` |
+| `rounded-3xl`   | 32  | `rounded-4xl` |
+
+## 只用 Token
+
+如果只想用 token、不要元件（不產生元件的 class），改為匯入 `theme.css`：
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/theme.css';
+```
+
+## `cn`
+
+`cn`（clsx + tailwind-merge）有匯出，而且認得自訂 token，所以 `cn('text-fg-muted', 'text-danger')` 會得到 `text-danger`，`cn('shadow-popover', 'shadow-none')` 會得到 `shadow-none`。

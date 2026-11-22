@@ -1,0 +1,194 @@
+---
+title: 開關 Switch
+description: 用於立即生效的設定，附標籤、說明、載入中與錯誤狀態。
+---
+
+<ComponentPreview name="switch-demo" />
+
+<WhenToUse
+  use={[
+    '立即生效的開關設定：通知、深色模式、自動同步。',
+    '在背景儲存的設定，儲存期間用 `loading`。',
+    '緊湊的列與表格，用 `size="sm"`。',
+  ]}
+  alternatives={[
+    { name: 'Checkbox', href: '/components/checkbox', when: '之後才套用、需要按送出的選擇。' },
+    { name: 'RadioGroup', href: '/components/radio-group', when: '從簡短的清單中只選一項。' },
+    { name: 'Button', href: '/components/button', when: '執行動作，而不是設定。' },
+  ]}
+/>
+
+## 安裝
+
+```tsx
+import { Switch } from '@weichenlin/swell-ui'
+```
+
+CSS 包含在 `styles.css` 裡，在 Tailwind 之後引入一次即可（見[安裝](/installation)）：
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
+## 用法
+
+```tsx
+import { Switch } from '@weichenlin/swell-ui'
+
+export function Example() {
+  return <Switch name="notifications" label="Notifications" />
+}
+```
+
+每個開關都需要可見的 `label`；若周圍的內容已經說明了它，也可以只給 `aria-label`。
+
+## 範例
+
+### 尺寸
+
+<ComponentPreview name="switch-sizes" />
+
+### 受控
+
+<ComponentPreview name="switch-controlled" />
+
+### 載入中
+
+點一下試試：儲存期間會忽略切換，但焦點不會跑掉。
+
+<ComponentPreview name="switch-loading" />
+
+### 設定列、停用與無效
+
+`labelPosition="start"` 會把標籤放在前面，並把開關推到最右側。
+
+<ComponentPreview name="switch-label-position" />
+
+## API
+
+只列元件自己的 props；其他 `<input type="checkbox">` 屬性都會直接傳給元素，`type`、`size`、`role` 與 `aria-checked` 除外。`className` 會套在整列上。
+
+<AutoTypeTable
+  path="src/components/switch/switch.tsx"
+  name="SwitchProps"
+  keep={['className', 'disabled']}
+/>
+
+`label` 與 `aria-label` 二擇一：給可見的 `label`，或只給 `aria-label`。
+
+## 狀態
+
+<StatesTable
+  rows={[
+    {
+      state: '滑鼠移入',
+      attribute: ':hover',
+      notes: '關閉時的軌道變成 `--color-input-border-hover`。停用或載入中時不會。',
+    },
+    {
+      state: '按下',
+      attribute: ':active',
+      notes: '滑塊朝即將移動的方向拉長。停用或載入中時不會。',
+    },
+    {
+      state: '聚焦',
+      attribute: ':focus-visible',
+      notes: '關閉：input 邊框加 3px 光暈。開啟：2px 的 `--color-control-checked` 外框，間距 2px。',
+    },
+    {
+      state: '開啟',
+      attribute: ':checked',
+      notes: '軌道填上 `--color-control-checked`，滑塊滑到另一側。RTL 時方向會鏡像。',
+    },
+    {
+      state: '載入中',
+      attribute: 'aria-busy="true"',
+      notes:
+        '滑塊內顯示轉圈圖示；點擊與 Space 都會被吞掉。不是 `disabled`，所以仍可聚焦。偏好減少動態時改為靜止的虛線圓環。',
+    },
+    {
+      state: '無效',
+      attribute: 'aria-invalid="true"',
+      notes: '`error` 為真值時設定。軌道邊框與光暈為 danger；文字訊息顯示在標籤下方。',
+    },
+    {
+      state: '附描述',
+      attribute: 'aria-describedby',
+      notes: '指向 `description` 與錯誤文字，排在你傳入的 `aria-describedby` 之後。',
+    },
+    {
+      state: '停用',
+      attribute: 'disabled',
+      notes: '原生 `disabled`，停用的 fieldset 也會傳下來；整列變暗到 50%。',
+    },
+    {
+      state: '角色',
+      attribute: 'role="switch"',
+      notes: '設在原生 checkbox 上。開啟狀態來自 input 本身，沒有 `aria-checked`。',
+    },
+    {
+      state: '根元素',
+      attribute: 'data-slot="switch"',
+      notes: '在整列的 `<label>` 上，方便從父層設定樣式。',
+    },
+  ]}
+/>
+
+## 鍵盤操作
+
+<KeyboardTable
+  rows={[
+    { keys: ['Tab', 'Shift+Tab'], action: '把焦點移到開關或移開，載入中時也一樣。' },
+    { keys: 'Space', action: '切換聚焦中的開關。Enter 不會。載入中時沒有作用。' },
+  ]}
+/>
+
+點擊軌道或標籤文字也能切換，因為整列是一個 `<label>`。
+
+## 無障礙
+
+- 帶 `role="switch"` 的原生 `<input type="checkbox">`，所以表單、`required`、重設與點擊標籤都維持原生行為。
+- 可見標籤是開關的名稱；`description` 與錯誤文字不會混進名稱，而是用 `aria-describedby` 連結。
+- `loading` 時會設定 `aria-busy`，並吞掉點擊與 Space，而不是用 `disabled`，所以鍵盤焦點不會跑掉。
+- 轉圈圖示是 `aria-hidden`，不會朗讀儲存狀態，請在你自己的介面顯示結果。
+- 整列高度至少 24px；在觸控螢幕上，點擊範圍擴大到 44px，版面不變。
+- 強制色彩模式下，軌道與滑塊使用 `Canvas`、`CanvasText` 與 `Highlight`，停用則用 `GrayText`。
+
+## 主題
+
+把上方任一預覽切到 **Flat**，就能看到 `themes/flat.css` 的效果：`--shadow-switch-thumb` 歸零。
+
+<TokenList
+  tokens={[
+    { name: '--color-input-border', description: '關閉時的軌道。' },
+    { name: '--color-input-border-hover', description: '滑鼠移入時關閉的軌道。' },
+    { name: '--color-input-focus', description: '關閉時，聚焦的軌道邊框。' },
+    { name: '--color-input-halo', description: '聚焦時 3px 的光暈。' },
+    { name: '--color-input-halo-invalid', description: '無效時 3px 的光暈。' },
+    {
+      name: '--color-input-halo-invalid-focus',
+      description: '無效且聚焦時 3px 的光暈。',
+    },
+    {
+      name: '--color-control-checked',
+      description: '開啟時的軌道、聚焦外框，以及載入圖示的顏色。',
+    },
+    { name: '--color-switch-handle', description: '關閉時的滑塊。' },
+    { name: '--color-switch-handle-checked', description: '開啟時的滑塊。' },
+    { name: '--shadow-switch-thumb', description: '滑塊的細邊與投影。' },
+    { name: '--color-danger', description: '無效的軌道邊框、外框與錯誤文字。' },
+    { name: '--color-fg', description: '標籤文字。' },
+    { name: '--color-fg-muted', description: '`description` 文字。' },
+  ]}
+/>
+
+## 相關元件
+
+<Related
+  items={[
+    { title: 'Checkbox', href: '/components/checkbox', description: '之後才套用的選擇。' },
+    { title: 'RadioGroup', href: '/components/radio-group', description: '只選一項。' },
+    { title: 'Button', href: '/components/button', description: '執行動作。' },
+  ]}
+/>

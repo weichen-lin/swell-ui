@@ -1,0 +1,286 @@
+---
+title: 組合選單 Combobox
+description: 邊輸入邊搜尋清單，並以穩定的 ID 選取一個選項。
+---
+
+<ComponentPreview name="combobox-demo" />
+
+<WhenToUse
+  use={[
+    '從很長的清單中挑選一個值，搜尋比捲動更方便。',
+    '邊輸入邊載入結果，並需要載入中與重試狀態。',
+    '選項需要說明文字、圖示或分組。',
+  ]}
+  alternatives={[
+    {
+      name: 'Select',
+      href: '/components/select',
+      when: '清單很短，原生選單就夠用。',
+    },
+    {
+      name: 'Input',
+      href: '/components/input',
+      when: '自由輸入的文字，不必對應到選項。',
+    },
+    {
+      name: 'DropdownMenu',
+      href: '/components/dropdown-menu',
+      when: '要執行的動作，而不是要儲存的值。',
+    },
+  ]}
+/>
+
+## 安裝
+
+```tsx
+import { Combobox } from '@weichenlin/swell-ui'
+```
+
+CSS 包含在 `styles.css` 裡，在 Tailwind 之後引入一次即可（見[安裝](/installation)）：
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
+## 用法
+
+```tsx
+import { Combobox } from '@weichenlin/swell-ui'
+
+export function Example() {
+  return (
+    <Combobox
+      label="Project"
+      placeholder="Search projects"
+      options={[
+        { value: 'payment-api', label: 'Payment API' },
+        { value: 'analytics', label: 'Analytics' },
+      ]}
+    />
+  )
+}
+```
+
+選取依據的是選項的 `value`（穩定的 ID），而不是輸入的文字。受控用 `value` 搭配 `onValueChange`，非受控用 `defaultValue`。設定 `name` 時，表單送出的是 `value`。
+
+## 範例
+
+### 受控
+
+<ComponentPreview name="combobox-controlled" />
+
+### 分組、圖示與停用選項
+
+<ComponentPreview name="combobox-groups" />
+
+### 非同步搜尋
+
+結果在別處篩選時，設定 `filter={false}`，並且只在 `reason === 'input'` 時送出請求。
+
+<ComponentPreview name="combobox-async" />
+
+### 搜尋失敗
+
+`searchError` 會取代選項，`onRetry` 會加上重試按鈕。輸入文字就能看到。
+
+<ComponentPreview name="combobox-search-error" />
+
+### 錯誤、唯讀與停用
+
+<ComponentPreview name="combobox-states" />
+
+## API
+
+所有原生 `<input>` 屬性都會傳入，但 `size`、`type`、`value`、`defaultValue`、`onChange` 與 ARIA combobox 屬性除外，這些由元件管理。請傳 `label`；若上下文已經說明欄位用途，改傳 `aria-label`。
+
+<AutoTypeTable
+  path="src/components/combobox/types.ts"
+  name="ComboboxProps"
+  keep={['disabled', 'readOnly', 'required', 'name', 'placeholder']}
+/>
+
+### ComboboxOption
+
+<AutoTypeTable path="src/components/combobox/types.ts" name="ComboboxOption" />
+
+### ComboboxGroup
+
+<AutoTypeTable path="src/components/combobox/types.ts" name="ComboboxGroup" />
+
+### ComboboxValueChangeDetails
+
+<AutoTypeTable path="src/components/combobox/types.ts" name="ComboboxValueChangeDetails" />
+
+### ComboboxInputChangeDetails
+
+<AutoTypeTable path="src/components/combobox/types.ts" name="ComboboxInputChangeDetails" />
+
+### ComboboxOpenChangeDetails
+
+<AutoTypeTable path="src/components/combobox/types.ts" name="ComboboxOpenChangeDetails" />
+
+## 狀態
+
+<StatesTable
+  rows={[
+    {
+      state: '滑鼠移入',
+      attribute: ':hover',
+      notes: '邊框變為 `--color-input-border-hover`，並出現淡淡的投影。',
+    },
+    {
+      state: '聚焦',
+      attribute: ':focus',
+      notes: '邊框變為 `--color-input-focus`，外圍有 3px 光暈。DOM 焦點一直留在輸入框。',
+    },
+    {
+      state: '展開',
+      attribute: 'aria-expanded="true"',
+      notes: '根元素同時有 `data-state="open"`；`aria-controls` 指向 listbox。',
+    },
+    {
+      state: '作用中的選項',
+      attribute: 'data-active',
+      notes: '方向鍵或指標目前所在的選項；輸入框以 `aria-activedescendant` 指向它。',
+    },
+    {
+      state: '已選取的選項',
+      attribute: 'aria-selected="true"',
+      notes: '顯示打勾圖示。',
+    },
+    {
+      state: '停用的選項',
+      attribute: 'aria-disabled="true"',
+      notes: '透明度降為 50%；方向鍵會跳過，點擊沒有作用。',
+    },
+    {
+      state: '載入中',
+      attribute: 'aria-busy="true"',
+      notes: '設在 listbox 上；`loadingText` 取代選項，並且無法選取。',
+    },
+    {
+      state: '錯誤',
+      attribute: 'aria-invalid="true"',
+      notes: '由有值的 `error` 設定，或原生驗證失敗後設定（`required`，或值對應不到任何選項）。',
+    },
+    {
+      state: '停用',
+      attribute: 'disabled',
+      notes: '原生 `disabled`：沒有清單、無法聚焦、不會送出；透明度 50%。',
+    },
+    {
+      state: '唯讀',
+      attribute: 'readonly',
+      notes: '可聚焦、可複製；沒有清單與按鈕，仍會送出。',
+    },
+    {
+      state: '說明文字',
+      attribute: 'aria-describedby',
+      notes: '指向 `helperText` 或 `error` 訊息。',
+    },
+    {
+      state: '插槽',
+      attribute: 'data-slot',
+      notes:
+        '根元素是 `combobox`，面板是 `combobox-content`，裡面有 `combobox-group` 與 `combobox-option`。',
+    },
+  ]}
+/>
+
+## 鍵盤操作
+
+<KeyboardTable
+  rows={[
+    {
+      keys: ['Tab', 'Shift+Tab'],
+      action: '把焦點移到輸入框或移開，並關閉清單，不會選取任何項目。',
+    },
+    {
+      keys: '輸入文字',
+      action: '開啟清單並篩選。在你選擇選項之前，不會選取任何項目。',
+    },
+    {
+      keys: ['ArrowDown', 'ArrowUp'],
+      action:
+        '關閉時：開啟清單，停在已選取、第一個或最後一個選項。開啟時：移到下一個可用選項，到頭就停住。',
+    },
+    {
+      keys: 'Enter',
+      action: '選取作用中的選項並關閉清單。清單開啟時不會送出表單。',
+    },
+    {
+      keys: 'Escape',
+      action: '關閉清單並捨棄尚未確認的文字。只有清單已經關閉時，才會傳到父層（例如對話框）。',
+    },
+    {
+      keys: ['Home', 'End', 'ArrowLeft', 'ArrowRight'],
+      action: '和一般輸入框一樣編輯文字，不會在選項間移動。',
+    },
+  ]}
+/>
+
+## 無障礙
+
+- 遵循帶清單的 combobox 模式：輸入框有 `role="combobox"`、`aria-autocomplete="list"`、`aria-expanded` 與 `aria-controls`。DOM 焦點不會離開輸入框，選項透過 `aria-activedescendant` 指定。
+- listbox 的名稱來自 `label` 或 `aria-label`；群組的名稱是它的 `label`。選項使用 `aria-selected` 與 `aria-disabled`，選項的 `description` 是它的無障礙描述。
+- 結果數量會以 polite 方式朗讀，`loadingText` 與字串型的 `searchError` 也是；用 `getResultsText` 在地化數量文字。「沒有結果」是狀態訊息，不是選項。
+- 清除與箭頭按鈕都有無障礙名稱（`clearLabel`、`openLabel`、`closeLabel`）；箭頭按鈕不在 Tab 順序中，因為輸入框本身就能開啟清單。
+- `required` 檢查的是有沒有選取，不是有沒有輸入文字。訊息是 `requiredText`；當 `value` 對應不到任何選項時是 `unresolvedText`。選取的 ID 可能不在目前結果中時，請提供 `selectedOption`。
+- 選項圖示、`start` 與打勾圖示都是 `aria-hidden`。
+- 使用輸入法（IME）輸入是安全的：用來結束組字的 Enter 不會被攔截，組好的文字也會被搜尋。
+- 在觸控螢幕上，選項與按鈕至少 44px。強制色彩模式下，作用中的選項以 `Highlight` 描邊。
+- 開啟 `prefers-reduced-motion: reduce` 時，面板不播放淡入。
+
+## 主題
+
+把上方任一預覽切到 **Flat**，就能看到 `themes/flat.css` 的效果：欄位陰影移除，`--radius-control` 與 `--radius-surface` 更小，`--color-popover-border` 更明顯。欄位邊框不變。清除與箭頭按鈕是 `ghost` 的 [Button](/components/button)，沿用它的 token。
+
+<TokenList
+  tokens={[
+    { name: '--color-input-bg', description: '欄位底色（浮動標籤不使用）。' },
+    { name: '--color-input-bg-hover', description: '滑鼠移入時的欄位底色。' },
+    { name: '--color-input-border', description: '靜止時的邊框；作用中選項的外框。' },
+    { name: '--color-input-border-hover', description: '滑鼠移入時的邊框。' },
+    {
+      name: '--color-input-focus',
+      description: '聚焦時的邊框；聚焦時的浮動標籤。',
+    },
+    { name: '--color-input-placeholder', description: 'placeholder 文字。' },
+    { name: '--color-input-halo', description: '聚焦時的 3px 光暈。' },
+    { name: '--color-input-halo-invalid', description: '錯誤欄位的光暈。' },
+    { name: '--color-input-halo-invalid-focus', description: '錯誤欄位聚焦時的光暈。' },
+    { name: '--color-danger', description: '錯誤時的邊框、標籤與訊息；搜尋失敗的文字。' },
+    { name: '--color-fg', description: '輸入框與選項的文字，以及欄位上方的標籤。' },
+    { name: '--color-fg-muted', description: '說明文字、選項說明、群組標題與圖示。' },
+    { name: '--color-popover-bg', description: '選項面板的底色。' },
+    { name: '--color-popover-border', description: '面板的邊框，以及群組之間的分隔線。' },
+    { name: '--color-popover-highlight', description: '作用中選項的底色。' },
+    { name: '--shadow-input', description: '欄位頂部的內側高光。' },
+    { name: '--shadow-input-lift', description: '滑鼠移入時的淡淡投影。' },
+    { name: '--radius-control', description: '欄位與選項的圓角。' },
+    { name: '--radius-surface', description: '面板的圓角。' },
+    {
+      name: '--spacing-control-sm',
+      description: '`sm` 欄位的高度與選項的最小高度；`-md`、`-lg` 同理。',
+    },
+  ]}
+/>
+
+## 相關元件
+
+<Related
+  items={[
+    {
+      title: 'Select',
+      href: '/components/select',
+      description: '原生的單選選單，適合短清單。',
+    },
+    { title: 'Input', href: '/components/input', description: '與它共用同一個欄位外框。' },
+    {
+      title: 'Button',
+      href: '/components/button',
+      description: '清除與箭頭按鈕是 ghost 的 Button。',
+    },
+  ]}
+/>

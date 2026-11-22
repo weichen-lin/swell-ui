@@ -1,0 +1,265 @@
+---
+title: 分頁 Tabs
+description: 就地切換面板；TabNav 用同樣的外觀，處理路由之間的連結。
+---
+
+<ComponentPreview name="tabs-demo" />
+
+<WhenToUse
+  use={[
+    '把相關內容分成多個面板，一次顯示一個，不改變網址。',
+    '切換檢視的分段控制：格狀或列表。',
+    '各區塊是獨立路由、需要真正連結時，用 `TabNav`。',
+  ]}
+  alternatives={[
+    {
+      name: 'Accordion',
+      href: '/components/accordion',
+      when: '垂直堆疊、可以同時展開的區塊。',
+    },
+    {
+      name: 'RadioGroup',
+      href: '/components/radio-group',
+      when: '在表單中選擇一個值，沒有面板。',
+    },
+    { name: 'Router Links', href: '/router-links', when: '把 `TabNavLink` 接上你的 router。' },
+  ]}
+/>
+
+## 安裝
+
+```tsx
+import { Tab, TabList, TabPanel, Tabs } from '@weichenlin/swell-ui'
+```
+
+CSS 包含在 `styles.css` 裡，在 Tailwind 之後引入一次即可（見[安裝](/installation)）：
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
+## 用法
+
+```tsx
+import { Tab, TabList, TabPanel, Tabs } from '@weichenlin/swell-ui'
+
+export function Example() {
+  return (
+    <Tabs defaultValue="a" aria-label="Sections">
+      <TabList>
+        <Tab value="a">A</Tab>
+        <Tab value="b">B</Tab>
+      </TabList>
+      <TabPanel value="a">First</TabPanel>
+      <TabPanel value="b">Second</TabPanel>
+    </Tabs>
+  )
+}
+```
+
+分頁列需要名稱：傳入 `aria-label` 或 `aria-labelledby`。用 `defaultValue`（非受控），或 `value` 搭配 `onValueChange`（受控）；兩者必須擇一。
+
+## 範例
+
+### 分段式、受控
+
+`Board` 分頁是 `disabled`：方向鍵會跳過它，點擊也沒有作用。
+
+<ComponentPreview name="tabs-segmented" />
+
+### 圖示與徽章
+
+徽章是分頁名稱的一部分，所以螢幕閱讀器會讀出「Resources 12」。
+
+<ComponentPreview name="tabs-icons-badges" />
+
+### 手動啟用
+
+方向鍵只移動焦點，按 Enter 或 Space 才會選取。面板需要載入資料時使用。
+
+<ComponentPreview name="tabs-manual" />
+
+### 保持面板掛載
+
+預設只渲染被選取的面板。`keepMounted` 會把其他面板隱藏起來，並保留它們的狀態。
+
+<ComponentPreview name="tabs-keep-mounted" />
+
+### TabNav
+
+`TabNav` 用在會改變網址的分頁：一個由連結組成的 `nav`，外觀相同。用 `aria-current="page"` 標示目前的連結；搭配 router 時，在 `TabNavLink` 上用 `asChild` 來渲染你的 `Link`。
+
+<ComponentPreview name="tab-nav-demo" />
+
+## API
+
+### Tabs
+
+另外接受 `<div>` 屬性。`aria-label` 與 `aria-labelledby` 擇一傳入，`value` 與 `defaultValue` 也擇一傳入。
+
+<AutoTypeTable path="src/components/tabs/tabs.tsx" name="TabsProps" />
+
+### TabList
+
+包住 `Tab` 元素。它接受 `<div>` 屬性（`role` 除外），沒有自己的 props。
+
+### Tab
+
+另外接受 `<button>` 屬性，但 `role`、`type` 與 `children` 除外。設定 `disabled` 即可停用分頁。
+
+<AutoTypeTable path="src/components/tabs/tabs.tsx" name="TabProps" keep={['disabled']} />
+
+### TabPanel
+
+另外接受 `<div>` 屬性，但 `role` 與 `hidden` 除外。
+
+<AutoTypeTable path="src/components/tabs/tabs.tsx" name="TabPanelProps" />
+
+### TabNav
+
+另外接受 `<nav>` 屬性。`aria-label` 與 `aria-labelledby` 擇一傳入。
+
+<AutoTypeTable path="src/components/tabs/tab-nav.tsx" name="TabNavProps" />
+
+### TabNavLink
+
+另外接受 `<a>` 屬性。
+
+<AutoTypeTable path="src/components/tabs/tab-nav.tsx" name="TabNavLinkProps" />
+
+## 狀態
+
+<StatesTable
+  rows={[
+    {
+      state: '已選取',
+      attribute: '`aria-selected="true"` `data-selected`',
+      notes: '設在分頁上：文字變強，指示器（`line` 是 2px 的線條，`segmented` 是滑塊）移到它下方。',
+    },
+    {
+      state: '目前的連結',
+      attribute: 'aria-current="page"',
+      notes: '設在 `TabNavLink` 上，由你或你的 router 設定；樣式與已選取的分頁相同。',
+    },
+    {
+      state: '滑鼠移入',
+      attribute: ':hover',
+      notes:
+        '文字變為 `--color-fg`。`line` 在滑鼠下會有一塊底色在分頁之間滑動（列表上有 `data-hover`）；觸控與觸控筆不會出現。',
+    },
+    {
+      state: '聚焦',
+      attribute: ':focus-visible',
+      notes: '2px 的 `--color-focus` 外框，畫在分頁內側。',
+    },
+    {
+      state: '停用',
+      attribute: '`disabled` `data-disabled`',
+      notes: '`Tab`：透明度 50%，方向鍵會跳過。`TabNavLink` 則改用 `aria-disabled="true"`。',
+    },
+    {
+      state: '單一 Tab 停駐點',
+      attribute: 'tabindex',
+      notes: '被選取的分頁是 `0`，其餘是 `-1`，所以 Tab 只會進入列表一次。',
+    },
+    {
+      state: '面板隱藏',
+      attribute: 'hidden',
+      notes: '只有設定 `keepMounted` 時才會出現；否則未選取的面板不會渲染。',
+    },
+    {
+      state: '溢出',
+      attribute: 'mask-image',
+      notes: '列表比容器寬時可橫向捲動，還有內容可看的那一側邊緣會淡出。',
+    },
+    {
+      state: '指示器',
+      attribute: 'data-indicator',
+      notes: '選取位置量測完成後設在列表上；`data-instant` 讓首次放置與尺寸改變時不播放滑動。',
+    },
+    {
+      state: '插槽',
+      attribute: 'data-slot',
+      notes:
+        '`tabs`、`tab-list`、`tab`、`tab-panel`、`tab-nav`，分頁內還有 `tab-content`、`tab-icon` 與 `tab-badge`。列表上有 `data-variant`。',
+    },
+  ]}
+/>
+
+## 鍵盤操作
+
+<KeyboardTable
+  rows={[
+    {
+      keys: ['Tab', 'Shift+Tab'],
+      action: '從被選取的分頁進入列表，再移到面板。在 `TabNav` 中則在連結之間移動。',
+    },
+    {
+      keys: ['ArrowRight', 'ArrowLeft'],
+      action:
+        '移到下一個或上一個可用的分頁，到頭會繞回；`automatic` 模式下同時選取。由右至左的版面方向相反。',
+    },
+    {
+      keys: ['Home', 'End'],
+      action: '移到第一個或最後一個可用的分頁；`automatic` 模式下同時選取。',
+    },
+    {
+      keys: ['Enter', 'Space'],
+      action:
+        '選取聚焦的分頁；這是 `manual` 模式下唯一能用鍵盤選取的方式。在 `TabNav` 中，Enter 會前往連結。',
+    },
+  ]}
+/>
+
+## 無障礙
+
+- `Tabs` 遵循 WAI-ARIA 的 tabs 模式：`role="tablist"`、`tab` 與 `tabpanel`，並以 `aria-controls` 與 `aria-labelledby` 相連。型別要求分頁列必須有名稱。
+- 單一 `tabindex` 停駐點：Tab 進入被選取的分頁，方向鍵在列表內移動。面板本身也是停駐點，所以 Tab 會從列表直接進入內容。
+- 選取分頁會載入資料時，請用 `activationMode="manual"`，避免方向鍵經過分頁就發出請求。
+- 停用的分頁會被方向鍵跳過，點擊也沒有作用。巢狀的 `Tabs` 有自己的列表、按鍵與面板。
+- 圖示是 `aria-hidden`。用來撐住寬度的粗體文字副本是隱藏的，所以名稱只會讀一次；徽章是名稱的一部分。
+- `TabNav` 是 `<nav>` 加上由真正連結組成的列表：每個連結都能在新分頁開啟，`aria-current="page"` 標示你所在的位置。請替它命名，才能和其他導覽地標區分。
+- 在觸控螢幕上，分頁至少 44px，列表也比較高。強制色彩模式下，指示器用 `Highlight`，停用的分頁用 `GrayText`。
+
+## 主題
+
+把上方任一預覽切到 **Flat**，就能看到 `themes/flat.css` 的效果：`--radius-control`、`--radius-item` 與 `--radius-inset` 更小，`line` 樣式的分隔線 `--color-border-strong` 更明顯。
+
+<TokenList
+  tokens={[
+    {
+      name: '--color-fg',
+      description: '已選取的文字；`line` 的線條；滑過的底色與 `segmented` 的滑塊都是它的淡色。',
+    },
+    { name: '--color-fg-muted', description: '未選取分頁的文字。' },
+    { name: '--color-border-strong', description: '`line` 列表下方的分隔線。' },
+    { name: '--color-ring', description: '`segmented` 的外框。' },
+    { name: '--color-focus', description: '分頁與面板的聚焦外框。' },
+    { name: '--radius-control', description: '`line` 分頁與滑過底色的圓角。' },
+    { name: '--radius-item', description: '`segmented` 外框的圓角。' },
+    { name: '--radius-inset', description: '`segmented` 分頁與滑塊的圓角。' },
+  ]}
+/>
+
+## 相關元件
+
+<Related
+  items={[
+    {
+      title: 'Accordion',
+      href: '/components/accordion',
+      description: '垂直展開與收合的區塊。',
+    },
+    {
+      title: 'Badge',
+      href: '/components/badge',
+      description: '常放在分頁文字旁的 `badge`。',
+    },
+    {
+      title: 'Router Links',
+      href: '/router-links',
+      description: '在 `TabNavLink` 上用 asChild 搭配你的 router Link。',
+    },
+  ]}
+/>

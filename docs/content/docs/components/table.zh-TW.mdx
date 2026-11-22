@@ -1,0 +1,225 @@
+---
+title: 表格 Table
+description: 資料表格，可選用搜尋、排序、選取與分頁控制項。
+---
+
+<ComponentPreview name="table-demo" />
+
+<WhenToUse
+  use={[
+    '用多個欄位比較結構相同的資料列。',
+    '搜尋、排序、選取或分頁瀏覽長清單。',
+    '放進 `Card` 裡貼齊邊緣。',
+  ]}
+  alternatives={[
+    {
+      name: 'Card',
+      href: '/components/card',
+      when: '少數數字或單一筆資料，不需要比較欄位。',
+    },
+    {
+      name: 'Accordion',
+      href: '/components/accordion',
+      when: '讀者一次展開一項的細節。',
+    },
+  ]}
+/>
+
+## 安裝
+
+```tsx
+import { Table, type TableColumn } from '@weichenlin/swell-ui'
+```
+
+CSS 包含在 `styles.css` 裡，在 Tailwind 之後引入一次即可（見[安裝](/installation)）：
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
+## 用法
+
+`Table` 是受控的 UI：搜尋、排序、選取與分頁只負責顯示控制項並回報變更。你要自己提供已經過濾、排序、切頁的 `data`。
+
+```tsx
+import { Table, type TableColumn } from '@weichenlin/swell-ui'
+
+type Invoice = { id: string; customer: string; amount: number }
+
+const columns: TableColumn<Invoice>[] = [
+  { id: 'id', header: 'Invoice', cell: (row) => row.id, rowHeader: true },
+  { id: 'customer', header: 'Customer', cell: (row) => row.customer },
+  { id: 'amount', header: 'Amount', cell: (row) => `$${row.amount}`, numeric: true },
+]
+
+export function Example({ invoices }: { invoices: Invoice[] }) {
+  return <Table data={invoices} columns={columns} getRowId={(row) => row.id} title="Invoices" />
+}
+```
+
+## 範例
+
+### 排序
+
+點擊可排序的欄位標題，會依序切換遞增、遞減、不排序。
+
+<ComponentPreview name="table-sorting" />
+
+### 搜尋
+
+由你根據 `search.value` 過濾 `data`。沒有結果時，表格內會顯示 `noResults`。
+
+<ComponentPreview name="table-search" />
+
+### 選取
+
+`canSelectRow` 可以略過特定資料列；全選核取方塊只涵蓋目前頁面上可選取的資料列。
+
+<ComponentPreview name="table-selection" />
+
+### 分頁
+
+`pageIndex` 從 0 開始；`data` 只傳目前這一頁。
+
+<ComponentPreview name="table-pagination" />
+
+### 空狀態
+
+沒有資料也沒有過濾條件時，`emptyState` 會取代整個表格。
+
+<ComponentPreview name="table-empty" />
+
+## API
+
+### Table
+
+原生 `<table>` 的 props 會傳給 table 元素，但不含 `title`、`children` 與 `className`。
+
+<AutoTypeTable path="src/components/table/table.tsx" name="TableProps" />
+
+### TableColumn
+
+<AutoTypeTable path="src/components/table/table.tsx" name="TableColumn" />
+
+### TableSort
+
+<AutoTypeTable path="src/components/table/table.tsx" name="TableSort" />
+
+## 狀態
+
+<StatesTable
+  rows={[
+    {
+      state: '資料列滑鼠移入',
+      attribute: ':hover',
+      notes: '該列套用 `--color-surface-muted` 底色。',
+    },
+    {
+      state: '已選取的資料列',
+      attribute: 'data-selected',
+      notes: '設在 ID 位於 `selection.ids` 的 `<tr>` 上；底色與滑鼠移入相同。',
+    },
+    {
+      state: '已排序的欄位',
+      attribute: 'aria-sort',
+      notes: '`<th>` 上為 `ascending` 或 `descending`；未排序時不存在。',
+    },
+    {
+      state: '不可選取的資料列',
+      attribute: 'disabled',
+      notes: '`canSelectRow` 回傳 false 時，該列的核取方塊。',
+    },
+    {
+      state: '部分選取的頁面',
+      attribute: 'indeterminate',
+      notes: '頁面上只有部分可選取的資料列被選取時，全選核取方塊的狀態。',
+    },
+    {
+      state: '到底的頁面按鈕',
+      attribute: 'aria-disabled="true"',
+      notes: '第一頁的上一頁、最後一頁的下一頁。仍可聚焦，但點擊會被忽略。',
+    },
+    {
+      state: '聚焦',
+      attribute: ':focus-visible',
+      notes: '捲動區域與空狀態上有 2px 的 `--color-focus` 外框，向內縮。',
+    },
+    {
+      state: '空狀態',
+      attribute: 'data-slot="table-empty"',
+      notes: '沒有資料、沒有搜尋文字、也沒有 `filtered` 時，取代整個表格。',
+    },
+    {
+      state: '沒有結果',
+      attribute: 'data-slot="table-no-results"',
+      notes: '搜尋或 `filtered` 把資料列濾光時，表格內的一列。',
+    },
+    {
+      state: '部件',
+      attribute: 'data-slot',
+      notes:
+        '`table-root`、`table-toolbar`、`table-scroll`、`table`、`table-header`、`table-body`、`table-row`、`table-pagination`。',
+    },
+  ]}
+/>
+
+## 鍵盤操作
+
+<KeyboardTable
+  rows={[
+    {
+      keys: ['Tab', 'Shift+Tab'],
+      action: '依序移動到工具列、捲動區域、排序按鈕、資料列核取方塊與分頁按鈕。',
+    },
+    {
+      keys: ['Enter', 'Space'],
+      action:
+        '在排序按鈕、清除選取或分頁按鈕上：觸發。停用的分頁按鈕沒有作用。清除選取後，焦點會移到搜尋欄位，沒有搜尋欄位則移到捲動區域，再沒有則移到空狀態。',
+    },
+    { keys: 'Space', action: '在核取方塊上：切換該列，或切換頁面上所有可選取的資料列。' },
+    {
+      keys: 'Arrow keys',
+      action: '焦點在捲動區域時：捲動過寬的表格，與一般可捲動容器相同。',
+    },
+  ]}
+/>
+
+## 無障礙
+
+- 標題儲存格是 `scope="col"`；`rowHeader` 欄位會渲染成 `<th scope="row">`。
+- 已排序的標題會帶 `aria-sort`，排序控制項是標題內真正的按鈕。
+- 表格的名稱來自 `title`，或你設定的 `aria-label`、`aria-labelledby`。捲動區域是有名稱的 `section`（預設為 `Table`），並設 `tabindex="0"`，鍵盤使用者才能捲動過寬的表格。
+- 資料列核取方塊的名稱是 `Select row <id>`；全選核取方塊的名稱是 `Select all rows on this page`。
+- 已選取數量與分頁範圍是 `<output>` 元素，變動時會被朗讀。
+- 分頁按鈕用 `aria-disabled` 而非原生 `disabled`，所以在首頁、末頁時焦點不會消失。
+- 所有內建文字都能透過 `labels` 替換，方便在地化。
+- 由右至左的版面中，分頁的箭頭會翻轉。
+
+## 主題
+
+把上方任一預覽切到 **Flat**，就能看到 `themes/flat.css` 的效果：分隔線變得更明顯，`--radius-inset` 從 4px 變 2px。表格沒有用到陰影。
+
+<TokenList
+  tokens={[
+    { name: '--color-surface', description: '表格底色。' },
+    { name: '--color-fg', description: '內文文字；已排序時排序按鈕的文字。' },
+    { name: '--color-fg-muted', description: '標題文字、已選取數量、分頁文字。' },
+    { name: '--color-border', description: '工具列、標題列、資料列與頁尾之間的分隔線。' },
+    { name: '--color-surface-muted', description: '滑鼠移入或已選取的資料列底色。' },
+    { name: '--color-focus', description: '聚焦外框。' },
+    { name: '--radius-inset', description: '排序按鈕的圓角。' },
+  ]}
+/>
+
+工具列與頁尾裡的搜尋欄位、核取方塊與按鈕各自讀取自己的 token，請見各元件頁面。
+
+## 相關元件
+
+<Related
+  items={[
+    { title: 'Card', href: '/components/card', description: '把表格貼齊邊緣放進卡片。' },
+    { title: 'Input', href: '/components/input', description: '搜尋欄位使用 SearchInput。' },
+    { title: 'Checkbox', href: '/components/checkbox', description: '資料列與全選核取方塊。' },
+  ]}
+/>

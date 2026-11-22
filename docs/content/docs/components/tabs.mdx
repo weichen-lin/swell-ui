@@ -1,14 +1,45 @@
 ---
 title: Tabs
-description: In-page tabs that switch panels, plus TabNav for tabs that navigate between routes.
+description: Switches between panels in place; TabNav does the same look for links between routes.
 ---
 
 <ComponentPreview name="tabs-demo" />
 
-## Usage
+<WhenToUse
+  use={[
+    'Split related content into panels and show one at a time, without changing the URL.',
+    'A segmented control that switches a view: grid or list.',
+    '`TabNav` for sections that are separate routes and need real links.',
+  ]}
+  alternatives={[
+    {
+      name: 'Accordion',
+      href: '/components/accordion',
+      when: 'sections that can be open together, stacked vertically.',
+    },
+    {
+      name: 'RadioGroup',
+      href: '/components/radio-group',
+      when: 'choosing a value in a form, with no panels.',
+    },
+    { name: 'Router Links', href: '/router-links', when: 'wiring `TabNavLink` to your router.' },
+  ]}
+/>
 
-`Tabs` switches panels without changing the URL. A tablist needs a name: pass `aria-label` or
-`aria-labelledby`. Use `defaultValue` (uncontrolled) or `value` with `onValueChange` (controlled).
+## Installation
+
+```tsx
+import { Tab, TabList, TabPanel, Tabs } from '@weichenlin/swell-ui'
+```
+
+The CSS comes with `styles.css`, imported once after Tailwind (see [Installation](/installation)):
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
+## Usage
 
 ```tsx
 import { Tab, TabList, TabPanel, Tabs } from '@weichenlin/swell-ui'
@@ -27,20 +58,37 @@ export function Example() {
 }
 ```
 
+A tablist needs a name: pass `aria-label` or `aria-labelledby`. Use `defaultValue` (uncontrolled) or `value` with `onValueChange` (controlled); one of the two is required.
+
 ## Examples
 
 ### Segmented, controlled
+
+The `Board` tab is `disabled`: it is skipped by the arrow keys and ignores clicks.
 
 <ComponentPreview name="tabs-segmented" />
 
 ### Icons and badges
 
+The badge is part of the tab's name, so a screen reader hears "Resources 12".
+
 <ComponentPreview name="tabs-icons-badges" />
+
+### Manual activation
+
+Arrow keys only move focus; Enter or Space selects. Use it when a panel loads data.
+
+<ComponentPreview name="tabs-manual" />
+
+### Keep panels mounted
+
+By default only the selected panel renders. `keepMounted` hides the others and keeps their state.
+
+<ComponentPreview name="tabs-keep-mounted" />
 
 ### TabNav
 
-`TabNav` is for tabs that change the URL: a `nav` of links with the same look. Mark the current
-link with `aria-current="page"`. With a router, use `asChild` on `TabNavLink` to render your `Link`.
+`TabNav` is for tabs that change the URL: a `nav` of links with the same look. Mark the current link with `aria-current="page"`; with a router, use `asChild` on `TabNavLink` to render your `Link`.
 
 <ComponentPreview name="tab-nav-demo" />
 
@@ -48,62 +96,176 @@ link with `aria-current="page"`. With a router, use `asChild` on `TabNavLink` to
 
 ### Tabs
 
-Also accepts `div` props. One of `aria-label` or `aria-labelledby` is required, and one of `value`
-or `defaultValue`.
+Also accepts `<div>` attributes. Pass one of `aria-label` or `aria-labelledby`, and one of `value` or `defaultValue`.
 
-| Prop             | Type                      | Default       | Description                                               |
-| ---------------- | ------------------------- | ------------- | --------------------------------------------------------- |
-| `value`          | `string`                  | -             | Selected tab (controlled).                                |
-| `defaultValue`   | `string`                  | -             | Initially selected tab (uncontrolled).                    |
-| `onValueChange`  | `(value: string) => void` | -             | Called when the selection changes.                        |
-| `variant`        | `'line' \| 'segmented'`   | `'line'`      | Visual style.                                             |
-| `size`           | `'sm' \| 'md'`            | `'md'`        | Tab size.                                                 |
-| `activationMode` | `'automatic' \| 'manual'` | `'automatic'` | `manual`: arrows only move focus; Enter or Space selects. |
+<AutoTypeTable path="src/components/tabs/tabs.tsx" name="TabsProps" />
 
 ### TabList
 
-Wraps the `Tab` elements (`div` props, except `role`).
+Wraps the `Tab` elements. It takes `<div>` attributes except `role`, and has no props of its own.
 
 ### Tab
 
-| Prop       | Type        | Default | Description                                                    |
-| ---------- | ----------- | ------- | -------------------------------------------------------------- |
-| `value`    | `string`    | -       | Identifies the tab and its panel.                              |
-| `icon`     | `ReactNode` | -       | Decorative leading icon.                                       |
-| `badge`    | `ReactNode` | -       | Trailing slot, usually a `Badge`; part of the accessible name. |
-| `disabled` | `boolean`   | `false` | Disables the tab.                                              |
+Also accepts `<button>` attributes, except `role`, `type` and `children`. Set `disabled` to turn a tab off.
+
+<AutoTypeTable path="src/components/tabs/tabs.tsx" name="TabProps" keep={['disabled']} />
 
 ### TabPanel
 
-| Prop          | Type      | Default | Description                          |
-| ------------- | --------- | ------- | ------------------------------------ |
-| `value`       | `string`  | -       | The tab it belongs to.               |
-| `keepMounted` | `boolean` | `false` | Keep the panel mounted while hidden. |
+Also accepts `<div>` attributes, except `role` and `hidden`.
+
+<AutoTypeTable path="src/components/tabs/tabs.tsx" name="TabPanelProps" />
 
 ### TabNav
 
-Also accepts `nav` props. One of `aria-label` or `aria-labelledby` is required.
+Also accepts `<nav>` attributes. Pass one of `aria-label` or `aria-labelledby`.
 
-| Prop            | Type                    | Default  | Description                                              |
-| --------------- | ----------------------- | -------- | -------------------------------------------------------- |
-| `variant`       | `'line' \| 'segmented'` | `'line'` | Visual style.                                            |
-| `size`          | `'sm' \| 'md'`          | `'md'`   | Tab size.                                                |
-| `listClassName` | `string`                | -        | Classes for the inner `ul`; `className` is on the `nav`. |
+<AutoTypeTable path="src/components/tabs/tab-nav.tsx" name="TabNavProps" />
 
 ### TabNavLink
 
-Also accepts `a` props.
+Also accepts `<a>` attributes.
 
-| Prop      | Type        | Default | Description                                                 |
-| --------- | ----------- | ------- | ----------------------------------------------------------- |
-| `icon`    | `ReactNode` | -       | Decorative leading icon.                                    |
-| `badge`   | `ReactNode` | -       | Trailing slot, usually a `Badge`.                           |
-| `asChild` | `boolean`   | `false` | Render the only child (usually a router `Link`) as the tab. |
+<AutoTypeTable path="src/components/tabs/tab-nav.tsx" name="TabNavLinkProps" />
+
+## States
+
+<StatesTable
+  rows={[
+    {
+      state: 'Selected',
+      attribute: '`aria-selected="true"` `data-selected`',
+      notes:
+        'On the tab: strong text, and the indicator (a 2px bar for `line`, a knob for `segmented`) moves under it.',
+    },
+    {
+      state: 'Current link',
+      attribute: 'aria-current="page"',
+      notes: 'On a `TabNavLink`, set by you or your router; styled like a selected tab.',
+    },
+    {
+      state: 'Hover',
+      attribute: ':hover',
+      notes:
+        'Text turns `--color-fg`. In `line`, a pill glides between tabs under a mouse (`data-hover` on the list); touch and pen leave none.',
+    },
+    {
+      state: 'Focus',
+      attribute: ':focus-visible',
+      notes: '2px `--color-focus` outline, drawn inside the tab.',
+    },
+    {
+      state: 'Disabled',
+      attribute: '`disabled` `data-disabled`',
+      notes:
+        'A `Tab`: 50% opacity, skipped by arrow keys. A `TabNavLink` uses `aria-disabled="true"` instead.',
+    },
+    {
+      state: 'Roving tab stop',
+      attribute: 'tabindex',
+      notes: '`0` on the selected tab and `-1` on the rest, so Tab enters the list once.',
+    },
+    {
+      state: 'Panel hidden',
+      attribute: 'hidden',
+      notes: 'Only with `keepMounted`; otherwise an unselected panel is not rendered.',
+    },
+    {
+      state: 'Overflow',
+      attribute: 'mask-image',
+      notes:
+        'A list wider than its container scrolls sideways and fades the edge that has more to reveal.',
+    },
+    {
+      state: 'Indicator',
+      attribute: 'data-indicator',
+      notes:
+        'On the list once the selection is measured; `data-instant` skips the slide on first placement and resize.',
+    },
+    {
+      state: 'Slots',
+      attribute: 'data-slot',
+      notes:
+        '`tabs`, `tab-list`, `tab`, `tab-panel`, `tab-nav`, and inside a tab `tab-content`, `tab-icon` and `tab-badge`. `data-variant` is on the list.',
+    },
+  ]}
+/>
+
+## Keyboard
+
+<KeyboardTable
+  rows={[
+    {
+      keys: ['Tab', 'Shift+Tab'],
+      action:
+        'Enters the list on the selected tab, then moves on to the panel. In `TabNav`, moves between links.',
+    },
+    {
+      keys: ['ArrowRight', 'ArrowLeft'],
+      action:
+        'Moves to the next or previous enabled tab, wrapping at the ends, and selects it in `automatic` mode. Reversed in right-to-left layouts.',
+    },
+    {
+      keys: ['Home', 'End'],
+      action: 'Moves to the first or last enabled tab, selecting it in `automatic` mode.',
+    },
+    {
+      keys: ['Enter', 'Space'],
+      action:
+        'Selects the focused tab; the only way to select with the keyboard in `manual` mode. In `TabNav`, Enter follows the link.',
+    },
+  ]}
+/>
 
 ## Accessibility
 
-- `Tabs` follows the WAI-ARIA tabs pattern: roving tabindex, Arrow keys, Home and End move between
-  tabs, and Tab moves from the tablist into the panel. Right and Left arrows respect RTL.
-- Use `activationMode="manual"` when a panel loads data.
-- `TabNav` uses link semantics: Tab moves between links, Enter follows one, and each can open in a
-  new tab.
+- `Tabs` follows the WAI-ARIA tabs pattern: `role="tablist"`, `tab` and `tabpanel`, linked by `aria-controls` and `aria-labelledby`. The types require a name for the tablist.
+- Roving `tabindex`: Tab enters on the selected tab and arrow keys move within the list. The panel is a tab stop too, so Tab goes from the list straight into the content.
+- Use `activationMode="manual"` when selecting a tab loads data, so arrowing past tabs does not fire requests.
+- Disabled tabs are skipped by arrow keys and ignore clicks. A nested `Tabs` keeps its own list, keys and panels.
+- The icon is `aria-hidden`. The bold label copy used to hold the width is hidden, so the name is read once; the badge is part of the name.
+- `TabNav` is a `<nav>` with a list of real links: each can open in a new tab, and `aria-current="page"` marks where you are. Give it a name so it can be told apart from other navigation landmarks.
+- On touch screens tabs are at least 44px, and the list is taller. In forced colors mode the indicator is `Highlight` and disabled tabs `GrayText`.
+
+## Theming
+
+Switch a preview above to **Flat** to see `themes/flat.css`: it tightens `--radius-control`, `--radius-item` and `--radius-inset`, and strengthens `--color-border-strong`, the divider of the `line` variant.
+
+<TokenList
+  tokens={[
+    {
+      name: '--color-fg',
+      description:
+        'Selected text; the `line` bar; the hover pill and segmented knob are tints of it.',
+    },
+    { name: '--color-fg-muted', description: 'Unselected tab text.' },
+    { name: '--color-border-strong', description: '`line` divider under the list.' },
+    { name: '--color-ring', description: '`segmented` frame.' },
+    { name: '--color-focus', description: 'Focus outline of tabs and panels.' },
+    { name: '--radius-control', description: '`line` tab and hover pill corner radius.' },
+    { name: '--radius-item', description: '`segmented` frame corner radius.' },
+    { name: '--radius-inset', description: '`segmented` tab and knob corner radius.' },
+  ]}
+/>
+
+## Related
+
+<Related
+  items={[
+    {
+      title: 'Accordion',
+      href: '/components/accordion',
+      description: 'Vertical sections that expand and collapse.',
+    },
+    {
+      title: 'Badge',
+      href: '/components/badge',
+      description: 'The usual `badge` next to a tab label.',
+    },
+    {
+      title: 'Router Links',
+      href: '/router-links',
+      description: "asChild on `TabNavLink` with your router's Link.",
+    },
+  ]}
+/>

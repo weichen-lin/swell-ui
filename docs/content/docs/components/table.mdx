@@ -5,7 +5,42 @@ description: A data table with optional search, sorting, selection and paginatio
 
 <ComponentPreview name="table-demo" />
 
+<WhenToUse
+  use={[
+    'Compare rows of the same shape across several columns.',
+    'Search, sort, select or page through a long list.',
+    'Run edge to edge inside a `Card`.',
+  ]}
+  alternatives={[
+    {
+      name: 'Card',
+      href: '/components/card',
+      when: 'a few figures or one record, with no columns to compare.',
+    },
+    {
+      name: 'Accordion',
+      href: '/components/accordion',
+      when: 'detail the reader opens one item at a time.',
+    },
+  ]}
+/>
+
+## Installation
+
+```tsx
+import { Table, type TableColumn } from '@weichenlin/swell-ui'
+```
+
+The CSS comes with `styles.css`, imported once after Tailwind (see [Installation](/installation)):
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
 ## Usage
+
+`Table` is controlled UI: search, sorting, selection and pagination only render controls and report changes. You supply the already filtered, sorted and paged `data`.
 
 ```tsx
 import { Table, type TableColumn } from '@weichenlin/swell-ui'
@@ -23,9 +58,6 @@ export function Example({ invoices }: { invoices: Invoice[] }) {
 }
 ```
 
-`Table` is controlled UI: search, sorting, selection and pagination only render controls and report
-changes. You supply the already filtered, sorted and paged `data`.
-
 ## Examples
 
 ### Sorting
@@ -36,65 +68,170 @@ Clicking a sortable header cycles ascending, descending, then no sort.
 
 ### Search
 
+Filter `data` yourself from `search.value`. An empty result shows `noResults` inside the table.
+
 <ComponentPreview name="table-search" />
 
 ### Selection
+
+`canSelectRow` skips rows; the select-all checkbox covers eligible rows on the current page only.
 
 <ComponentPreview name="table-selection" />
 
 ### Pagination
 
+`pageIndex` is zero-based; pass only the current page as `data`.
+
 <ComponentPreview name="table-pagination" />
+
+### Empty state
+
+With no data and no filter, `emptyState` replaces the table.
+
+<ComponentPreview name="table-empty" />
 
 ## API
 
 ### Table
 
-Native `<table>` props are forwarded to the table element, except `title`, `children` and
-`className`.
+Native `<table>` props are forwarded to the table element, except `title`, `children` and `className`.
 
-| Prop             | Type                                                                                                     | Default              | Description                                                                           |
-| ---------------- | -------------------------------------------------------------------------------------------------------- | -------------------- | ------------------------------------------------------------------------------------- |
-| `data`           | `readonly T[]`                                                                                           | -                    | Rows to render on the current page, in display order.                                 |
-| `columns`        | `readonly TableColumn<T>[]`                                                                              | -                    | Column definitions.                                                                   |
-| `getRowId`       | `(row: T) => string`                                                                                     | -                    | Returns a stable unique ID for each row.                                              |
-| `title`          | `ReactNode`                                                                                              | -                    | Toolbar title; also names the table.                                                  |
-| `emptyState`     | `ReactNode`                                                                                              | `'No rows yet'`      | Shown when there is no data and no active filter.                                     |
-| `noResults`      | `ReactNode`                                                                                              | `'No matching rows'` | Shown when filters leave no rows.                                                     |
-| `filtered`       | `boolean`                                                                                                | `false`              | Indicates filtering when the caller filters outside the search field.                 |
-| `search`         | `{ value: string; onChange: (value: string) => void }`                                                   | -                    | Shows a search field in the toolbar.                                                  |
-| `sorting`        | `{ value: TableSort \| null; onChange: (value: TableSort \| null) => void }`                             | -                    | Enables sort buttons on columns marked `sortable`.                                    |
-| `pagination`     | `{ pageIndex: number; pageSize: number; rowCount: number; onPageChange: (pageIndex: number) => void }`   | -                    | Shows a pagination footer. `pageIndex` is zero-based.                                 |
-| `selection`      | `{ ids: ReadonlySet<string>; onChange: (ids: Set<string>) => void; canSelectRow?: (row: T) => boolean }` | -                    | Adds row checkboxes and a select-all-on-page checkbox.                                |
-| `className`      | `string`                                                                                                 | -                    | Root element classes.                                                                 |
-| `tableClassName` | `string`                                                                                                 | -                    | Classes for the `<table>`; use for column layout or a minimum width.                  |
-| `labels`         | `Partial<Labels>`                                                                                        | English defaults     | Overrides built-in text such as `search`, `previousPage`, `nextPage` and `noResults`. |
+<AutoTypeTable path="src/components/table/table.tsx" name="TableProps" />
 
 ### TableColumn
 
-| Field             | Type                           | Description                                              |
-| ----------------- | ------------------------------ | -------------------------------------------------------- |
-| `id`              | `string`                       | Unique column ID; also the `TableSort` ID.               |
-| `header`          | `ReactNode`                    | Header content.                                          |
-| `cell`            | `(row: T) => ReactNode`        | Renders the cell for a row.                              |
-| `sortable`        | `boolean`                      | Shows a sort button when `sorting` is set.               |
-| `align`           | `'start' \| 'center' \| 'end'` | Text alignment. Defaults to `'end'` for numeric columns. |
-| `numeric`         | `boolean`                      | Right-aligns and uses tabular numerals.                  |
-| `rowHeader`       | `boolean`                      | Renders the cell as a row header (`<th scope="row">`).   |
-| `className`       | `string`                       | Classes for body cells.                                  |
-| `headerClassName` | `string`                       | Classes for the header cell.                             |
+<AutoTypeTable path="src/components/table/table.tsx" name="TableColumn" />
 
 ### TableSort
 
-| Field       | Type              | Description     |
-| ----------- | ----------------- | --------------- |
-| `id`        | `string`          | Column ID.      |
-| `direction` | `'asc' \| 'desc'` | Sort direction. |
+<AutoTypeTable path="src/components/table/table.tsx" name="TableSort" />
+
+## States
+
+<StatesTable
+  rows={[
+    {
+      state: 'Row hover',
+      attribute: ':hover',
+      notes: 'The row takes the `--color-surface-muted` fill.',
+    },
+    {
+      state: 'Selected row',
+      attribute: 'data-selected',
+      notes: 'On the `<tr>` whose ID is in `selection.ids`; same fill as hover.',
+    },
+    {
+      state: 'Sorted column',
+      attribute: 'aria-sort',
+      notes: '`ascending` or `descending` on the `<th>`; absent when unsorted.',
+    },
+    {
+      state: 'Row not selectable',
+      attribute: 'disabled',
+      notes: 'The row checkbox when `canSelectRow` returns false.',
+    },
+    {
+      state: 'Partly selected page',
+      attribute: 'indeterminate',
+      notes: 'The select-all checkbox when only some selectable rows on the page are selected.',
+    },
+    {
+      state: 'Page button at the end',
+      attribute: 'aria-disabled="true"',
+      notes: 'Previous on the first page, Next on the last. Stays focusable; clicks are ignored.',
+    },
+    {
+      state: 'Focus',
+      attribute: ':focus-visible',
+      notes: '2px `--color-focus` outline, inset, on the scroll region and the empty state.',
+    },
+    {
+      state: 'Empty',
+      attribute: 'data-slot="table-empty"',
+      notes: 'Replaces the table when there is no data, no search text and no `filtered`.',
+    },
+    {
+      state: 'No results',
+      attribute: 'data-slot="table-no-results"',
+      notes: 'A row inside the table when search or `filtered` leaves nothing.',
+    },
+    {
+      state: 'Parts',
+      attribute: 'data-slot',
+      notes:
+        '`table-root`, `table-toolbar`, `table-scroll`, `table`, `table-header`, `table-body`, `table-row`, `table-pagination`.',
+    },
+  ]}
+/>
+
+## Keyboard
+
+<KeyboardTable
+  rows={[
+    {
+      keys: ['Tab', 'Shift+Tab'],
+      action:
+        'Moves through the toolbar, the scroll region, the sort buttons, the row checkboxes and the pagination buttons.',
+    },
+    {
+      keys: ['Enter', 'Space'],
+      action:
+        'On a sort button, Clear selection or a page button: activates it. Disabled page buttons do nothing. Clear selection then moves focus to the search field, else the scroll region, else the empty state.',
+    },
+    {
+      keys: 'Space',
+      action: 'On a checkbox: toggles the row, or every selectable row on the page.',
+    },
+    {
+      keys: 'Arrow keys',
+      action: 'With the scroll region focused: scrolls a wide table, as any scroll container.',
+    },
+  ]}
+/>
 
 ## Accessibility
 
-- Sorted headers expose `aria-sort`, and sort controls are real buttons.
-- The scroll region is focusable so keyboard users can scroll wide tables.
-- Selection checkboxes have row-specific names; the selected count is announced through an
-  `output` element.
-- All built-in text can be localized with `labels`.
+- Header cells are `scope="col"`; `rowHeader` columns render `<th scope="row">`.
+- Sorted headers expose `aria-sort`, and sort controls are real buttons inside the header.
+- The table is named by `title`, or by your `aria-label` or `aria-labelledby`. The scroll region is a labelled `section` (`Table` by default) with `tabindex="0"`, so keyboard users can scroll wide tables.
+- Row checkboxes are named `Select row <id>`; the select-all checkbox is named `Select all rows on this page`.
+- The selected count and the pagination range are `<output>` elements, which are announced as they change.
+- Page buttons use `aria-disabled`, not native `disabled`, so focus is not lost at either end.
+- Every built-in string can be replaced through `labels`, for localization.
+- The chevrons in pagination flip in right-to-left layouts.
+
+## Theming
+
+Switch a preview above to **Flat** to see `themes/flat.css`: hairlines get stronger and `--radius-inset` goes from 4px to 2px. The table draws no shadows.
+
+<TokenList
+  tokens={[
+    { name: '--color-surface', description: 'Table fill.' },
+    { name: '--color-fg', description: 'Body text; sort button text when sorted.' },
+    { name: '--color-fg-muted', description: 'Header text, selected count, pagination text.' },
+    { name: '--color-border', description: 'Lines between the toolbar, header, rows and footer.' },
+    { name: '--color-surface-muted', description: 'Fill of a hovered or selected row.' },
+    { name: '--color-focus', description: 'Focus outline.' },
+    { name: '--radius-inset', description: 'Corner radius of sort buttons.' },
+  ]}
+/>
+
+Search, checkboxes and buttons inside the toolbar and footer read their own tokens; see their pages.
+
+## Related
+
+<Related
+  items={[
+    { title: 'Card', href: '/components/card', description: 'Hold a table edge to edge.' },
+    {
+      title: 'Input',
+      href: '/components/input',
+      description: 'SearchInput powers the search field.',
+    },
+    {
+      title: 'Checkbox',
+      href: '/components/checkbox',
+      description: 'Row and select-all checkboxes.',
+    },
+  ]}
+/>

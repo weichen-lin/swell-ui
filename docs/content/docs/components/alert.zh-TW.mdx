@@ -1,0 +1,160 @@
+---
+title: 警示訊息 Alert
+description: 內嵌的訊息，在條件成立期間一直顯示。
+---
+
+<ComponentPreview name="alert-demo" />
+
+<WhenToUse
+  use={[
+    '頁面或區塊的狀態成立期間持續顯示：同步已關閉、資料已過期。',
+    '在出錯的地方旁邊回報錯誤，並用 `action` 提供重試。',
+    '使用者可以關閉的提示，用 `onDismiss`。',
+  ]}
+  alternatives={[
+    {
+      name: 'Toast',
+      href: '/components/toast',
+      when: '操作的結果，可以自己消失。',
+    },
+    {
+      name: 'Dialog',
+      href: '/components/dialog',
+      when: '必須先確認才能繼續的訊息。',
+    },
+    {
+      name: 'Badge',
+      href: '/components/badge',
+      when: '放在列或表格裡的簡短狀態標籤。',
+    },
+  ]}
+/>
+
+## 安裝
+
+```tsx
+import { Alert } from '@weichenlin/swell-ui'
+```
+
+CSS 包含在 `styles.css` 裡，在 Tailwind 之後引入一次即可（見[安裝](/installation)）：
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
+## 用法
+
+```tsx
+import { Alert } from '@weichenlin/swell-ui'
+
+export function Example() {
+  return (
+    <Alert tone="info" title="Next sync at 11:00">
+      The order count refreshes after the sync completes.
+    </Alert>
+  )
+}
+```
+
+## 範例
+
+### Tone 色調
+
+neutral 與 info 使用同一個圖示，所以重要的訊息要寫在文字裡。
+
+<ComponentPreview name="alert-tones" />
+
+### 動作與關閉
+
+`onDismiss` 會顯示關閉按鈕，警示訊息是否保持掛載由你決定。
+
+<ComponentPreview name="alert-action-dismiss" />
+
+## API
+
+只列元件自己的 props；其他 `<div>` 屬性（`title` 除外）都會直接傳給根元素。
+
+<AutoTypeTable path="src/components/alert/alert.tsx" name="AlertProps" />
+
+`children` 會渲染成標題下方的描述。
+
+## 狀態
+
+<StatesTable
+  rows={[
+    {
+      state: 'Tone',
+      attribute: 'data-tone',
+      notes: '對應 `tone`，決定圖示與它的顏色。',
+    },
+    {
+      state: '寬容器',
+      attribute: '@container (width >= 28rem)',
+      notes: 'action 移到右側獨立一欄，關閉按鈕垂直置中；較窄時，action 換行排在文字下方。',
+    },
+    {
+      state: '描述',
+      attribute: 'data-slot="alert-description"',
+      notes: '在標題下方時是柔和的顏色；沒有標題時是一般文字顏色。',
+    },
+    {
+      state: '各部分',
+      attribute: 'data-slot',
+      notes:
+        '根元素是 `alert`，其餘為 `alert-icon`、`alert-title`、`alert-description`、`alert-action`。',
+    },
+  ]}
+/>
+
+## 鍵盤操作
+
+<KeyboardTable
+  rows={[
+    {
+      keys: ['Tab', 'Shift+Tab'],
+      action: '依序在 action 與關閉按鈕之間移動。',
+    },
+    {
+      keys: ['Enter', 'Space'],
+      action: '觸發目前聚焦的 action 或關閉按鈕。',
+    },
+  ]}
+/>
+
+## 無障礙
+
+- 警示訊息沒有 role，也不是 live region：它不會自己朗讀。需要朗讀的更新，請把訊息放進 live region。
+- 圖示是 `aria-hidden`。不要只靠 tone 傳達意思：請寫在標題或文字裡。
+- 關閉按鈕的名稱是 `Dismiss alert`；傳 `dismissLabel` 即可在地化。
+- 顯示與否由呼叫端控制：`onDismiss` 只回報點擊。
+- 長字會換行，所以窄容器不會溢出。
+- 強制色彩模式下，邊框用 `CanvasText` 繪製。
+
+## 主題
+
+把上方任一預覽切到 **Flat**，就能看到 `themes/flat.css` 的效果：它把 `--radius-surface` 縮到 8px，Alert 的其他部分都沒變。
+
+<TokenList
+  tokens={[
+    { name: '--color-ring-deep', description: '邊框。' },
+    { name: '--color-fg', description: '文字與標題。' },
+    { name: '--color-fg-muted', description: '標題下方的描述，以及關閉按鈕。' },
+    { name: '--color-neutral', description: '`neutral` 的圖示。' },
+    { name: '--color-info', description: '`info` 的圖示。' },
+    { name: '--color-success', description: '`success` 的圖示。' },
+    { name: '--color-warning', description: '`warning` 的圖示。' },
+    { name: '--color-danger', description: '`danger` 的圖示。' },
+    { name: '--radius-surface', description: '圓角。' },
+  ]}
+/>
+
+## 相關元件
+
+<Related
+  items={[
+    { title: 'Toast', href: '/components/toast', description: '會自己消失的訊息。' },
+    { title: 'Button', href: '/components/button', description: 'action 與關閉按鈕。' },
+    { title: 'Badge', href: '/components/badge', description: '放在列裡的狀態標籤。' },
+  ]}
+/>

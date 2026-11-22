@@ -1,14 +1,53 @@
 ---
 title: Dialog
-description: A modal dialog built on the native dialog element.
+description: A modal dialog on the native dialog element, for decisions and short tasks that block the page.
 ---
 
 <ComponentPreview name="dialog-demo" />
 
+<WhenToUse
+  use={[
+    'Ask for a decision or a short input before going on: confirm, edit, sync.',
+    'Confirm a destructive action, with `alert`.',
+    'Hold the user on one task until it finishes, with `dismissible={false}`.',
+  ]}
+  alternatives={[
+    {
+      name: 'Drawer',
+      href: '/components/drawer',
+      when: 'filters or details that sit beside the page.',
+    },
+    { name: 'Toast', href: '/components/toast', when: 'a result that needs no reply.' },
+    {
+      name: 'Alert',
+      href: '/components/alert',
+      when: 'a message that stays next to the content it describes.',
+    },
+  ]}
+/>
+
+## Installation
+
+```tsx
+import {
+  Dialog,
+  DialogBody,
+  DialogFooter,
+  DialogHeader,
+  type DialogCloseReason,
+} from '@weichenlin/swell-ui'
+```
+
+The CSS comes with `styles.css`, imported once after Tailwind (see [Installation](/installation)):
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
 ## Usage
 
-`Dialog` is controlled: `open` drives it and every close request (Esc, backdrop, close button) goes
-through `onOpenChange`. Compose it with `DialogHeader`, `DialogBody`, and `DialogFooter`.
+`Dialog` is controlled: `open` drives it, and every close request (Esc, backdrop, close button) goes through `onOpenChange`.
 
 ```tsx
 import { Button, Dialog, DialogBody, DialogFooter, DialogHeader } from '@weichenlin/swell-ui'
@@ -35,8 +74,7 @@ export function Example() {
 
 ### Destructive confirmation
 
-`alert` renders `role="alertdialog"`, hides the close button, and bounces instead of closing on a
-backdrop click. Put `autoFocus` on the least destructive button.
+`alert` renders `role="alertdialog"`, hides the close button, and bounces instead of closing on a backdrop click. Put `autoFocus` on the least destructive button.
 
 <ComponentPreview name="dialog-alert" />
 
@@ -44,39 +82,144 @@ backdrop click. Put `autoFocus` on the least destructive button.
 
 <ComponentPreview name="dialog-sizes" />
 
+### Not dismissible
+
+`dismissible={false}` makes Esc, the backdrop and the close button refuse with a bounce, for example while a request runs.
+
+<ComponentPreview name="dialog-dismissible" />
+
 ## API
+
+Own props only; every other `<dialog>` attribute passes through to the element.
 
 ### Dialog
 
-Also accepts the props of the native `dialog` element, except `open`.
+<AutoTypeTable path="src/components/dialog/dialog.tsx" name="DialogProps" />
 
-| Prop           | Type                                                 | Default | Description                                                                    |
-| -------------- | ---------------------------------------------------- | ------- | ------------------------------------------------------------------------------ |
-| `open`         | `boolean`                                            | -       | Whether the dialog is open.                                                    |
-| `onOpenChange` | `(open: boolean, reason: DialogCloseReason) => void` | -       | Called for every close request.                                                |
-| `size`         | `'sm' \| 'md' \| 'lg'`                               | `'md'`  | Max width: sm 384px, md 480px, lg 640px.                                       |
-| `alert`        | `boolean`                                            | -       | Destructive confirmation: alertdialog role, no close button, backdrop bounces. |
-| `dismissible`  | `boolean`                                            | -       | `false` blocks Esc, the backdrop and the close button (e.g. while pending).    |
-
-`DialogCloseReason` is `'escape' | 'backdrop' | 'close-button' | 'programmatic'`.
+`DialogCloseReason` is `'escape' | 'backdrop' | 'close-button' | 'programmatic'`. The dialog never sends `programmatic` itself: use it when you route your own closes, such as after a successful submit, through the same handler.
 
 ### DialogHeader
 
-| Prop          | Type        | Default                   | Description                                |
-| ------------- | ----------- | ------------------------- | ------------------------------------------ |
-| `title`       | `ReactNode` | -                         | Heading; also names the dialog.            |
-| `description` | `ReactNode` | -                         | Supporting text, announced with the title. |
-| `closeButton` | `boolean`   | `true` (`false` if alert) | Show the top-right close button.           |
+<AutoTypeTable path="src/components/dialog/dialog.tsx" name="DialogHeaderProps" />
 
 ### DialogBody and DialogFooter
 
-Plain `div` wrappers. `DialogBody` scrolls when content is taller than the available space;
-`DialogFooter` right-aligns actions (Cancel first, primary action last).
+Plain `div` wrappers. `DialogBody` scrolls when the content is taller than the space between header and footer. `DialogFooter` right-aligns actions: Cancel first, the primary action last.
+
+## States
+
+<StatesTable
+  rows={[
+    {
+      state: 'Open',
+      attribute: 'open',
+      notes:
+        'Set by `showModal()`. The content mounts when it opens and unmounts after the exit, so each opening starts fresh.',
+    },
+    {
+      state: 'Closing',
+      attribute: 'data-closing',
+      notes:
+        'Set while the exit plays (120ms, 180ms as a sheet); `close()` waits for it. Close requests in the meantime are ignored.',
+    },
+    {
+      state: 'Alert',
+      attribute: 'role="alertdialog"',
+      notes: 'With `alert`. Backdrop clicks bounce; Esc still closes.',
+    },
+    {
+      state: 'Dismiss refused',
+      attribute: 'dismissible={false}',
+      notes:
+        'Esc, backdrop and close button bounce the dialog for 200ms (a 6px lift as a sheet). The close button is `disabled`. Skipped under `prefers-reduced-motion: reduce`.',
+    },
+    {
+      state: 'Named',
+      attribute: '`aria-labelledby` `aria-describedby`',
+      notes:
+        'Point at the `DialogHeader` title and description, only while they are rendered. Your own values win.',
+    },
+    {
+      state: 'Sheet',
+      attribute: '@media (width < 40rem)',
+      notes: 'Below 640px the dialog is a full-width bottom sheet; footer buttons share the row.',
+    },
+    {
+      state: 'Scroll lock',
+      attribute: 'overflow: hidden',
+      notes:
+        'On `<html>` from open until the exit has finished. The scrollbar width stays as padding, so the page does not shift.',
+    },
+    {
+      state: 'Parts',
+      attribute: 'data-slot',
+      notes:
+        '`dialog` on the `<dialog>`, then `dialog-panel`, `dialog-header`, `dialog-body` and `dialog-footer`.',
+    },
+  ]}
+/>
+
+## Keyboard
+
+<KeyboardTable
+  rows={[
+    {
+      keys: ['Tab', 'Shift+Tab'],
+      action: 'Moves focus between the focusable elements inside the dialog; it cannot leave.',
+    },
+    {
+      keys: 'Esc',
+      action:
+        'Asks to close with reason `escape`. With `dismissible={false}` it bounces instead; an `alert` dialog still closes.',
+    },
+    {
+      keys: ['Enter', 'Space'],
+      action: 'Activates the focused button, such as the close button or a footer action.',
+    },
+  ]}
+/>
 
 ## Accessibility
 
-- Built on the native `dialog` with `showModal()`: the page is inert, focus is contained and
-  restored on close, and Esc closes it.
-- `DialogHeader` supplies the accessible name and description.
-- With `alert`, focus the least destructive action with `autoFocus`.
-- Below 640px the dialog becomes a bottom sheet.
+- Built on the native `<dialog>` with `showModal()`: the page behind is inert, focus stays inside and goes back to where it was on close.
+- `DialogHeader` names the dialog with its title and describes it with its description. Without one, pass `aria-label` or `aria-labelledby`.
+- With `alert`, the role is `alertdialog` and there is no close button, so the answer is in the footer. Put `autoFocus` on the least destructive button; the dialog opens before React applies it, so it lands. Without `autoFocus`, the first focusable element gets focus.
+- A backdrop click closes only when the press and the release both land on the backdrop, so selecting text and releasing outside does not dismiss.
+- The close button is named `Close` and has no tooltip, since it would repeat the name.
+- Page scroll is locked until the exit has finished, and stays locked until the last stacked modal closes.
+- In forced colors mode the panel border is drawn in `CanvasText`.
+- `DialogHeader`, `DialogBody` and `DialogFooter` throw outside a `Dialog`, and inside a `Drawer`.
+
+## Theming
+
+The dialog stays inside the preview in the DOM, so the Flat switch above applies to it too. `themes/flat.css` removes `--shadow-dialog`, tightens `--radius-surface` to 8px, and strengthens `--color-popover-border` and `--color-dialog-backdrop`, so the hairline and the dim do the shadow's job.
+
+<TokenList
+  tokens={[
+    { name: '--color-popover-bg', description: 'Panel fill.' },
+    { name: '--color-popover-border', description: 'Panel border.' },
+    { name: '--shadow-dialog', description: 'Drop shadow of the panel.' },
+    { name: '--color-dialog-backdrop', description: 'Dim behind the panel.' },
+    { name: '--radius-surface', description: 'Panel corner radius; square at the sheet bottom.' },
+    { name: '--color-fg', description: 'Title and body text.' },
+    { name: '--color-fg-muted', description: 'Description text.' },
+  ]}
+/>
+
+## Related
+
+<Related
+  items={[
+    {
+      title: 'Button',
+      href: '/components/button',
+      description: 'Footer actions and the close button.',
+    },
+    {
+      title: 'Drawer',
+      href: '/components/drawer',
+      description: 'The same behavior as a side panel.',
+    },
+    { title: 'Toast', href: '/components/toast', description: 'Feedback after the dialog closes.' },
+  ]}
+/>

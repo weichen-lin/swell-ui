@@ -1,0 +1,214 @@
+---
+title: 核取方塊 Checkbox
+description: 原生核取方塊，附標籤、說明、錯誤與不確定狀態，並提供 CheckboxGroup 把相關選項分組。
+---
+
+<ComponentPreview name="checkbox-demo" />
+
+<WhenToUse
+  use={[
+    '從簡短的清單中選零個或多個選項，搭配 `CheckboxGroup`。',
+    '隨表單送出的單一是／否，例如同意條款。',
+    '會顯示混合狀態的「全選」，用 `indeterminate`。',
+  ]}
+  alternatives={[
+    { name: 'Switch', href: '/components/switch', when: '切換後立即生效的開關設定。' },
+    { name: 'RadioGroup', href: '/components/radio-group', when: '從簡短的清單中只選一項。' },
+    { name: 'Select', href: '/components/select', when: '從很長的清單中選一項。' },
+  ]}
+/>
+
+## 安裝
+
+```tsx
+import { Checkbox, CheckboxGroup } from '@weichenlin/swell-ui'
+```
+
+CSS 包含在 `styles.css` 裡，在 Tailwind 之後引入一次即可（見[安裝](/installation)）：
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
+## 用法
+
+```tsx
+import { Checkbox, CheckboxGroup } from '@weichenlin/swell-ui'
+
+export function Example() {
+  return (
+    <CheckboxGroup legend="Options">
+      <Checkbox name="options" value="a" label="Option A" />
+      <Checkbox name="options" value="b" label="Option B" />
+    </CheckboxGroup>
+  )
+}
+```
+
+每個核取方塊都需要可見的 `label`；若周圍的內容已經說明了它（例如表格中的一列），也可以只給 `aria-label`。
+
+## 範例
+
+### 各種狀態
+
+<ComponentPreview name="checkbox-states" />
+
+### 不確定狀態
+
+`indeterminate` 請由子項目的狀態推導，這樣每次變更後都會保持正確。
+
+<ComponentPreview name="checkbox-indeterminate" />
+
+### CheckboxGroup
+
+`legend` 為群組命名；`description` 會在下方加一行淡色說明。
+
+<ComponentPreview name="checkbox-group" />
+
+### 橫向群組與錯誤
+
+群組本身不保存值，請在你的處理函式裡驗證，並把訊息傳給 `error`。
+
+<ComponentPreview name="checkbox-group-horizontal" />
+
+## API
+
+### Checkbox
+
+只列元件自己的 props；其他 `<input type="checkbox">` 屬性都會直接傳給元素，`type` 與 `size` 除外。`className` 會套在整列上。
+
+<AutoTypeTable
+  path="src/components/checkbox/checkbox.tsx"
+  name="CheckboxProps"
+  keep={['className', 'disabled']}
+/>
+
+`label` 與 `aria-label` 二擇一：給可見的 `label`，或只給 `aria-label`。
+
+### CheckboxGroup
+
+只列元件自己的 props；其他 `<fieldset>` 屬性都會直接傳給元素。
+
+<AutoTypeTable
+  path="src/components/checkbox/checkbox-group.tsx"
+  name="CheckboxGroupProps"
+  keep={['disabled']}
+/>
+
+`CheckboxGroup` 不保存值。每個核取方塊各自保有 `name` 與 `checked`，所以原生表單送出與 `FormData` 照常運作。
+
+## 狀態
+
+<StatesTable
+  rows={[
+    {
+      state: '滑鼠移入',
+      attribute: ':hover',
+      notes: '未勾選的方塊邊框變成 `--color-input-border-hover`。已勾選、混合、無效或停用時不會。',
+    },
+    {
+      state: '按下',
+      attribute: ':active',
+      notes: '按下時方塊縮小到 0.92 倍。',
+    },
+    {
+      state: '聚焦',
+      attribute: ':focus-visible',
+      notes:
+        '未勾選：input 邊框加 3px 光暈。已勾選或混合：2px 的 `--color-control-checked` 外框，間距 2px。',
+    },
+    {
+      state: '已勾選',
+      attribute: ':checked',
+      notes: '填上 `--color-control-checked` 並畫出勾號。',
+    },
+    {
+      state: '不確定',
+      attribute: ':indeterminate',
+      notes: '由 `indeterminate` prop 透過 DOM 屬性設定。填色並畫出短橫線；表單仍送出 `checked`。',
+    },
+    {
+      state: '無效',
+      attribute: 'aria-invalid="true"',
+      notes: '`error` 為真值時設定。邊框與光暈為 danger；文字訊息顯示在標籤下方。',
+    },
+    {
+      state: '附描述',
+      attribute: 'aria-describedby',
+      notes: '指向 `description` 與錯誤文字，排在你傳入的 `aria-describedby` 之後。',
+    },
+    {
+      state: '停用',
+      attribute: 'disabled',
+      notes: '原生 `disabled`，停用的 fieldset 也會傳下來；整列變暗到 50%。',
+    },
+    {
+      state: '根元素',
+      attribute: 'data-slot="checkbox"',
+      notes:
+        '在整列的 `<label>` 上。群組是 `data-slot="checkbox-group"`，其列容器有 `data-orientation`。',
+    },
+  ]}
+/>
+
+## 鍵盤操作
+
+<KeyboardTable
+  rows={[
+    { keys: ['Tab', 'Shift+Tab'], action: '把焦點移到核取方塊或移開，每個一個停靠點。' },
+    { keys: 'Space', action: '切換聚焦中的核取方塊。Enter 不會。' },
+  ]}
+/>
+
+點擊方塊或標籤文字也能切換，因為整列是一個 `<label>`。
+
+## 無障礙
+
+- 原生的 `<input type="checkbox">`，所以表單、`required`、重設與點擊標籤都維持原生行為。
+- 可見標籤是核取方塊的名稱；`description` 與錯誤文字不會混進名稱，而是用 `aria-describedby` 連結。
+- `indeterminate` 會被朗讀為混合。瀏覽器在點擊時會清掉這個 DOM 屬性，所以每當 `checked` 改變，Checkbox 都會重新套用。
+- `CheckboxGroup` 是帶 `<legend>` 的 `<fieldset>`。它不設定 `aria-invalid`，因為 ARIA 1.2 不支援在群組角色上使用；群組的描述與錯誤用 `aria-describedby` 連結。
+- 原生 `required` 無法表達「至少選一個」，請在送出處理函式裡驗證，並把訊息傳給 `error`。
+- 勾號、短橫線與錯誤圖示都是 `aria-hidden`。
+- 整列高度至少 24px；在觸控螢幕上，點擊範圍擴大到 44px，版面不變。
+- 強制色彩模式下，方塊使用 `Canvas`、`Highlight` 與 `CanvasText`，停用則用 `GrayText`。
+
+## 主題
+
+把上方任一預覽切到 **Flat**，就能看到 `themes/flat.css` 的效果：`--radius-inset`（方塊的圓角）更小。
+
+<TokenList
+  tokens={[
+    { name: '--color-input-bg', description: '方塊底色。' },
+    { name: '--color-input-bg-hover', description: '滑鼠移入時的方塊底色。' },
+    { name: '--color-input-border', description: '靜止時的邊框。' },
+    { name: '--color-input-border-hover', description: '滑鼠移入時的邊框。' },
+    { name: '--color-input-focus', description: '未勾選時，聚焦的邊框。' },
+    { name: '--color-input-halo', description: '聚焦時 3px 的光暈。' },
+    { name: '--color-input-halo-invalid', description: '無效時 3px 的光暈。' },
+    {
+      name: '--color-input-halo-invalid-focus',
+      description: '無效且聚焦時 3px 的光暈。',
+    },
+    {
+      name: '--color-control-checked',
+      description: '已勾選或混合時的底色與邊框；也是聚焦外框的顏色。',
+    },
+    { name: '--color-control-checked-fg', description: '勾號與短橫線。' },
+    { name: '--color-danger', description: '無效的邊框、外框與錯誤文字。' },
+    { name: '--color-fg', description: '標籤文字。' },
+    { name: '--color-fg-muted', description: '`description` 文字。' },
+    { name: '--radius-inset', description: '方塊的圓角。' },
+  ]}
+/>
+
+## 相關元件
+
+<Related
+  items={[
+    { title: 'RadioGroup', href: '/components/radio-group', description: '只選一項。' },
+    { title: 'Switch', href: '/components/switch', description: '開關設定。' },
+    { title: 'Table', href: '/components/table', description: '用核取方塊選取列。' },
+  ]}
+/>

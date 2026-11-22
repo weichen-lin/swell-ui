@@ -1,0 +1,36 @@
+---
+title: 安裝
+description: 把 swell-ui 加進 React 19 + Tailwind CSS v4 的專案。
+---
+
+Peer dependencies：`react` 與 `react-dom` 19、`tailwindcss` 4.3+、`lucide-react`。
+
+```sh
+pnpm add @weichenlin/swell-ui
+```
+
+在匯入 Tailwind 的 CSS 檔裡加上：
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
+`styles.css` 包含 token（`theme.css`），以及一條 `@source`，讓 Tailwind 掃描打包好的元件。Tailwind 預設會略過 `node_modules`，有了它，元件用到的 class 才會被產生。
+
+接著就能使用元件。`toast()` 需要在應用程式的根部附近渲染一個 `<Toaster />`：
+
+```tsx
+import { Button, toast, Toaster } from '@weichenlin/swell-ui'
+
+export function App() {
+  return (
+    <>
+      <Button onClick={() => toast.success('Saved')}>Save</Button>
+      <Toaster />
+    </>
+  )
+}
+```
+
+<ComponentPreview name="button-demo" />

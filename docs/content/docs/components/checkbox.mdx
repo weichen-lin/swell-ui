@@ -1,9 +1,39 @@
 ---
 title: Checkbox
-description: A native checkbox with label, description, error and indeterminate states.
+description: A native checkbox with label, description, error and indeterminate states, plus a CheckboxGroup for related options.
 ---
 
 <ComponentPreview name="checkbox-demo" />
+
+<WhenToUse
+  use={[
+    'Zero or more options from a short list, with `CheckboxGroup`.',
+    'A single yes/no that is submitted with a form, such as accepting terms.',
+    'A "select all" that shows a mixed state, with `indeterminate`.',
+  ]}
+  alternatives={[
+    { name: 'Switch', href: '/components/switch', when: 'an on/off setting that applies at once.' },
+    {
+      name: 'RadioGroup',
+      href: '/components/radio-group',
+      when: 'exactly one option from a short list.',
+    },
+    { name: 'Select', href: '/components/select', when: 'one option from a long list.' },
+  ]}
+/>
+
+## Installation
+
+```tsx
+import { Checkbox, CheckboxGroup } from '@weichenlin/swell-ui'
+```
+
+The CSS comes with `styles.css`, imported once after Tailwind (see [Installation](/installation)):
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
 
 ## Usage
 
@@ -20,6 +50,8 @@ export function Example() {
 }
 ```
 
+Every checkbox needs a visible `label`, or an `aria-label` when the surrounding context already names it, as in a table row.
+
 ## Examples
 
 ### States
@@ -34,9 +66,13 @@ Derive `indeterminate` from the children's state, so it stays correct after ever
 
 ### CheckboxGroup
 
+`legend` names the group; `description` adds a muted line under it.
+
 <ComponentPreview name="checkbox-group" />
 
 ### Horizontal group with error
+
+The group has no value of its own, so validate in your handler and pass the message as `error`.
 
 <ComponentPreview name="checkbox-group-horizontal" />
 
@@ -44,37 +80,143 @@ Derive `indeterminate` from the children's state, so it stays correct after ever
 
 ### Checkbox
 
-Extends native `<input type="checkbox">` props, except `type`, `size`, `children` and `aria-label`.
+Own props only; every other `<input type="checkbox">` attribute passes through to the element, except `type` and `size`. `className` goes to the row.
 
-| Prop             | Type        | Default | Description                                                                      |
-| ---------------- | ----------- | ------- | -------------------------------------------------------------------------------- |
-| `label`          | `ReactNode` | -       | Visible label. Required unless `aria-label` is set.                              |
-| `aria-label`     | `string`    | -       | Accessible name when there is no visible `label`.                                |
-| `description`    | `ReactNode` | -       | One muted line under the label, linked with `aria-describedby`.                  |
-| `error`          | `ReactNode` | -       | Truthy sets `aria-invalid`; text is shown under the label.                       |
-| `indeterminate`  | `boolean`   | `false` | Draws a dash and announces mixed. Visual only; the form still submits `checked`. |
-| `className`      | `string`    | -       | Classes for the row.                                                             |
-| `inputClassName` | `string`    | -       | Classes for the `<input>`.                                                       |
+<AutoTypeTable
+  path="src/components/checkbox/checkbox.tsx"
+  name="CheckboxProps"
+  keep={['className', 'disabled']}
+/>
+
+`label` and `aria-label` are alternatives: pass a visible `label`, or only `aria-label`.
 
 ### CheckboxGroup
 
-Extends native `<fieldset>` props.
+Own props only; every other `<fieldset>` attribute passes through to the element.
 
-| Prop          | Type                         | Default      | Description                                                         |
-| ------------- | ---------------------------- | ------------ | ------------------------------------------------------------------- |
-| `legend`      | `ReactNode`                  | -            | Names the group. Title case noun, no trailing colon.                |
-| `description` | `ReactNode`                  | -            | Muted line under the legend, linked with `aria-describedby`.        |
-| `error`       | `ReactNode`                  | -            | Group-level message, linked with `aria-describedby`.                |
-| `orientation` | `'vertical' \| 'horizontal'` | `'vertical'` | Layout of the rows.                                                 |
-| `disabled`    | `boolean`                    | -            | Reaches every checkbox through the native fieldset.                 |
-| `children`    | `ReactNode`                  | -            | Checkbox (or Switch) rows; each keeps its own `name` and `checked`. |
+<AutoTypeTable
+  path="src/components/checkbox/checkbox-group.tsx"
+  name="CheckboxGroupProps"
+  keep={['disabled']}
+/>
 
-## Notes
+`CheckboxGroup` holds no value. Each checkbox keeps its own `name` and `checked`, so native form submission and `FormData` work as usual.
 
-- `CheckboxGroup` holds no value. Each checkbox keeps its own `name` and `checked`, so native form
-  submission and `FormData` work as usual.
-- `CheckboxGroup` does not set `aria-invalid`, because ARIA 1.2 does not support it on the group
-  role. Native `required` cannot express "at least one", so validate in your submit handler and pass
-  the message as `error`.
-- `indeterminate` is a DOM-only property. The browser clears it on click, so Checkbox re-applies it
-  whenever `checked` changes.
+## States
+
+<StatesTable
+  rows={[
+    {
+      state: 'Hover',
+      attribute: ':hover',
+      notes:
+        'An unchecked box steps its border to `--color-input-border-hover`. Not while checked, mixed, invalid or disabled.',
+    },
+    {
+      state: 'Pressed',
+      attribute: ':active',
+      notes: 'The box scales to 0.92 while pressed.',
+    },
+    {
+      state: 'Focus',
+      attribute: ':focus-visible',
+      notes:
+        'Unchecked: input border plus a 3px halo. Checked or mixed: a 2px `--color-control-checked` ring, 2px out.',
+    },
+    {
+      state: 'Checked',
+      attribute: ':checked',
+      notes: 'Fills with `--color-control-checked` and draws the check.',
+    },
+    {
+      state: 'Indeterminate',
+      attribute: ':indeterminate',
+      notes:
+        'Set from the `indeterminate` prop through the DOM property. Fills and draws a dash; the form still submits `checked`.',
+    },
+    {
+      state: 'Invalid',
+      attribute: 'aria-invalid="true"',
+      notes:
+        'Set when `error` is truthy. Danger border and halo; a text message shows under the label.',
+    },
+    {
+      state: 'Described',
+      attribute: 'aria-describedby',
+      notes:
+        'Points at the `description` and the error text, after any `aria-describedby` you pass.',
+    },
+    {
+      state: 'Disabled',
+      attribute: 'disabled',
+      notes: 'Native `disabled`, also through a disabled fieldset; the row dims to 50%.',
+    },
+    {
+      state: 'Root',
+      attribute: 'data-slot="checkbox"',
+      notes:
+        'On the row `<label>`. The group is `data-slot="checkbox-group"`, with `data-orientation` on its rows.',
+    },
+  ]}
+/>
+
+## Keyboard
+
+<KeyboardTable
+  rows={[
+    { keys: ['Tab', 'Shift+Tab'], action: 'Moves focus to or from the checkbox, one stop each.' },
+    { keys: 'Space', action: 'Toggles the focused checkbox. Enter does not.' },
+  ]}
+/>
+
+Clicking the box or the label text toggles it too, since the whole row is one `<label>`.
+
+## Accessibility
+
+- A native `<input type="checkbox">`, so forms, `required`, reset and label clicks stay native.
+- The visible label names the checkbox; `description` and the error text stay out of the name and are linked with `aria-describedby`.
+- `indeterminate` is announced as mixed. The browser clears the DOM property on click, so Checkbox re-applies it whenever `checked` changes.
+- `CheckboxGroup` is a `<fieldset>` with a `<legend>`. It does not set `aria-invalid`, because ARIA 1.2 does not support it on the group role; its description and error are linked with `aria-describedby`.
+- Native `required` cannot express "at least one", so validate in your submit handler and pass the message as `error`.
+- The check, the dash and the error icon are `aria-hidden`.
+- The row is at least 24px tall; on touch screens the hit area grows to 44px without changing the layout.
+- In forced colors mode the box uses `Canvas`, `Highlight` and `CanvasText`, and disabled uses `GrayText`.
+
+## Theming
+
+Switch a preview above to **Flat** to see `themes/flat.css`: it tightens `--radius-inset`, the corner radius of the box.
+
+<TokenList
+  tokens={[
+    { name: '--color-input-bg', description: 'Box fill.' },
+    { name: '--color-input-bg-hover', description: 'Box fill on hover.' },
+    { name: '--color-input-border', description: 'Resting border.' },
+    { name: '--color-input-border-hover', description: 'Border on hover.' },
+    { name: '--color-input-focus', description: 'Border while focused, when unchecked.' },
+    { name: '--color-input-halo', description: '3px focus halo.' },
+    { name: '--color-input-halo-invalid', description: '3px halo when invalid.' },
+    {
+      name: '--color-input-halo-invalid-focus',
+      description: '3px halo when invalid and focused.',
+    },
+    {
+      name: '--color-control-checked',
+      description: 'Fill and border when checked or mixed; its focus ring.',
+    },
+    { name: '--color-control-checked-fg', description: 'The check and the dash.' },
+    { name: '--color-danger', description: 'Invalid border, ring and error text.' },
+    { name: '--color-fg', description: 'Label text.' },
+    { name: '--color-fg-muted', description: '`description` text.' },
+    { name: '--radius-inset', description: 'Corner radius of the box.' },
+  ]}
+/>
+
+## Related
+
+<Related
+  items={[
+    { title: 'RadioGroup', href: '/components/radio-group', description: 'Exactly one option.' },
+    { title: 'Switch', href: '/components/switch', description: 'An on/off setting.' },
+    { title: 'Table', href: '/components/table', description: 'Row selection with checkboxes.' },
+  ]}
+/>

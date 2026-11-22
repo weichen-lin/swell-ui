@@ -1,0 +1,30 @@
+---
+title: 深色模式
+description: 跟隨系統主題，或用一個屬性強制切成淺色或深色。
+---
+
+沒有 `data-theme` 屬性時，主題會跟隨系統（`prefers-color-scheme`）。在 `<html>` 上設定 `data-theme="light"` 或 `data-theme="dark"`，就能強制指定其中一種。`dark:` variant 也遵循同樣的規則。
+
+底層的做法是：根元素的 `color-scheme` 會依情況設為 `light dark`、`light` 或 `dark`，每個顏色 token 再用 `light-dark()` 挑選對應的那一邊。瀏覽器從 Chrome 123、Safari 17.5 與 Firefox 120 起原生支援；較舊的目標瀏覽器，Tailwind 的 production build 會幫你改寫。
+
+`useTheme` 會保存選擇並設定該屬性；`ThemeSwitcher` 則是切換按鈕：
+
+```tsx
+import { ThemeSwitcher, useTheme } from '@weichenlin/swell-ui'
+
+function Header() {
+  const { theme, setTheme } = useTheme({ storageKey: 'my-app-theme' }) // default 'swell-ui-theme'
+  return <ThemeSwitcher value={theme} onChange={setTheme} />
+}
+```
+
+為了避免 React 掛載前閃過錯誤的主題，請在 `<head>` 中先套用已儲存的值：
+
+```html
+<script>
+  try {
+    const t = localStorage.getItem('my-app-theme')
+    if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t
+  } catch {}
+</script>
+```

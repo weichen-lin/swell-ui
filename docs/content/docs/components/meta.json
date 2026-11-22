@@ -1,4 +1,35 @@
 {
   "title": "Components",
-  "pages": ["..."]
+  "pages": [
+    "index",
+    "---Actions---",
+    "button",
+    "dropdown-menu",
+    "theme-switcher",
+    "---Forms---",
+    "checkbox",
+    "combobox",
+    "input",
+    "radio-group",
+    "select",
+    "slider",
+    "switch",
+    "textarea",
+    "---Overlays---",
+    "dialog",
+    "drawer",
+    "tooltip",
+    "---Feedback---",
+    "alert",
+    "meter",
+    "toast",
+    "---Navigation---",
+    "sidebar",
+    "tabs",
+    "---Data display---",
+    "accordion",
+    "badge",
+    "card",
+    "table"
+  ]
 }

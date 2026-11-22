@@ -1,9 +1,39 @@
 ---
 title: Slider
-description: A native range input for choosing a number, with a RangeSlider for two thumbs.
+description: A native range input for choosing a number, with a RangeSlider for choosing a range with two thumbs.
 ---
 
 <ComponentPreview name="slider-demo" />
+
+<WhenToUse
+  use={[
+    'A number in a known range where the approximate value matters: volume, brightness, quality.',
+    'A minimum and a maximum together, with `RangeSlider`: a price range.',
+    'A value that people adjust and see the result of at once, with `onValueChange`.',
+  ]}
+  alternatives={[
+    { name: 'Input', href: '/components/input', when: 'an exact value people type.' },
+    {
+      name: 'Select',
+      href: '/components/select',
+      when: 'one option from a short list of choices.',
+    },
+    { name: 'Meter', href: '/components/meter', when: 'showing a value people do not set.' },
+  ]}
+/>
+
+## Installation
+
+```tsx
+import { RangeSlider, Slider } from '@weichenlin/swell-ui'
+```
+
+The CSS comes with `styles.css`, imported once after Tailwind (see [Installation](/installation)):
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
 
 ## Usage
 
@@ -27,24 +57,31 @@ export function Example() {
 }
 ```
 
+Every slider needs a visible `label`, or an `aria-label` when the surrounding context already names it.
+
 ## Examples
 
 ### Controlled
 
-Use `value` and `onValueChange` for controlled state. `onValueCommit` runs once after a changed
-pointer or keyboard gesture ends.
+Use `value` and `onValueChange`. `onValueCommit` runs once after a changed pointer or keyboard gesture ends.
 
 <ComponentPreview name="slider-controlled" />
 
 ### Marks
 
+Marks are visual only; every step-aligned value stays selectable.
+
 <ComponentPreview name="slider-marks" />
 
 ### Disabled and invalid
 
+`error` replaces the helper text and marks the slider invalid; it does not stop editing.
+
 <ComponentPreview name="slider-states" />
 
 ### RangeSlider
+
+Two thumbs, each with its own accessible name and form field. `minStepsBetweenThumbs` keeps them apart.
 
 <ComponentPreview name="range-slider-demo" />
 
@@ -52,50 +89,154 @@ pointer or keyboard gesture ends.
 
 ### Slider
 
-Extends native `<div>` props, except `defaultValue`, `onChange`, `children`, `aria-label` and `role`.
+Own props only; every other `<div>` attribute passes through to the root, except `onChange`, `children` and `role`. `className` and `ref` target the root `div`.
 
-| Prop            | Type                                                    | Default | Description                                                     |
-| --------------- | ------------------------------------------------------- | ------- | --------------------------------------------------------------- |
-| `label`         | `ReactNode`                                             | -       | Visible label. Required unless `aria-label` is set.             |
-| `aria-label`    | `string`                                                | -       | Accessible name when there is no visible `label`.               |
-| `value`         | `number`                                                | -       | Controlled value.                                               |
-| `defaultValue`  | `number`                                                | `min`   | Uncontrolled initial value.                                     |
-| `onValueChange` | `(value: number, details: SliderChangeDetails) => void` | -       | Called on every change, including previews while dragging.      |
-| `onValueCommit` | `(value: number, details: SliderCommitDetails) => void` | -       | Called once after a changed pointer or keyboard gesture ends.   |
-| `min`           | `number`                                                | `0`     | Lower bound.                                                    |
-| `max`           | `number`                                                | `100`   | Upper bound.                                                    |
-| `step`          | `number`                                                | `1`     | Positive step; `max - min` must be a whole number of steps.     |
-| `disabled`      | `boolean`                                               | -       | Disables the slider.                                            |
-| `helperText`    | `ReactNode`                                             | -       | Helper text under the slider.                                   |
-| `error`         | `ReactNode`                                             | -       | Error message and invalid state.                                |
-| `showValue`     | `boolean`                                               | `true`  | Shows the current value.                                        |
-| `formatValue`   | `(value: number) => string`                             | -       | Formats both the visible output and the spoken value.           |
-| `getValueText`  | `(value: number, thumbIndex: 0 \| 1) => string`         | -       | Overrides only the spoken value text.                           |
-| `marks`         | `readonly { value: number; label?: ReactNode }[]`       | -       | Visual markers only; all step-aligned values remain selectable. |
-| `name`          | `string`                                                | -       | Field name for native form submission.                          |
-| `form`          | `string`                                                | -       | Id of an external form.                                         |
+<AutoTypeTable path="src/components/slider/types.ts" name="SliderProps" keep={['className']} />
+
+`label` and `aria-label` are alternatives: pass a visible `label`, or only `aria-label`. `value` and `defaultValue` are alternatives: pass one, not both. `defaultValue` is `min` when omitted.
+
+`SliderChangeDetails` is `{ thumbIndex: 0 | 1; reason: 'pointer' | 'keyboard' | 'input' | 'cancel' }`. `SliderCommitDetails` is the same without the `cancel` reason.
 
 ### RangeSlider
 
-Accepts the same props as `Slider`, with these differences.
+Takes the same props as `Slider`, except these, which replace their `Slider` counterparts. `defaultValue` is `[min, max]` when omitted.
 
-| Prop                    | Type                        | Default      | Description                                            |
-| ----------------------- | --------------------------- | ------------ | ------------------------------------------------------ |
-| `value`                 | `readonly [number, number]` | -            | Controlled value.                                      |
-| `defaultValue`          | `readonly [number, number]` | `[min, max]` | Uncontrolled initial value.                            |
-| `thumbLabels`           | `readonly [string, string]` | -            | Required accessible name for each thumb.               |
-| `name`                  | `readonly [string, string]` | -            | Two field names for native form submission.            |
-| `minStepsBetweenThumbs` | `number`                    | `0`          | Thumbs stop at this distance; they never swap or push. |
+<AutoTypeTable
+  path="src/components/slider/types.ts"
+  name="RangeSliderOwnProps"
+  type={
+    "Pick<RangeSliderProps, 'value' | 'defaultValue' | 'onValueChange' | 'onValueCommit' | 'thumbLabels' | 'name' | 'minStepsBetweenThumbs'>"
+  }
+/>
 
-`SliderChangeDetails` is `{ thumbIndex: 0 | 1; reason: 'pointer' | 'keyboard' | 'input' | 'cancel' }`.
-`SliderCommitDetails` is the same without the `cancel` reason.
+## States
 
-## Notes
+<StatesTable
+  rows={[
+    {
+      state: 'Hover',
+      attribute: ':hover',
+      notes:
+        'The thumb border steps to `--color-input-border-hover`. Not while disabled or invalid.',
+    },
+    {
+      state: 'Focus',
+      attribute: ':focus-visible',
+      notes:
+        'On the hidden native input; draws a 2px `--color-focus` ring, 3px out, around its thumb.',
+    },
+    {
+      state: 'Dragging',
+      attribute: 'data-dragging',
+      notes: 'On the root while a pointer or keyboard gesture is in progress.',
+    },
+    {
+      state: 'Active thumb',
+      attribute: 'data-active',
+      notes: 'On the thumb being dragged; adds a 4px halo.',
+    },
+    {
+      state: 'Disabled',
+      attribute: 'disabled',
+      notes:
+        'Native `disabled` on every input, also through a disabled fieldset; the slider dims to 50%. `data-disabled` is on the root.',
+    },
+    {
+      state: 'Invalid',
+      attribute: 'aria-invalid="true"',
+      notes:
+        'Set when `error` is truthy. The range and thumb turn danger; `data-invalid` is on the root. Editing still works.',
+    },
+    {
+      state: 'Described',
+      attribute: 'aria-describedby',
+      notes: 'Points at the helper or error text, after any `aria-describedby` you pass.',
+    },
+    {
+      state: 'Range',
+      attribute: 'data-range',
+      notes: 'On the root of a `RangeSlider`.',
+    },
+    {
+      state: 'Parts',
+      attribute: 'data-slot="slider"',
+      notes:
+        'The root. Inside: `slider-control`, `slider-track`, `slider-range`, `slider-thumb`, `slider-input`, `slider-marks` and `slider-value`.',
+    },
+  ]}
+/>
 
-- Both components use native range inputs for accessibility and form submission.
-- `min` and `max` must be finite with `min < max`. External values must be on the step grid,
-  ordered, and satisfy the thumb gap.
-- Controlled owners must accept preview changes immediately. Cancelling a gesture restores the
-  starting value through `onValueChange` with reason `cancel`, without committing.
-- Use `aria-label` when omitting a visible `label`. `className` and `ref` target the outer `div`.
-- Native reset restores uncontrolled defaults; controlled reset remains the owner's choice.
+## Keyboard
+
+<KeyboardTable
+  rows={[
+    {
+      keys: ['Tab', 'Shift+Tab'],
+      action: 'Moves focus to or from a thumb. A RangeSlider has two stops, in order.',
+    },
+    {
+      keys: ['ArrowRight', 'ArrowUp'],
+      action:
+        'Increases the value by one `step`. In RTL, ArrowLeft increases it instead; ArrowUp is not mirrored.',
+    },
+    {
+      keys: ['ArrowLeft', 'ArrowDown'],
+      action:
+        'Decreases the value by one `step`. In RTL, ArrowRight decreases it instead; ArrowDown is not mirrored.',
+    },
+    { keys: 'PageUp', action: 'Increases the value by 10 steps.' },
+    { keys: 'PageDown', action: 'Decreases the value by 10 steps.' },
+    {
+      keys: 'Home',
+      action: 'Jumps to the lowest value this thumb can take.',
+    },
+    {
+      keys: 'End',
+      action: 'Jumps to the highest value this thumb can take.',
+    },
+  ]}
+/>
+
+Holding a key previews every step through `onValueChange`; `onValueCommit` runs once on release, or when focus leaves, and never for a gesture that ends where it began. Keys with Ctrl, Alt, Meta or Shift held are ignored. A thumb stops at its neighbour and never swaps or pushes it, so Home and End respect `minStepsBetweenThumbs`.
+
+## Accessibility
+
+- Each thumb is a native `<input type="range">` inside a `role="group"`, so the browser provides the slider role, value and form submission.
+- The visible `label` names the group and each thumb. In a `RangeSlider`, each thumb is named by the label plus its `thumbLabels` entry; with only `aria-label`, by `aria-label` plus the thumb label.
+- The spoken value is `formatValue(value)`, or `getValueText` when you pass it. The visible value, the bounds and the marks are `aria-hidden`.
+- Helper and error text are linked with `aria-describedby`; the error also sets `aria-invalid`.
+- Pointer cancel, a lost capture or a window blur rolls the value back, through `onValueChange` with reason `cancel`, without committing.
+- Esc is not handled, so it reaches outer handlers such as a dialog.
+- The hit area is 44px tall, and the thumb is 18px with a 44px target around it.
+- Native form reset restores uncontrolled defaults; a controlled reset is the owner's choice.
+- In forced colors mode the track, range and thumb use `CanvasText`, `Highlight` and `ButtonText`, and disabled uses `GrayText`.
+- `min` and `max` must be finite with `min < max`; values must be on the step grid, ordered, and satisfy the thumb gap, or the slider throws.
+
+## Theming
+
+Switch a preview above to **Flat** to see `themes/flat.css`: Slider uses no shadow or radius tokens, so it looks the same.
+
+<TokenList
+  tokens={[
+    { name: '--color-control-checked', description: 'Filled range and thumb border.' },
+    { name: '--color-input-border', description: 'Track border and mark ticks.' },
+    { name: '--color-surface-muted', description: 'Track fill.' },
+    { name: '--color-surface-raised', description: 'Thumb fill.' },
+    { name: '--color-input-border-hover', description: 'Thumb border on hover.' },
+    { name: '--color-input-halo', description: '4px halo around the thumb while dragging.' },
+    { name: '--color-focus', description: 'Thumb focus ring.' },
+    { name: '--color-danger', description: 'Invalid range, thumb border and error text.' },
+    { name: '--color-fg', description: 'Label and value text.' },
+    { name: '--color-fg-muted', description: 'Bounds, marks and helper text.' },
+  ]}
+/>
+
+## Related
+
+<Related
+  items={[
+    { title: 'Input', href: '/components/input', description: 'Type an exact value.' },
+    { title: 'Meter', href: '/components/meter', description: 'Show a value people do not set.' },
+    { title: 'Switch', href: '/components/switch', description: 'An on/off setting.' },
+  ]}
+/>

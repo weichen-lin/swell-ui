@@ -4,14 +4,16 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "typecheck": "next typegen && tsc --noEmit"
+    "examples": "node scripts/gen-examples.mjs",
+    "dev": "node scripts/gen-examples.mjs && next dev",
+    "build": "node scripts/gen-examples.mjs && next build && node scripts/markdown-files.mjs && node scripts/legacy-redirects.mjs",
+    "typecheck": "node scripts/gen-examples.mjs && next typegen && tsc --noEmit"
   },
   "dependencies": {
     "@weichenlin/swell-ui": "workspace:*",
     "fumadocs-core": "16.19.4",
     "fumadocs-mdx": "15.6.3",
+    "fumadocs-typescript": "5.6.2",
     "fumadocs-ui": "npm:@fumadocs/base-ui@16.19.4",
     "lucide-react": "^1.71.0",
     "next": "16.4.6",

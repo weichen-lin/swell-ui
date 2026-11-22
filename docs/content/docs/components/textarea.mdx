@@ -1,9 +1,34 @@
 ---
 title: Textarea
-description: A multi-line text field with label, helper text, error and character count.
+description: A multi-line text field with label, helper text, error state and character count.
 ---
 
 <ComponentPreview name="textarea-demo" />
+
+<WhenToUse
+  use={[
+    'Free-form text over several lines: a message, a bio, notes.',
+    'Text with a length limit, with `showCount` and `maxLength`.',
+    'A field that grows with its content, with `autoResize`.',
+  ]}
+  alternatives={[
+    { name: 'Input', href: '/components/input', when: 'a short, single-line value.' },
+    { name: 'Select', href: '/components/select', when: 'a choice from a fixed list.' },
+  ]}
+/>
+
+## Installation
+
+```tsx
+import { Textarea } from '@weichenlin/swell-ui'
+```
+
+The CSS comes with `styles.css`, imported once after Tailwind (see [Installation](/installation)):
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
 
 ## Usage
 
@@ -15,47 +40,158 @@ export function Example() {
 }
 ```
 
+Every textarea needs a visible `label`, or an `aria-label` when the surrounding context already names the field.
+
 ## Examples
 
 ### Character count
 
-`showCount` counts UTF-16 length like native `maxLength`, and turns red past the limit. It never
-truncates controlled values.
+`showCount` counts UTF-16 length like native `maxLength`, and turns red past the limit. It never truncates controlled values.
 
 <ComponentPreview name="textarea-count" />
 
 ### Auto resize
 
+The height follows the content between `minRows` and `maxRows`, then scrolls.
+
 <ComponentPreview name="textarea-auto-resize" />
 
-### Floating label, disabled, invalid and mono
+### Field states
+
+A floating label, disabled, invalid and monospace.
 
 <ComponentPreview name="textarea-states" />
 
 ## API
 
-Extends native `<textarea>` props, except `children` and `rows`.
+Own props only; every other `<textarea>` attribute passes through to the element, except `children` and `rows` (a prop here). `className` goes to the outer field.
 
-| Prop                | Type                   | Default      | Description                                                                       |
-| ------------------- | ---------------------- | ------------ | --------------------------------------------------------------------------------- |
-| `label`             | `string`               | -            | Visible label. Required unless `aria-label` is set.                               |
-| `aria-label`        | `string`               | -            | Accessible name when there is no visible `label`.                                 |
-| `floating`          | `boolean`              | `false`      | Outlined floating label that rests inside the field.                              |
-| `helperText`        | `ReactNode`            | -            | Helper text under the field.                                                      |
-| `error`             | `ReactNode`            | -            | Replaces `helperText` and marks the field invalid. `true` shows only the outline. |
-| `size`              | `'sm' \| 'md' \| 'lg'` | `'md'`       | Field size.                                                                       |
-| `rows`              | `number`               | `3`          | Visible rows. Not allowed with `autoResize`.                                      |
-| `resize`            | `'vertical' \| 'none'` | `'vertical'` | Manual resize handle. Not allowed with `autoResize`.                              |
-| `autoResize`        | `boolean`              | `false`      | Grows with content.                                                               |
-| `minRows`           | `number`               | `3`          | Minimum rows; only with `autoResize`.                                             |
-| `maxRows`           | `number`               | -            | Maximum rows, at least `minRows`; only with `autoResize`.                         |
-| `showCount`         | `boolean`              | `false`      | Shows the character count (and `/ maxLength` when set).                           |
-| `mono`              | `boolean`              | `false`      | Monospace font; disables spellcheck, autocorrect and autocapitalize.              |
-| `className`         | `string`               | -            | Classes for the outer field.                                                      |
-| `textareaClassName` | `string`               | -            | Classes for the `<textarea>`.                                                     |
+<AutoTypeTable
+  path="src/components/textarea/textarea.tsx"
+  name="TextareaProps"
+  keep={['className', 'disabled']}
+/>
 
-## Notes
+- `label` and `aria-label` are alternatives; `floating` needs a visible `label`.
+- `rows` and `resize` are for a fixed height; `minRows` and `maxRows` only work with `autoResize`. Mixing them is a type error.
+- `rows`, `minRows` and `maxRows` must be positive integers, and `maxRows` at least `minRows`, or Textarea throws a `RangeError`.
 
-- `rows` and `minRows` / `maxRows` must be positive integers, or Textarea throws a `RangeError`.
-- Going over `maxLength` (possible with controlled values) shows the error state.
-- Native form reset updates the count and height.
+## States
+
+<StatesTable
+  rows={[
+    {
+      state: 'Hover',
+      attribute: ':hover',
+      notes:
+        'The border steps to `--color-input-border-hover` and a faint lift shadow appears. Not while invalid, disabled or read-only.',
+    },
+    {
+      state: 'Focus',
+      attribute: ':focus',
+      notes: 'The border becomes `--color-input-focus`, with a 3px halo outside it.',
+    },
+    {
+      state: 'Invalid',
+      attribute: 'aria-invalid="true"',
+      notes:
+        'Set when `error` is truthy, or when the length goes over `maxLength`. `error={true}` shows only the outline.',
+    },
+    {
+      state: 'Described',
+      attribute: 'aria-describedby',
+      notes: 'Points at the helper or error text and, with `showCount`, the count.',
+    },
+    {
+      state: 'Disabled',
+      attribute: 'disabled',
+      notes: 'Native `disabled`; the whole field dims to 50% and the cursor is `not-allowed`.',
+    },
+    {
+      state: 'Read only',
+      attribute: 'readonly',
+      notes: 'Stays focusable. No inset highlight, hover change or lift shadow.',
+    },
+    {
+      state: 'Required',
+      attribute: 'required',
+      notes: 'Native validation, plus an `aria-hidden` asterisk after the label.',
+    },
+    {
+      state: 'Over the limit',
+      attribute: 'maxLength',
+      notes:
+        'The count turns `--color-danger` and the field shows the error state. Controlled text is never cut.',
+    },
+    {
+      state: 'Floated label',
+      attribute: ':placeholder-shown',
+      notes:
+        'Derived in CSS from focus or a value, so `defaultValue` and form reset need no JavaScript.',
+    },
+    {
+      state: 'Root',
+      attribute: 'data-slot="input-field"',
+      notes: 'On the outer wrapper; the bordered control inside has `data-slot="input-control"`.',
+    },
+  ]}
+/>
+
+## Keyboard
+
+<KeyboardTable
+  rows={[
+    { keys: ['Tab', 'Shift+Tab'], action: 'Moves focus to or from the field.' },
+    { keys: 'Enter', action: 'Inserts a line break, as in any native textarea.' },
+  ]}
+/>
+
+All other keys are the browser's native text editing.
+
+## Accessibility
+
+- `label` renders a real `<label>` linked to the textarea. In the floating notch, the repeated label text is `aria-hidden` and never joins the accessible name.
+- Helper and error text are linked with `aria-describedby`, as is the count; your own `aria-describedby` comes first. The error also sets `aria-invalid`.
+- The count is not a live region, so it is not announced on every keystroke.
+- The count uses UTF-16 length, as native `maxLength` does, so an emoji counts as 2.
+- `mono` turns off spellcheck, autocorrect and autocapitalize.
+- A native form reset updates the count and the auto-resized height.
+- On touch screens the text is 16px.
+
+## Theming
+
+Switch a preview above to **Flat** to see `themes/flat.css`: it zeroes `--shadow-input` and `--shadow-input-lift` and tightens `--radius-control`.
+
+<TokenList
+  tokens={[
+    { name: '--color-input-bg', description: 'Field fill; not used by the floating label.' },
+    { name: '--color-input-bg-hover', description: 'Field fill on hover.' },
+    { name: '--color-input-border', description: 'Resting border.' },
+    { name: '--color-input-border-hover', description: 'Border on hover.' },
+    { name: '--color-input-focus', description: 'Border while focused, and the floating label.' },
+    { name: '--color-input-halo', description: '3px focus halo.' },
+    { name: '--color-input-halo-invalid', description: '3px halo of an invalid field.' },
+    {
+      name: '--color-input-halo-invalid-focus',
+      description: '3px halo of an invalid field while focused.',
+    },
+    { name: '--color-input-placeholder', description: 'Placeholder text.' },
+    { name: '--color-fg', description: 'Value and label text.' },
+    { name: '--color-fg-strong', description: 'Floated label while the field is not focused.' },
+    { name: '--color-fg-muted', description: 'Helper text and the count.' },
+    { name: '--color-danger', description: 'Error border, text, count over the limit, asterisk.' },
+    { name: '--radius-control', description: 'Corner radius.' },
+    { name: '--shadow-input', description: 'Inset top highlight at rest.' },
+    { name: '--shadow-input-lift', description: 'Faint drop shadow on hover.' },
+  ]}
+/>
+
+## Related
+
+<Related
+  items={[
+    { title: 'Input', href: '/components/input', description: 'The single-line field.' },
+    { title: 'Select', href: '/components/select', description: 'One choice from a fixed list.' },
+    { title: 'Button', href: '/components/button', description: 'Submit the form.' },
+  ]}
+/>

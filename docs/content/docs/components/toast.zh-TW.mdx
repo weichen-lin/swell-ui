@@ -1,0 +1,293 @@
+---
+title: 通知 Toast
+description: 命令式的通知，可從任何地方呼叫，由單一 Toaster 以堆疊方式顯示。
+---
+
+<ComponentPreview name="toast-demo" />
+
+<WhenToUse
+  use={[
+    '確認不需要回應的結果：已儲存、已複製、已同步。',
+    '追蹤單一非同步任務從開始到結束，用 `toast.promise`。',
+    '提供簡短的復原操作，用 `action`。',
+  ]}
+  alternatives={[
+    {
+      name: 'Alert',
+      href: '/components/alert',
+      when: '固定顯示在相關內容旁邊的訊息。',
+    },
+    {
+      name: 'Dialog',
+      href: '/components/dialog',
+      when: '使用者必須先做決定才能繼續。',
+    },
+    {
+      name: 'Badge',
+      href: '/components/badge',
+      when: '放在列或表格裡的狀態。',
+    },
+  ]}
+/>
+
+## 安裝
+
+```tsx
+import { toast, Toaster } from '@weichenlin/swell-ui'
+```
+
+CSS 包含在 `styles.css` 裡，在 Tailwind 之後引入一次即可（見[安裝](/installation)）：
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
+## 用法
+
+在 app 根部附近掛載一個 `<Toaster />`；如果 `action` 會渲染 `<Link>`，要掛在 router 裡面。之後可以在任何地方呼叫 `toast`：事件處理函式、mutation、loader。每次呼叫都會回傳該通知的 id。
+
+```tsx
+import { Toaster } from '@weichenlin/swell-ui'
+
+export function App({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      {children}
+      <Toaster />
+    </>
+  )
+}
+```
+
+```tsx
+import { toast } from '@weichenlin/swell-ui'
+
+toast({ title: 'Changes saved', description: 'Your settings are up to date.' })
+toast.success('Synced')
+```
+
+## 範例
+
+### 類型
+
+`toast.error` 使用 `danger` 類型，會一直顯示到被關閉。
+
+<ComponentPreview name="toast-types" />
+
+### 動作
+
+`{ label, onClick }` 形式的 action 會渲染成小按鈕，點擊後關閉通知，除非 `onClick` 呼叫了 `preventDefault()`。
+
+<ComponentPreview name="toast-action" />
+
+### Promise
+
+promise 完成後，載入中的通知會就地變成成功或錯誤。
+
+<ComponentPreview name="toast-promise" />
+
+### 就地更新
+
+`toast.update(id, patch)` 會合併到仍在畫面上的通知，並重新計時。
+
+<ComponentPreview name="toast-update" />
+
+## API
+
+### toast
+
+`toast(options)` 會顯示一則通知並回傳它的 id。用畫面上仍存在的通知 id 呼叫時，會就地取代該通知；沒有傳的欄位會回到預設值。
+
+```ts
+toast(options: ToastOptions): string
+```
+
+<AutoTypeTable path="src/components/toast/store.ts" name="ToastOptions" />
+
+### 動作按鈕
+
+`action` 是帶有 `label` 的物件時，會渲染成小型 secondary 按鈕。其他節點則原樣渲染，且不會自己關閉通知。
+
+<AutoTypeTable path="src/components/toast/store.ts" name="ToastActionButton" />
+
+### 輔助函式
+
+```ts
+toast.success(title: ReactNode, options?: Omit<ToastOptions, 'title' | 'type'>): string
+toast.info(title: ReactNode, options?: Omit<ToastOptions, 'title' | 'type'>): string
+toast.warning(title: ReactNode, options?: Omit<ToastOptions, 'title' | 'type'>): string
+toast.error(title: ReactNode, options?: Omit<ToastOptions, 'title' | 'type'>): string
+toast.loading(title: ReactNode, options?: Omit<ToastOptions, 'title' | 'type'>): string
+toast.update(id: string, patch: ToastPatch): void
+toast.dismiss(id?: string): void
+toast.promise<T>(promise: Promise<T> | (() => Promise<T>), steps: ToastPromiseOptions<T>): string
+```
+
+| 函式            | 說明                                                         |
+| --------------- | ------------------------------------------------------------ |
+| `toast.success` | 成功通知。                                                   |
+| `toast.info`    | 資訊通知。                                                   |
+| `toast.warning` | 警告通知。                                                   |
+| `toast.error`   | 以 `danger` 類型顯示，會一直顯示到被關閉。                   |
+| `toast.loading` | 轉圈圖示；會一直顯示到被更新或關閉。                         |
+| `toast.update`  | 合併到仍在畫面上的通知並重新計時。id 不存在時不做任何事。    |
+| `toast.dismiss` | 播放一則通知的退場動畫；不傳 id 則是全部通知。               |
+| `toast.promise` | 載入中的通知，promise 完成後就地變成成功或 danger。回傳 id。 |
+
+`ToastPatch` 是 `Partial<ToastOptions>` 去掉 `id` 與 `toasterId`：通知會一直留在建立它的 Toaster。
+
+### toast.promise
+
+接收一個 promise（或回傳 promise 的函式），以及每種結果的步驟。步驟可以是標題，或不含 `id` 與 `type` 的完整選項；`success` 與 `error` 也可以是以結果或錯誤為參數的函式。每個步驟都會取代前一個步驟的欄位，所以載入中的描述或 action 不會殘留。如果使用者在 promise 完成前就關掉通知，它會維持關閉。
+
+<AutoTypeTable path="src/components/toast/store.ts" name="ToastPromiseOptions" />
+
+### Toaster
+
+<AutoTypeTable path="src/components/toast/toaster.tsx" name="ToasterProps" />
+
+每個 `id` 只會有一個 `Toaster` 渲染。相同 `id` 的第二個 `Toaster` 會保持空白，直到第一個卸載，所以通知不會顯示兩次。
+
+## 狀態
+
+<StatesTable
+  rows={[
+    {
+      state: '類型',
+      attribute: 'data-type',
+      notes:
+        '在每則通知上：`neutral`、`success`、`info`、`warning`、`danger` 或 `loading`。neutral 沒有圖示。',
+    },
+    {
+      state: '收合的堆疊',
+      attribute: 'data-stacked',
+      notes:
+        '在最前面那則後方的卡片上：每張往後退 14px、縮小 5%，內容隱藏。最新的一則有 `data-front`。',
+    },
+    {
+      state: '展開',
+      attribute: 'data-expanded',
+      notes:
+        '在 viewport 上，滑鼠或手寫筆移入，或鍵盤焦點在裡面時。卡片間距拉開為 14px，所有計時器暫停。',
+    },
+    {
+      state: '等待中',
+      attribute: 'data-visible="false"',
+      notes: '超出 `visibleToasts` 的通知：隱藏並設為 `inert`，計時器暫停，直到它往前移。',
+    },
+    {
+      state: '關閉中',
+      attribute: 'data-removed',
+      notes:
+        '已被關閉並正在播放退場動畫（150ms；滑動關閉為 200ms），為 `inert`。`data-swipe-out` 記錄方向。',
+    },
+    {
+      state: '滑動中',
+      attribute: 'data-swiping',
+      notes: '拖曳時設定。超過 45px，或速度超過 0.11px/ms 的快速滑動會滑出畫面；否則彈回原位。',
+    },
+    {
+      state: '可關閉',
+      attribute: 'data-dismissible',
+      notes: '`dismissible: false` 時不存在：沒有關閉按鈕，也不能滑動或按 Esc 關閉。',
+    },
+    {
+      state: '聚焦',
+      attribute: ':focus-visible',
+      notes: '每張卡片都能聚焦（`tabindex="0"`），外框為 2px 的 `--color-focus`。',
+    },
+    {
+      state: '各部分',
+      attribute: 'data-slot',
+      notes:
+        '`toast-viewport`（帶 `data-position`）、`toast`（帶 `data-toast-id` 與 `data-index`）、`toast-card`、`toast-body`、`toast-icon`、`toast-title`、`toast-description`、`toast-action`、`toast-announcer`。',
+    },
+  ]}
+/>
+
+## 鍵盤操作
+
+<KeyboardTable
+  rows={[
+    {
+      keys: ['F6', 'Alt+T'],
+      action:
+        '把焦點移到最新的通知；在通知裡再按一次，焦點回到原本的位置。在輸入欄位打字時會忽略 Alt+T。沒有通知時，這兩個按鍵交還給瀏覽器。',
+    },
+    {
+      keys: ['Tab', 'Shift+Tab'],
+      action: '在可聚焦的卡片與其按鈕之間移動。',
+    },
+    {
+      keys: 'Esc',
+      action:
+        '關閉目前聚焦的通知，並把焦點移到下一則，或回到原本的位置。在對話框裡不會連對話框一起關閉。',
+    },
+    {
+      keys: ['Enter', 'Space'],
+      action: '觸發目前聚焦的 action 或關閉按鈕。',
+    },
+  ]}
+/>
+
+## 無障礙
+
+- 兩個 live region 一開始就存在，公告才能正常運作：大部分通知用 `role="status"`（polite），`danger` 用 `role="alert"`（assertive）。同一個畫格內出現的通知會一起朗讀，相同的文字也會再朗讀一次。
+- 通知出現時會被朗讀。更新時只朗讀新的狀態。
+- 每張卡片以標題為名稱、描述為說明，並可透過 F6 聚焦，整段文字會被朗讀。
+- 滑鼠移入、鍵盤聚焦與分頁隱藏都會暫停計時器，所以閱讀期間通知不會消失；剩餘時間會保留，只有更新才會重設。`danger` 與 `loading` 不會自己消失。
+- 圖示是 `aria-hidden`；意思由文字傳達。開啟 `prefers-reduced-motion: reduce` 時，載入圖示改為虛線圓環。
+- `dismissible: false` 時沒有關閉按鈕，也不能滑動或按 Esc：通知只會因計時結束或 `toast.dismiss()` 離開。
+- 滑動方向是堆疊所在的邊緣，角落位置再加上靠側的那一邊。選取文字不算滑動，按鈕與連結保有自己的點擊。
+- 有強制回應的對話框開啟時，堆疊會移進對話框裡，通知才看得到、點得到；對話框關閉後再移回來。
+- 寬度 600px 以下時，卡片滿版並各留 16px 邊距，最多同時顯示 2 則。
+- viewport 的標籤是 `Notifications (F6)`，關閉按鈕是 `Close`，兩者都是英文。
+- 強制色彩模式下，卡片邊框用 `CanvasText` 繪製。
+- 伺服器端不會渲染任何東西：通知只在客戶端呼叫之後才存在。
+
+## 主題
+
+上方預覽的 Flat 切換碰不到通知堆疊，因為它渲染在 `<body>` 裡。要看效果，請在你的 app 引入 `themes/flat.css`：它會移除 `--shadow-popover`、把 `--radius-surface` 縮到 8px，並加深 `--color-popover-border`。
+
+<TokenList
+  tokens={[
+    { name: '--color-popover-bg', description: '`neutral` 與 `loading` 的底色。' },
+    { name: '--color-popover-border', description: '`neutral` 與 `loading` 的邊框。' },
+    { name: '--color-fg', description: '`neutral` 與 `loading` 的文字。' },
+    { name: '--color-fg-muted', description: '描述文字與載入圖示。' },
+    {
+      name: '--color-success-subtle-bg',
+      description: '`success` 的底色；`info`、`warning`、`danger` 同理。',
+    },
+    {
+      name: '--color-success-subtle-fg',
+      description: '`success` 的文字；`info`、`warning`、`danger` 同理。',
+    },
+    {
+      name: '--color-success-border',
+      description: '`success` 的邊框；`info`、`warning`、`danger` 同理。',
+    },
+    {
+      name: '--color-success',
+      description: '`success` 的圖示；`--color-info`、`--color-warning`、`--color-danger` 同理。',
+    },
+    { name: '--shadow-popover', description: '卡片的投影。' },
+    { name: '--radius-surface', description: '卡片圓角。' },
+    { name: '--color-focus', description: '聚焦外框。' },
+    {
+      name: '--spacing-control-sm',
+      description: '為關閉按鈕（`sm` 的 Button）預留的空間。',
+    },
+  ]}
+/>
+
+## 相關元件
+
+<Related
+  items={[
+    { title: 'Alert', href: '/components/alert', description: '固定留在頁面上的訊息。' },
+    { title: 'Dialog', href: '/components/dialog', description: '會擋住頁面的決定。' },
+    { title: 'Button', href: '/components/button', description: 'action 與關閉按鈕。' },
+  ]}
+/>

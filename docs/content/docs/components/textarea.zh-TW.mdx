@@ -1,0 +1,194 @@
+---
+title: 多行輸入框 Textarea
+description: 多行文字欄位，附標籤、輔助文字、錯誤狀態與字數統計。
+---
+
+<ComponentPreview name="textarea-demo" />
+
+<WhenToUse
+  use={[
+    '跨多行的自由文字：訊息、自我介紹、備註。',
+    '有長度上限的文字，搭配 `showCount` 與 `maxLength`。',
+    '高度隨內容增長的欄位，用 `autoResize`。',
+  ]}
+  alternatives={[
+    { name: 'Input', href: '/components/input', when: '簡短的單行內容。' },
+    { name: 'Select', href: '/components/select', when: '從固定清單中選一項。' },
+  ]}
+/>
+
+## 安裝
+
+```tsx
+import { Textarea } from '@weichenlin/swell-ui'
+```
+
+CSS 包含在 `styles.css` 裡，在 Tailwind 之後引入一次即可（見[安裝](/installation)）：
+
+```css
+@import 'tailwindcss';
+@import '@weichenlin/swell-ui/styles.css';
+```
+
+## 用法
+
+```tsx
+import { Textarea } from '@weichenlin/swell-ui'
+
+export function Example() {
+  return <Textarea label="Message" name="message" />
+}
+```
+
+每個 textarea 都需要可見的 `label`；若周圍的內容已經說明了欄位，也可以只給 `aria-label`。
+
+## 範例
+
+### 字數統計
+
+`showCount` 以 UTF-16 長度計算，和原生 `maxLength` 一致，超過上限時會變紅。受控的值不會被截斷。
+
+<ComponentPreview name="textarea-count" />
+
+### 自動調整高度
+
+高度會在 `minRows` 與 `maxRows` 之間跟著內容變化，超過後出現捲軸。
+
+<ComponentPreview name="textarea-auto-resize" />
+
+### 欄位狀態
+
+浮動標籤、停用、無效與等寬字型。
+
+<ComponentPreview name="textarea-states" />
+
+## API
+
+只列元件自己的 props；其他 `<textarea>` 屬性都會直接傳給元素，`children` 除外，`rows` 在這裡是元件的 prop。`className` 會套在最外層欄位。
+
+<AutoTypeTable
+  path="src/components/textarea/textarea.tsx"
+  name="TextareaProps"
+  keep={['className', 'disabled']}
+/>
+
+- `label` 與 `aria-label` 二擇一；`floating` 需要可見的 `label`。
+- `rows` 與 `resize` 用於固定高度；`minRows` 與 `maxRows` 只能搭配 `autoResize`。混用會有型別錯誤。
+- `rows`、`minRows`、`maxRows` 必須是正整數，且 `maxRows` 不能小於 `minRows`，否則 Textarea 會丟出 `RangeError`。
+
+## 狀態
+
+<StatesTable
+  rows={[
+    {
+      state: '滑鼠移入',
+      attribute: ':hover',
+      notes:
+        '邊框變成 `--color-input-border-hover`，並出現淡淡的浮起陰影。無效、停用、唯讀時不會。',
+    },
+    {
+      state: '聚焦',
+      attribute: ':focus',
+      notes: '邊框變成 `--color-input-focus`，外側有 3px 的光暈。',
+    },
+    {
+      state: '無效',
+      attribute: 'aria-invalid="true"',
+      notes: '`error` 為真值，或長度超過 `maxLength` 時設定。`error={true}` 只顯示外框。',
+    },
+    {
+      state: '附描述',
+      attribute: 'aria-describedby',
+      notes: '指向輔助或錯誤文字；有 `showCount` 時也包含字數。',
+    },
+    {
+      state: '停用',
+      attribute: 'disabled',
+      notes: '原生 `disabled`；整個欄位變暗到 50%，游標為 `not-allowed`。',
+    },
+    {
+      state: '唯讀',
+      attribute: 'readonly',
+      notes: '仍可聚焦。沒有內側高光、滑鼠移入變化與浮起陰影。',
+    },
+    {
+      state: '必填',
+      attribute: 'required',
+      notes: '原生驗證，標籤後方另有 `aria-hidden` 的星號。',
+    },
+    {
+      state: '超過上限',
+      attribute: 'maxLength',
+      notes: '字數變成 `--color-danger`，欄位顯示錯誤狀態。受控的文字不會被截斷。',
+    },
+    {
+      state: '浮起的標籤',
+      attribute: ':placeholder-shown',
+      notes: '由 CSS 根據聚焦或有值推導，所以 `defaultValue` 與表單重設都不需要 JavaScript。',
+    },
+    {
+      state: '根元素',
+      attribute: 'data-slot="input-field"',
+      notes: '在最外層容器上；內層有邊框的控制區是 `data-slot="input-control"`。',
+    },
+  ]}
+/>
+
+## 鍵盤操作
+
+<KeyboardTable
+  rows={[
+    { keys: ['Tab', 'Shift+Tab'], action: '把焦點移到欄位或移開。' },
+    { keys: 'Enter', action: '插入換行，和原生 textarea 相同。' },
+  ]}
+/>
+
+其他按鍵是瀏覽器原生的文字編輯。
+
+## 無障礙
+
+- `label` 會渲染成真正的 `<label>` 並連結到 textarea。浮動標籤缺口裡重複的標籤文字是 `aria-hidden`，不會混進無障礙名稱。
+- 輔助與錯誤文字、字數都用 `aria-describedby` 連結，你自己傳入的 `aria-describedby` 排在最前面。錯誤另外會設定 `aria-invalid`。
+- 字數不是 live region，所以不會每按一個鍵就朗讀。
+- 字數以 UTF-16 長度計算，和原生 `maxLength` 一致，所以一個 emoji 算 2。
+- `mono` 會關閉拼字檢查、自動修正與自動大寫。
+- 原生表單重設會一併更新字數與自動調整後的高度。
+- 在觸控螢幕上，文字為 16px。
+
+## 主題
+
+把上方任一預覽切到 **Flat**，就能看到 `themes/flat.css` 的效果：`--shadow-input` 與 `--shadow-input-lift` 歸零，`--radius-control` 也更小。
+
+<TokenList
+  tokens={[
+    { name: '--color-input-bg', description: '欄位底色；浮動標籤不使用。' },
+    { name: '--color-input-bg-hover', description: '滑鼠移入時的欄位底色。' },
+    { name: '--color-input-border', description: '靜止時的邊框。' },
+    { name: '--color-input-border-hover', description: '滑鼠移入時的邊框。' },
+    { name: '--color-input-focus', description: '聚焦時的邊框，以及浮動標籤的顏色。' },
+    { name: '--color-input-halo', description: '聚焦時 3px 的光暈。' },
+    { name: '--color-input-halo-invalid', description: '無效欄位 3px 的光暈。' },
+    {
+      name: '--color-input-halo-invalid-focus',
+      description: '無效欄位聚焦時 3px 的光暈。',
+    },
+    { name: '--color-input-placeholder', description: '預留文字（placeholder）。' },
+    { name: '--color-fg', description: '內容與標籤文字。' },
+    { name: '--color-fg-strong', description: '欄位未聚焦時，浮起標籤的文字。' },
+    { name: '--color-fg-muted', description: '輔助文字與字數。' },
+    { name: '--color-danger', description: '錯誤的邊框、文字、超過上限的字數與星號。' },
+    { name: '--radius-control', description: '圓角。' },
+    { name: '--shadow-input', description: '靜止時頂部的內側高光。' },
+    { name: '--shadow-input-lift', description: '滑鼠移入時淡淡的投影。' },
+  ]}
+/>
+
+## 相關元件
+
+<Related
+  items={[
+    { title: 'Input', href: '/components/input', description: '單行輸入欄位。' },
+    { title: 'Select', href: '/components/select', description: '從固定清單中選一項。' },
+    { title: 'Button', href: '/components/button', description: '送出表單。' },
+  ]}
+/>
