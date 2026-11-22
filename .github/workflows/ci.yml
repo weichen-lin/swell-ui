@@ -29,7 +29,9 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm typecheck
+      # Type-aware lint checks docs against the built library and Next.js route types.
+      - run: pnpm build
+      - run: pnpm --filter ./docs exec next typegen
       - run: pnpm lint
       - run: pnpm knip
       - run: pnpm test
-      - run: pnpm build
