@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { FolderGit2, Layers, Server, SlidersHorizontal } from 'lucide-react'
 import { useId, useState } from 'react'
 import { Badge } from '../src/components/badge'
 import { Button } from '../src/components/button'
@@ -15,6 +14,7 @@ import {
 } from '../src/components/drawer'
 import { Input } from '../src/components/input'
 import { Select, type SelectOption } from '../src/components/select'
+import { FolderGit2, Layers, Server, SlidersHorizontal } from './_helpers/story-icons'
 
 const sides: DrawerSide[] = ['left', 'right']
 const sizes: DrawerSize[] = ['sm', 'md', 'lg']

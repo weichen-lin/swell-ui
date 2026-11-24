@@ -19,11 +19,15 @@
 - **Accessible.** Native inputs and form submission, full keyboard support, reduced motion.
 - **Themeable.** Rebrand with two tokens; every other color is derived at runtime.
 - **Light and dark.** Follows the system, or force either with one `data-theme` attribute.
-- **Small.** ESM with type declarations; runtime deps are only `cva`, `clsx` and `tailwind-merge`.
+- **Small.** ESM with type declarations; runtime deps are only `cva`, `clsx` and `tailwind-merge`, no icon library.
 
 ## Install
 
-Peer dependencies: `react` and `react-dom` 19, `tailwindcss` 4.3+, `lucide-react`.
+Peer dependencies: `react` and `react-dom` 19, `tailwindcss` 4.3+. No icon package is needed: the
+built-in icons are inline SVG, and every one can be swapped through a component prop
+(`loadingIcon`, `closeIcon`, `errorIcon`, ...); decorative ones also hide with `false` or `null`.
+The entry is marked `'use client'`, so Next.js App Router Server Components can import the
+components directly.
 
 ```sh
 pnpm add @weichenlin/swell-ui

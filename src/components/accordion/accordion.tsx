@@ -1,4 +1,3 @@
-import { ChevronDown } from 'lucide-react'
 import {
   type ComponentProps,
   createContext,
@@ -11,7 +10,9 @@ import {
   useRef,
   useState,
 } from 'react'
+import { ChevronDownIcon } from '../../icons'
 import { cn } from '../../lib/cn'
+import { iconOr } from '../../lib/icon-slots'
 import { isPresent, useMergedRef } from '../input/field'
 import { useAccordionMotion } from './use-accordion-motion'
 
@@ -339,11 +340,17 @@ export type AccordionTriggerProps = Omit<
 > & {
   /** Supplementary text, announced as the description rather than the title. */
   description?: ReactNode
+  /**
+   * Trailing open indicator, sized to 16px and turned upside down while the item is open.
+   * Defaults to a chevron pointing down.
+   */
+  chevronIcon?: ReactNode
 }
 
 export function AccordionTrigger({
   children,
   description,
+  chevronIcon,
   className,
   onClick,
   'aria-describedby': describedBy,
@@ -400,13 +407,16 @@ export function AccordionTrigger({
             </span>
           )}
         </span>
-        <ChevronDown
+        <span
           aria-hidden
+          data-slot="accordion-chevron"
           className={cn(
-            'mt-1 size-4 shrink-0 text-fg-muted transition-transform duration-200 ease-out motion-reduce:transition-none',
+            'mt-1 flex shrink-0 text-fg-muted transition-transform duration-200 ease-out motion-reduce:transition-none [&_svg]:size-4 [&_svg]:shrink-0',
             item.open && 'rotate-180',
           )}
-        />
+        >
+          {iconOr(chevronIcon, <ChevronDownIcon />)}
+        </span>
       </button>
     </Heading>
   )

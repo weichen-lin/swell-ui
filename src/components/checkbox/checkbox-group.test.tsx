@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import type { ReactNode } from 'react'
 import { expect, test } from 'vite-plus/test'
 import { Checkbox } from './checkbox'
 import { CheckboxGroup } from './checkbox-group'
@@ -80,4 +81,17 @@ test('forwards fieldset props', () => {
   const group = screen.getByTestId('g')
   expect(group).toHaveAttribute('name', 'opts')
   expect(group).toHaveClass('mine')
+})
+
+test.each([false, null])('errorIcon replaces the error message icon, and %s hides it', (hidden) => {
+  const ui = (errorIcon: ReactNode) => (
+    <CheckboxGroup legend="Sync options" error="Pick one" errorIcon={errorIcon}>
+      <Checkbox label="Prune" />
+    </CheckboxGroup>
+  )
+  const { rerender } = render(ui(<svg data-testid="custom" />))
+  expect(screen.getByText('Pick one').parentElement).toContainElement(screen.getByTestId('custom'))
+  expect(document.querySelector('[data-icon="circle-alert"]')).toBeNull()
+  rerender(ui(hidden))
+  expect(screen.getByText('Pick one').parentElement!.querySelector('svg')).toBeNull()
 })

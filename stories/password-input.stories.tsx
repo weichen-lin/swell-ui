@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { KeyRound } from 'lucide-react'
 import { PasswordInput } from '../src/components/input'
+import { KeyRound } from './_helpers/story-icons'
 
 const sizes = ['sm', 'md', 'lg'] as const
 

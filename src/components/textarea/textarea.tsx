@@ -52,6 +52,11 @@ export type TextareaProps = Omit<ComponentProps<'textarea'>, 'children' | 'rows'
     /** Replaces helperText and marks the field invalid. `true` shows only the error outline. */
     error?: ReactNode
     /**
+     * Icon before the error text, sized to it. Defaults to a circled exclamation mark; `false` or
+     * `null` hides it.
+     */
+    errorIcon?: ReactNode
+    /**
      * Field text size and padding.
      * @defaultValue 'md'
      */
@@ -93,6 +98,7 @@ export function Textarea({
   floating = false,
   helperText,
   error,
+  errorIcon,
   size = 'md',
   autoResize = false,
   rows = 3,
@@ -159,6 +165,7 @@ export function Textarea({
       floating={floating}
       helperText={helperText}
       error={error || overLimit}
+      errorIcon={errorIcon}
       size={size}
       id={id}
       required={required}

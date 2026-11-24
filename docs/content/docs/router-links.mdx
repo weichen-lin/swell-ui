@@ -19,7 +19,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@weichenlin/swell-ui'
-import { Box } from 'lucide-react'
+import { BoxIcon } from './icons' // any icon component
 
 function Nav() {
   return (
@@ -31,7 +31,7 @@ function Nav() {
             <SidebarItem asChild>
               <Link to="/projects">
                 <SidebarIcon>
-                  <Box />
+                  <BoxIcon />
                 </SidebarIcon>
                 Projects
                 <SidebarBadge>8</SidebarBadge>

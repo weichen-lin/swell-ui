@@ -195,3 +195,13 @@ test('check and dash marks are decorative siblings of the input', () => {
   expect(marks).toHaveLength(2)
   for (const svg of marks) expect(svg).toHaveAttribute('aria-hidden', 'true')
 })
+
+test.each([false, null])('errorIcon replaces the error message icon, and %s hides it', (hidden) => {
+  const { rerender } = render(
+    <Checkbox label="Accept" error="Required" errorIcon={<svg data-testid="custom" />} />,
+  )
+  expect(screen.getByText('Required').parentElement).toContainElement(screen.getByTestId('custom'))
+  expect(document.querySelector('[data-icon="circle-alert"]')).toBeNull()
+  rerender(<Checkbox label="Accept" error="Required" errorIcon={hidden} />)
+  expect(screen.getByText('Required').parentElement!.querySelector('svg')).toBeNull()
+})

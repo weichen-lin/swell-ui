@@ -1,6 +1,7 @@
-import { Search, X } from 'lucide-react'
-import { type ChangeEvent, type KeyboardEvent, useRef, useState } from 'react'
+import { type ChangeEvent, type KeyboardEvent, type ReactNode, useRef, useState } from 'react'
+import { SearchIcon, XIcon } from '../../icons'
 import { cn } from '../../lib/cn'
+import { iconOr } from '../../lib/icon-slots'
 import { Button } from '../button'
 import { compactButton, FieldFrame, type FieldProps } from './field'
 
@@ -9,6 +10,13 @@ export type SearchInputProps = Omit<FieldProps, 'type' | 'label' | 'floating' | 
   'aria-label': string
   /** Called after the clear button or Esc empties the field. */
   onClear?: () => void
+  /**
+   * Decorative leading icon, sized to the field's icons. Defaults to a magnifying glass; `false`
+   * or `null` hides it.
+   */
+  searchIcon?: ReactNode
+  /** Icon of the clear button, sized to the button's icon size. Defaults to an X. */
+  clearIcon?: ReactNode
   label?: never
   floating?: never
   start?: never
@@ -24,6 +32,8 @@ function setNativeValue(input: HTMLInputElement, value: string) {
 
 export function SearchInput({
   onClear,
+  searchIcon,
+  clearIcon,
   onChange,
   onKeyDown,
   inputClassName,
@@ -50,7 +60,7 @@ export function SearchInput({
       size={size}
       type="search"
       inputRef={inputRef}
-      start={<Search />}
+      start={searchIcon === undefined ? <SearchIcon /> : searchIcon}
       // The browser's own cancel button would duplicate ours
       inputClassName={cn(
         '[&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none',
@@ -72,7 +82,7 @@ export function SearchInput({
       actions={
         canClear ? (
           <Button
-            icon={<X />}
+            icon={iconOr(clearIcon, <XIcon />)}
             aria-label="Clear search"
             intent="ghost"
             size={size}

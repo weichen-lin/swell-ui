@@ -1,6 +1,7 @@
-import { Moon, Sun } from 'lucide-react'
-import { type ComponentProps, useSyncExternalStore } from 'react'
+import { type ComponentProps, type ReactNode, useSyncExternalStore } from 'react'
+import { MoonIcon, SunIcon } from '../../icons'
 import { cn } from '../../lib/cn'
+import { iconOr } from '../../lib/icon-slots'
 import { Button } from '../button'
 import type { Theme } from './use-theme'
 
@@ -23,12 +24,18 @@ export type ThemeSwitcherProps = Omit<
   value: Theme
   /** Called with the theme to switch to (`'light'` or `'dark'`), never `'system'`. */
   onChange: (value: Theme) => void
+  /** Icon for the light theme, shown while dark (the button switches to light). Defaults to a sun. */
+  lightIcon?: ReactNode
+  /** Icon for the dark theme, shown while light (the button switches to dark). Defaults to a moon. */
+  darkIcon?: ReactNode
 }
 
 /** Toggle the visible theme in one click, including when the initial choice follows the system. */
 export function ThemeSwitcher({
   value,
   onChange,
+  lightIcon,
+  darkIcon,
   onClick,
   className,
   'aria-label': ariaLabel,
@@ -43,7 +50,7 @@ export function ThemeSwitcher({
     <Button
       {...props}
       intent="ghost"
-      icon={dark ? <Sun /> : <Moon />}
+      icon={dark ? iconOr(lightIcon, <SunIcon />) : iconOr(darkIcon, <MoonIcon />)}
       aria-label={label}
       title={label}
       tooltip={false}

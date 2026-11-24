@@ -1,6 +1,6 @@
-import { CircleAlert } from 'lucide-react'
 import { type ComponentProps, type ReactNode, useId } from 'react'
 import { cn } from '../../lib/cn'
+import { MessageIcon } from '../../lib/icon-slots'
 import { isPresent } from '../input/field'
 
 export type CheckboxGroupProps = Omit<ComponentProps<'fieldset'>, 'children'> & {
@@ -15,6 +15,11 @@ export type CheckboxGroupProps = Omit<ComponentProps<'fieldset'>, 'children'> & 
    */
   error?: ReactNode
   /**
+   * Icon before the error text, sized to it. Defaults to a circled exclamation mark; `false` or
+   * `null` hides it.
+   */
+  errorIcon?: ReactNode
+  /**
    * Layout of the rows.
    * @defaultValue 'vertical'
    */
@@ -28,6 +33,7 @@ export function CheckboxGroup({
   legend,
   description,
   error,
+  errorIcon,
   orientation = 'vertical',
   className,
   'aria-describedby': describedByProp,
@@ -75,7 +81,7 @@ export function CheckboxGroup({
         </div>
         {hasError && (
           <p id={errorId} className="m-0 mt-2 flex items-start gap-1 text-xs/snug text-danger">
-            <CircleAlert aria-hidden className="mt-px size-3.5 shrink-0" />
+            <MessageIcon icon={errorIcon} className="mt-px" />
             <span>{error}</span>
           </p>
         )}

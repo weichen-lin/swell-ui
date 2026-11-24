@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { RefreshCw } from 'lucide-react'
 import { type FormEvent, useState } from 'react'
 import { Button } from '../src/components/button'
 import { Checkbox, CheckboxGroup, type CheckboxGroupProps } from '../src/components/checkbox'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '../src/components/dialog'
+import { RefreshCw } from './_helpers/story-icons'
 
 const meta = {
   title: 'UI/CheckboxGroup',

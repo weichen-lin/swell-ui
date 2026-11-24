@@ -1,6 +1,7 @@
-import { X } from 'lucide-react'
 import { type ComponentProps, type ReactNode, useEffect, useRef } from 'react'
+import { XIcon } from '../../icons'
 import { cn } from '../../lib/cn'
+import { iconOr } from '../../lib/icon-slots'
 import { Button } from '../button'
 import { useMergedRef } from '../input/field'
 import {
@@ -145,10 +146,18 @@ export type DrawerHeaderProps = Omit<ComponentProps<'div'>, 'title'> & {
   title: ReactNode
   /** Supporting text under the title, announced with it. */
   description?: ReactNode
+  /** Icon of the close button, sized to the button's icon size. Defaults to an X. */
+  closeIcon?: ReactNode
 }
 
 /** Title, optional description and the close button, pinned above the body. */
-export function DrawerHeader({ title, description, className, ...props }: DrawerHeaderProps) {
+export function DrawerHeader({
+  title,
+  description,
+  closeIcon,
+  className,
+  ...props
+}: DrawerHeaderProps) {
   const context = useDrawerContext('DrawerHeader')
   const hasDescription = description != null && description !== false && description !== ''
   useAnnounceHeading(context, hasDescription)
@@ -172,7 +181,7 @@ export function DrawerHeader({ title, description, className, ...props }: Drawer
       <Button
         intent="ghost"
         size="sm"
-        icon={<X />}
+        icon={iconOr(closeIcon, <XIcon />)}
         aria-label="Close"
         // A tooltip would only repeat the label, and would be clipped by the panel's edge
         tooltip={false}
@@ -237,7 +246,7 @@ export function DrawerClose({ size = 'sm', icon, ...props }: DrawerCloseProps) {
       {...props}
       intent="ghost"
       size={size}
-      icon={icon ?? <X />}
+      icon={iconOr(icon, <XIcon />)}
       // A tooltip would only repeat the label, and would be clipped by the panel's edge
       tooltip={false}
       onClick={() => requestClose('close-button')}

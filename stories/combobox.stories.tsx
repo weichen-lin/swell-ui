@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Database, Globe, Server } from 'lucide-react'
 import { type CSSProperties, useEffect, useId, useState } from 'react'
 import { Button } from '../src/components/button'
 import { Combobox, type ComboboxOption, type ComboboxProps } from '../src/components/combobox'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '../src/components/dialog'
+import { Database, Globe, Server } from './_helpers/story-icons'
 
 const projects: ComboboxOption[] = [
   {

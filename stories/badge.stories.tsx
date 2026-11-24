@@ -1,4 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { ReactNode } from 'react'
+import { Badge, type BadgeProps, type BadgeTone } from '../src/components/badge'
+import { Tooltip } from '../src/components/tooltip'
 import {
   Box,
   CircleArrowUp,
@@ -10,10 +13,7 @@ import {
   Heart,
   HeartCrack,
   TriangleAlert,
-} from 'lucide-react'
-import type { ReactNode } from 'react'
-import { Badge, type BadgeProps, type BadgeTone } from '../src/components/badge'
-import { Tooltip } from '../src/components/tooltip'
+} from './_helpers/story-icons'
 
 const tones = ['neutral', 'info', 'success', 'warning', 'danger'] as const satisfies BadgeTone[]
 const variants = ['subtle', 'outline', 'solid'] as const

@@ -1,8 +1,9 @@
 /* Custom listbox: options are addressed by aria-activedescendant and all keyboard input stays on the text input. Native option/select tags cannot implement that interaction. */
 /* oxlint-disable jsx-a11y/prefer-tag-over-role, jsx-a11y/interactive-supports-focus, jsx-a11y/click-events-have-key-events */
-import { Check, ChevronDown, CircleAlert, LoaderCircle, X } from 'lucide-react'
 import { useEffectEvent, useId, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { CheckIcon, ChevronDownIcon, XIcon } from '../../icons'
 import { cn } from '../../lib/cn'
+import { iconOr, MessageIcon, Spinner } from '../../lib/icon-slots'
 import { Button } from '../button'
 import { compactButton, FieldFrame } from '../input/field'
 import {
@@ -31,7 +32,9 @@ export function Combobox({
   selectedOption,
   loading = false,
   loadingText = 'Loading…',
+  loadingIcon,
   searchError,
+  searchErrorIcon,
   onRetry,
   retryText = 'Retry',
   emptyText = 'No matching options.',
@@ -40,6 +43,9 @@ export function Combobox({
   clearLabel = 'Clear selection',
   openLabel = 'Open options',
   closeLabel = 'Close options',
+  clearIcon,
+  chevronIcon,
+  checkIcon,
   requiredText = 'Choose an option from the list.',
   unresolvedText = 'The selected option is unavailable.',
   getResultsText = resultsText,
@@ -47,6 +53,7 @@ export function Combobox({
   floating,
   helperText,
   error,
+  errorIcon,
   size = 'md',
   start,
   mono,
@@ -337,10 +344,16 @@ export function Combobox({
           </span>
         )}
       </span>
-      <Check
+      <span
         aria-hidden
-        className={cn('size-4 shrink-0', item.value !== selectedValue && 'invisible')}
-      />
+        data-slot="combobox-check"
+        className={cn(
+          'flex shrink-0 [&_svg]:size-4 [&_svg]:shrink-0',
+          item.value !== selectedValue && 'invisible',
+        )}
+      >
+        {iconOr(checkIcon, <CheckIcon />)}
+      </span>
     </div>
   )
 
@@ -366,6 +379,7 @@ export function Combobox({
         floating={floating}
         helperText={helperText}
         error={fieldError}
+        errorIcon={errorIcon}
         required={required}
         disabled={disabled}
         readOnly={readOnly}
@@ -454,7 +468,7 @@ export function Combobox({
               {clearable && (text !== '' || selectedValue !== null) && (
                 <Button
                   type="button"
-                  icon={<X />}
+                  icon={iconOr(clearIcon, <XIcon />)}
                   aria-label={clearLabel}
                   intent="ghost"
                   size={size}
@@ -472,7 +486,7 @@ export function Combobox({
               )}
               <Button
                 type="button"
-                icon={<ChevronDown />}
+                icon={iconOr(chevronIcon, <ChevronDownIcon />)}
                 tabIndex={-1}
                 aria-label={open ? closeLabel : openLabel}
                 aria-expanded={open}
@@ -560,7 +574,7 @@ export function Combobox({
           </div>
           {searchError ? (
             <div className="flex items-start gap-2 p-3 text-xs text-danger">
-              <CircleAlert aria-hidden className="mt-px size-3.5 shrink-0" />
+              <MessageIcon icon={searchErrorIcon} className="mt-px" />
               <span className="flex-1">{searchError}</span>
               {onRetry && (
                 <Button type="button" size="sm" intent="secondary" onClick={onRetry}>
@@ -570,9 +584,9 @@ export function Combobox({
             </div>
           ) : loading ? (
             <div className="flex items-center justify-center gap-2 p-4 text-sm text-fg-muted">
-              <LoaderCircle
-                aria-hidden
-                className="size-4 animate-spin motion-reduce:[animation-duration:2.5s]"
+              <Spinner
+                icon={loadingIcon}
+                className="motion-reduce:[animation-duration:2.5s] [&_svg]:size-4 [&_svg]:shrink-0"
               />
               {loadingText}
             </div>

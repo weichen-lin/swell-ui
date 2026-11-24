@@ -1,8 +1,8 @@
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { GitBranch, Trash2 } from 'lucide-react'
 import { createRef } from 'react'
 import { afterEach, beforeEach, expect, test, vi } from 'vite-plus/test'
+import { CheckIcon, XIcon } from '../../icons'
 import { FakeLink, FakeOutlet, FakeRouter } from '../../test/fake-router'
 import { Button } from './button'
 
@@ -133,13 +133,14 @@ test('loadingText defaults to "Loading"', () => {
 
 test('spinner size follows button size', () => {
   const { rerender, container } = render(<Button loading>Go</Button>)
-  expect(container.querySelector('svg')).toHaveAttribute('width', '18')
+  const slot = () => container.querySelector('[data-slot="spinner"]')?.parentElement
+  expect(slot()).toHaveClass('[&_svg]:size-[18px]')
   rerender(
     <Button loading size="lg">
       Go
     </Button>,
   )
-  expect(container.querySelector('svg')).toHaveAttribute('width', '20')
+  expect(slot()).toHaveClass('[&_svg]:size-5')
 })
 
 test('no spinner or aria-busy when not loading', () => {
@@ -183,7 +184,7 @@ test('disabledReason is ignored while enabled, without remounting the button', (
 
 test('icons render in aria-hidden slots and trim padding on their side', () => {
   render(
-    <Button iconLeft={<GitBranch data-testid="left" />} iconRight={<Trash2 data-testid="right" />}>
+    <Button iconLeft={<CheckIcon data-testid="left" />} iconRight={<XIcon data-testid="right" />}>
       Branch
     </Button>,
   )
@@ -360,7 +361,7 @@ test.each([
 test('icon-only Button is square, named, and shows its label as a tooltip', async () => {
   vi.useFakeTimers()
   try {
-    render(<Button icon={<GitBranch />} aria-label="Sync now" size="sm" />)
+    render(<Button icon={<CheckIcon />} aria-label="Sync now" size="sm" />)
     const btn = screen.getByRole('button', { name: 'Sync now' })
     expect(btn).toHaveClass('h-control-sm', 'aspect-square')
     expect(btn).not.toHaveClass('px-2.75')
@@ -383,38 +384,33 @@ test('icon-only Button is square, named, and shows its label as a tooltip', asyn
 
 test('icon-only Button supports loading/disabled with reason and tooltip opt-out', () => {
   const { rerender } = render(
-    <Button
-      icon={<Trash2 />}
-      aria-label="Delete"
-      disabled
-      disabledReason="Protected environment"
-    />,
+    <Button icon={<XIcon />} aria-label="Delete" disabled disabledReason="Protected environment" />,
   )
   const btn = screen.getByRole('button', { name: 'Delete' })
   expect(btn).toHaveAttribute('aria-disabled', 'true')
   expect(btn).toHaveAccessibleDescription('Protected environment')
 
-  rerender(<Button icon={<Trash2 />} aria-label="Delete" loading />)
+  rerender(<Button icon={<XIcon />} aria-label="Delete" loading />)
   expect(screen.getByRole('button', { name: 'Delete' })).toHaveAttribute('aria-busy', 'true')
 
-  rerender(<Button icon={<Trash2 />} aria-label="Delete" tooltip={false} />)
+  rerender(<Button icon={<XIcon />} aria-label="Delete" tooltip={false} />)
   expect(screen.queryByRole('tooltip', { hidden: true })).toBeNull()
 })
 
 // Type-level API rules: each line must fail to compile, or the directive itself errors
 test('icon-only Button requires aria-label and rejects text-button slots', () => {
   // @ts-expect-error aria-label is required with icon
-  render(<Button icon={<Trash2 />} />)
+  render(<Button icon={<XIcon />} />)
   render(
     // @ts-expect-error icon-only buttons take no children
-    <Button icon={<Trash2 />} aria-label="Delete">
+    <Button icon={<XIcon />} aria-label="Delete">
       Delete
     </Button>,
   )
   // @ts-expect-error icon-only buttons take no iconLeft
-  render(<Button icon={<Trash2 />} aria-label="Delete" iconLeft={<GitBranch />} />)
+  render(<Button icon={<XIcon />} aria-label="Delete" iconLeft={<CheckIcon />} />)
   // @ts-expect-error icon-only buttons take no iconRight
-  render(<Button icon={<Trash2 />} aria-label="Delete" iconRight={<GitBranch />} />)
+  render(<Button icon={<XIcon />} aria-label="Delete" iconRight={<CheckIcon />} />)
 })
 
 test('text Button rejects icon-only tooltip props', () => {
@@ -436,7 +432,7 @@ test('asChild renders the link styled as a button, with props, classes and ref m
         intent="secondary"
         className="extra"
         title="Create"
-        iconLeft={<GitBranch data-testid="icon" />}
+        iconLeft={<CheckIcon data-testid="icon" />}
       >
         <FakeLink to="/apps/new" className="own">
           New app
@@ -533,7 +529,7 @@ test('disabledReason on an asChild link describes it with a tooltip', async () =
 test('icon-only asChild puts the icon inside the link, named by aria-label', () => {
   render(
     <FakeRouter initialPath="/">
-      <Button asChild icon={<Trash2 data-testid="icon" />} aria-label="Delete app" tooltip={false}>
+      <Button asChild icon={<XIcon data-testid="icon" />} aria-label="Delete app" tooltip={false}>
         <FakeLink to="/apps/1/delete" />
       </Button>
     </FakeRouter>,
@@ -586,7 +582,7 @@ test.each(sizes)('hang pulls out by the same variable the padding reads (%s)', (
 
 test.each(sizes)('hang follows the trimmed padding on an icon side (%s)', (size) => {
   render(
-    <Button size={size} hang="both" iconLeft={<GitBranch />} iconRight={<Trash2 />}>
+    <Button size={size} hang="both" iconLeft={<CheckIcon />} iconRight={<XIcon />}>
       Edit
     </Button>,
   )
@@ -601,7 +597,7 @@ test.each(sizes)('hang follows the trimmed padding on an icon side (%s)', (size)
 
 test('hang on one side keeps the full padding on the other side next to an icon', () => {
   render(
-    <Button size="md" hang="start" iconLeft={<GitBranch />}>
+    <Button size="md" hang="start" iconLeft={<CheckIcon />}>
       Edit
     </Button>,
   )
@@ -611,7 +607,7 @@ test('hang on one side keeps the full padding on the other side next to an icon'
 })
 
 test.each(sizes)('hang works on the icon-only Button (%s)', (size) => {
-  render(<Button size={size} hang="start" icon={<GitBranch />} aria-label="Edit" tooltip={false} />)
+  render(<Button size={size} hang="start" icon={<CheckIcon />} aria-label="Edit" tooltip={false} />)
   const btn = screen.getByRole('button', { name: 'Edit' })
   expect(btn).toHaveClass('aspect-square', hangStart, 'ps-(--btn-ps)')
   expect(btn.className).toMatch(
@@ -626,4 +622,35 @@ test('hang works with asChild', () => {
     </Button>,
   )
   expect(screen.getByRole('link', { name: 'Open' })).toHaveClass(hangEnd)
+})
+
+test('loadingIcon replaces the spinner and is spun at the spinner size', () => {
+  const { container } = render(
+    <Button loading loadingIcon={<svg data-testid="custom" />}>
+      Save
+    </Button>,
+  )
+  const spinner = container.querySelector('[data-slot="spinner"]')
+  expect(spinner).toContainElement(screen.getByTestId('custom'))
+  expect(spinner).toHaveClass('animate-spin')
+  expect(spinner?.parentElement).toHaveClass('[&_svg]:size-[18px]')
+  expect(container.querySelector('[data-icon="loader-circle"]')).toBeNull()
+})
+
+test.each([false, null])('loadingIcon={%s} falls back to the default spinner', (hidden) => {
+  const { container } = render(
+    <Button loading loadingIcon={hidden}>
+      Save
+    </Button>,
+  )
+  expect(
+    container.querySelector('[data-slot="spinner"] [data-icon="loader-circle"]'),
+  ).not.toBeNull()
+})
+
+test('the spinner slows down under reduced motion', () => {
+  const { container } = render(<Button loading>Save</Button>)
+  expect(container.querySelector('[data-slot="spinner"]')).toHaveClass(
+    'motion-reduce:[animation-duration:2.5s]',
+  )
 })

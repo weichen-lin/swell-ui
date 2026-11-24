@@ -1,6 +1,13 @@
-import { ArrowDown, ArrowUp, ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react'
 import { type ComponentProps, type ReactNode, useId, useRef } from 'react'
+import {
+  ArrowDownIcon,
+  ArrowUpDownIcon,
+  ArrowUpIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from '../../icons'
 import { cn } from '../../lib/cn'
+import { iconOr } from '../../lib/icon-slots'
 import { Button } from '../button'
 import { Checkbox } from '../checkbox'
 import { SearchInput } from '../input'
@@ -51,6 +58,24 @@ const labels = {
     total === 0 ? '0 rows' : `${first}–${last} of ${total}`,
   emptyState: 'No rows yet',
   noResults: 'No matching rows',
+}
+
+/** Built-in icons of the table; each one you leave out keeps its default. */
+type TableIcons = {
+  /** Sort button of the column sorted ascending. Defaults to an arrow pointing up. */
+  sortAsc: ReactNode
+  /** Sort button of the column sorted descending. Defaults to an arrow pointing down. */
+  sortDesc: ReactNode
+  /** Sort buttons of the unsorted sortable columns. Defaults to an up-and-down arrow pair. */
+  unsorted: ReactNode
+  /** Previous page button; mirrored in right-to-left layouts. Defaults to a chevron left. */
+  previousPage: ReactNode
+  /** Next page button; mirrored in right-to-left layouts. Defaults to a chevron right. */
+  nextPage: ReactNode
+  /** Leading icon of the search field; `false` or `null` hides it. Defaults to a magnifier. */
+  search: ReactNode
+  /** Clear button of the search field. Defaults to an X. */
+  clearSearch: ReactNode
 }
 
 export type TableProps<T> = Omit<ComponentProps<'table'>, 'title' | 'children' | 'className'> & {
@@ -105,10 +130,15 @@ export type TableProps<T> = Omit<ComponentProps<'table'>, 'title' | 'children' |
    * @defaultValue English text
    */
   labels?: Partial<typeof labels>
+  /**
+   * Overrides built-in icons: `sortAsc`, `sortDesc`, `unsorted`, `previousPage`, `nextPage`,
+   * `search`, `clearSearch`. Sort icons are sized to 14px, the others to their control's icon size.
+   * @defaultValue arrows for sorting, chevrons for paging, a magnifier and an X for search
+   */
+  icons?: Partial<TableIcons>
 }
 
 const alignClasses = { start: 'text-start', center: 'text-center', end: 'text-end' }
-const sortIcons = { asc: ArrowUp, desc: ArrowDown }
 
 export function Table<T>({
   data,
@@ -125,6 +155,7 @@ export function Table<T>({
   className,
   tableClassName,
   labels: labelOverrides,
+  icons = {},
   ...props
 }: TableProps<T>) {
   const titleId = useId()
@@ -200,6 +231,8 @@ export function Table<T>({
                   aria-label={text.search}
                   placeholder={`${text.search}…`}
                   size="sm"
+                  searchIcon={icons.search}
+                  clearIcon={icons.clearSearch}
                   className="w-48 max-w-full"
                   value={search.value}
                   onChange={(event) => search.onChange(event.currentTarget.value)}
@@ -254,7 +287,12 @@ export function Table<T>({
                   {columns.map((column) => {
                     const direction =
                       sorting?.value?.id === column.id ? sorting.value.direction : undefined
-                    const SortIcon = direction ? sortIcons[direction] : ArrowUpDown
+                    const sortIcon =
+                      direction === 'asc'
+                        ? iconOr(icons.sortAsc, <ArrowUpIcon />)
+                        : direction === 'desc'
+                          ? iconOr(icons.sortDesc, <ArrowDownIcon />)
+                          : iconOr(icons.unsorted, <ArrowUpDownIcon />)
                     const align = column.align ?? (column.numeric ? 'end' : 'start')
                     return (
                       <th
@@ -288,7 +326,13 @@ export function Table<T>({
                             }
                           >
                             {column.header}
-                            <SortIcon aria-hidden className="size-3.5 shrink-0" />
+                            <span
+                              aria-hidden
+                              data-slot="table-sort-icon"
+                              className="flex shrink-0 [&_svg]:size-3.5 [&_svg]:shrink-0"
+                            >
+                              {sortIcon}
+                            </span>
                           </button>
                         ) : (
                           column.header
@@ -359,7 +403,9 @@ export function Table<T>({
               </tbody>
             </table>
           </section>
-          {pagination && <TablePagination {...pagination} visibleCount={rows.length} text={text} />}
+          {pagination && (
+            <TablePagination {...pagination} visibleCount={rows.length} text={text} icons={icons} />
+          )}
         </>
       )}
     </div>
@@ -373,7 +419,12 @@ function TablePagination({
   visibleCount,
   onPageChange,
   text,
-}: NonNullable<TableProps<unknown>['pagination']> & { visibleCount: number; text: typeof labels }) {
+  icons,
+}: NonNullable<TableProps<unknown>['pagination']> & {
+  visibleCount: number
+  text: typeof labels
+  icons: Partial<TableIcons>
+}) {
   const count = Math.ceil(rowCount / pageSize)
   const first = visibleCount ? pageIndex * pageSize + 1 : 0
   const last = first ? first + visibleCount - 1 : 0
@@ -389,7 +440,11 @@ function TablePagination({
       <output>{text.range(first, last, rowCount)}</output>
       <span className="flex items-center gap-2">
         <Button
-          icon={<ChevronLeft className="rtl:rotate-180" />}
+          icon={
+            <span className="flex rtl:rotate-180">
+              {iconOr(icons.previousPage, <ChevronLeftIcon />)}
+            </span>
+          }
           aria-label={text.previousPage}
           intent="ghost"
           size="sm"
@@ -399,7 +454,11 @@ function TablePagination({
         />
         <span>{count === 0 ? '—' : text.page(pageIndex + 1, count)}</span>
         <Button
-          icon={<ChevronRight className="rtl:rotate-180" />}
+          icon={
+            <span className="flex rtl:rotate-180">
+              {iconOr(icons.nextPage, <ChevronRightIcon />)}
+            </span>
+          }
           aria-label={text.nextPage}
           intent="ghost"
           size="sm"

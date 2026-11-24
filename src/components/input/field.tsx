@@ -1,4 +1,3 @@
-import { CircleAlert, LoaderCircle } from 'lucide-react'
 import {
   type ComponentProps,
   type MouseEvent,
@@ -11,6 +10,7 @@ import {
   useRef,
 } from 'react'
 import { cn } from '../../lib/cn'
+import { MessageIcon, Spinner } from '../../lib/icon-slots'
 
 export type FieldSize = 'sm' | 'md' | 'lg'
 
@@ -29,6 +29,11 @@ export type FieldProps = NativeInputProps & {
   helperText?: ReactNode
   /** Truthy puts the field in the error state; the text replaces helperText. */
   error?: ReactNode
+  /**
+   * Icon before the error text, sized to it. Defaults to a circled exclamation mark; `false` or
+   * `null` hides it.
+   */
+  errorIcon?: ReactNode
   /**
    * Field height and text size.
    * @defaultValue 'md'
@@ -53,6 +58,11 @@ export type FieldProps = NativeInputProps & {
    * @defaultValue 'Checking…'
    */
   validatingText?: string
+  /**
+   * Spinner shown while validating, sized to the field's icons and spun by the field (slowed
+   * under reduced motion), so pass a static icon. Defaults to a circular loader.
+   */
+  validatingIcon?: ReactNode
   /** Classes for the `<input>`; `className` goes to the outer wrapper. */
   inputClassName?: string
 }
@@ -247,6 +257,8 @@ export type FieldShellProps<T extends HTMLElement> = {
   helperText?: ReactNode
   /** Truthy puts the field in the error state; the text replaces helperText. */
   error?: ReactNode
+  /** Icon before the error text; see FieldProps. */
+  errorIcon?: ReactNode
   size: FieldSize
   id?: string
   required?: boolean
@@ -284,6 +296,7 @@ export function FieldShell<T extends HTMLElement>({
   floating = false,
   helperText,
   error,
+  errorIcon,
   size,
   id: idProp,
   required,
@@ -460,7 +473,7 @@ export function FieldShell<T extends HTMLElement>({
                 invalid ? 'text-danger' : 'text-fg-muted',
               )}
             >
-              {invalid && <CircleAlert aria-hidden className="mt-px size-3.5 shrink-0" />}
+              {invalid && <MessageIcon icon={errorIcon} className="mt-px" />}
               <span>{description}</span>
             </p>
           )}
@@ -481,12 +494,14 @@ export function FieldFrame({
   floating = false,
   helperText,
   error,
+  errorIcon,
   size = 'md',
   start,
   end,
   mono = false,
   validating = false,
   validatingText = 'Checking…',
+  validatingIcon,
   className,
   inputClassName,
   inputRef: inputRefProp,
@@ -514,6 +529,7 @@ export function FieldFrame({
       floating={floating}
       helperText={helperText}
       error={error}
+      errorIcon={errorIcon}
       size={size}
       id={id}
       required={required}
@@ -579,10 +595,7 @@ export function FieldFrame({
               )}
             >
               {/* Slowed, not stopped: a still spinner would read as stuck */}
-              <LoaderCircle
-                aria-hidden
-                className="animate-spin motion-reduce:[animation-duration:2.5s]"
-              />
+              <Spinner icon={validatingIcon} className="motion-reduce:[animation-duration:2.5s]" />
             </span>
           ) : hasEnd ? (
             <Adornment node={end} side="end" size={size} />

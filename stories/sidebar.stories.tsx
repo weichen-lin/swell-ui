@@ -1,4 +1,19 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { ComponentType, ReactNode } from 'react'
+import {
+  Sidebar,
+  SidebarBadge,
+  SidebarBody,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarHeader,
+  SidebarIcon,
+  SidebarItem,
+  SidebarProvider,
+  SidebarTrigger,
+} from '../src/components/sidebar'
+import { cn } from '../src/lib/cn'
+import { DemoNav, useDemoNav } from './_helpers/demo-nav'
 import {
   Activity,
   BookOpen,
@@ -15,22 +30,7 @@ import {
   Settings,
   ShieldCheck,
   Users,
-} from 'lucide-react'
-import type { ComponentType, ReactNode } from 'react'
-import {
-  Sidebar,
-  SidebarBadge,
-  SidebarBody,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarHeader,
-  SidebarIcon,
-  SidebarItem,
-  SidebarProvider,
-  SidebarTrigger,
-} from '../src/components/sidebar'
-import { cn } from '../src/lib/cn'
-import { DemoNav, useDemoNav } from './_helpers/demo-nav'
+} from './_helpers/story-icons'
 
 const meta = {
   title: 'UI/Sidebar',

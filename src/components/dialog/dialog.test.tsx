@@ -443,3 +443,28 @@ describe('Dialog', () => {
     expect(() => render(<DialogHeader title="Orphan" />)).toThrow(/inside <Dialog>/)
   })
 })
+
+describe('DialogHeader closeIcon', () => {
+  it('replaces the X of the close button', () => {
+    render(
+      <Dialog open onOpenChange={vi.fn()}>
+        <DialogHeader title="Sync app" closeIcon={<svg data-testid="custom" />} />
+      </Dialog>,
+    )
+    const close = screen.getByRole('button', { name: 'Close' })
+    expect(close).toContainElement(screen.getByTestId('custom'))
+    expect(close.querySelector('[data-icon="x"]')).toBeNull()
+  })
+})
+
+describe('DialogHeader closeIcon fallback', () => {
+  it.each([false, null])('closeIcon={%s} keeps the X', (hidden) => {
+    render(
+      <Dialog open onOpenChange={vi.fn()}>
+        <DialogHeader title="Sync app" closeIcon={hidden} />
+      </Dialog>,
+    )
+    const close = screen.getByRole('button', { name: 'Close' })
+    expect(close.querySelector('[data-icon="x"]')).not.toBeNull()
+  })
+})

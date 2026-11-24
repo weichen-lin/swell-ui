@@ -200,3 +200,30 @@ test('sizes set the track and thumb geometry', () => {
   rerender(<Switch aria-label="s" size="md" />)
   expect(track()).toHaveClass('h-5', 'w-9', '[--switch-thumb:16px]')
 })
+
+test.each([false, null])('errorIcon replaces the error message icon, and %s hides it', (hidden) => {
+  const { rerender } = render(
+    <Switch label="Auto sync" error="Required" errorIcon={<svg data-testid="custom" />} />,
+  )
+  expect(screen.getByText('Required').parentElement).toContainElement(screen.getByTestId('custom'))
+  expect(document.querySelector('[data-icon="circle-alert"]')).toBeNull()
+  rerender(<Switch label="Auto sync" error="Required" errorIcon={hidden} />)
+  expect(screen.getByText('Required').parentElement!.querySelector('svg')).toBeNull()
+})
+
+test('loadingIcon replaces both thumb rings and spins until reduced motion', () => {
+  const { container } = render(
+    <Switch label="Auto sync" loading loadingIcon={<svg data-testid="custom" />} />,
+  )
+  const spinner = container.querySelector('[data-slot="spinner"]')
+  expect(spinner).toContainElement(screen.getByTestId('custom'))
+  expect(spinner).toHaveClass('animate-spin', 'motion-reduce:animate-none')
+  expect(container.querySelector('[data-icon="loader-circle"]')).toBeNull()
+  expect(container.querySelector('[data-icon="circle-dashed"]')).toBeNull()
+})
+
+test.each([false, null])('loadingIcon={%s} keeps the default thumb rings', (hidden) => {
+  const { container } = render(<Switch label="Auto sync" loading loadingIcon={hidden} />)
+  expect(container.querySelector('[data-icon="loader-circle"]')).not.toBeNull()
+  expect(container.querySelector('[data-icon="circle-dashed"]')).not.toBeNull()
+})

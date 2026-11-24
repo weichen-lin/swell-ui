@@ -15,6 +15,11 @@ export type CheckboxProps = NativeCheckboxProps &
     /** Truthy sets aria-invalid; text is shown under the label and linked with aria-describedby. */
     error?: ReactNode
     /**
+     * Icon before the error text, sized to it. Defaults to a circled exclamation mark; `false` or
+     * `null` hides it.
+     */
+    errorIcon?: ReactNode
+    /**
      * Partly selected (a "select all" over some rows): drawn as a dash, announced as mixed.
      * A visual state only; the form still submits `checked`. The browser clears it on click, so
      * derive it from the children's state and it stays right after every change.
@@ -41,6 +46,7 @@ export function Checkbox({
   label,
   description,
   error,
+  errorIcon,
   indeterminate = false,
   className,
   inputClassName,
@@ -66,6 +72,7 @@ export function Checkbox({
       label={label}
       description={description}
       error={error}
+      errorIcon={errorIcon}
       gap="gap-2"
       controlOffset="mt-1"
       className={className}

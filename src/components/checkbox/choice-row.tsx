@@ -1,6 +1,6 @@
-import { CircleAlert } from 'lucide-react'
 import { type ReactNode, useId } from 'react'
 import { cn } from '../../lib/cn'
+import { MessageIcon } from '../../lib/icon-slots'
 import { isPresent } from '../input/field'
 
 /**
@@ -35,6 +35,8 @@ type ChoiceRowProps = {
   description?: ReactNode
   /** Truthy puts the control in the error state; text (if any) is shown under the label. */
   error?: ReactNode
+  /** Icon before the error text; undefined shows the default, `false`/`null` hides it. */
+  errorIcon?: ReactNode
   /** `start` puts the text first and pushes the control to the far end (settings rows). */
   labelPosition?: 'end' | 'start'
   /** Space between the control and the text. */
@@ -57,6 +59,7 @@ export function ChoiceRow({
   label,
   description,
   error,
+  errorIcon,
   labelPosition = 'end',
   gap,
   controlOffset,
@@ -96,7 +99,7 @@ export function ChoiceRow({
               hasDescription && 'mt-1',
             )}
           >
-            <CircleAlert aria-hidden className="mt-px size-3.5 shrink-0" />
+            <MessageIcon icon={errorIcon} className="mt-px" />
             <span>{error}</span>
           </span>
         )}

@@ -1,0 +1,65 @@
+---
+title: 圖示
+description: 用任何 icon 套件替換或隱藏元件自己畫的 icon。
+---
+
+swell-ui 自己畫的 icon（chevron、關閉鈕、spinner、狀態 icon）都是內嵌 SVG，所以套件不需要任何 icon 套件。每一個都有對應的 prop，接受任何 `ReactNode`，例如你的 icon 套件裡的 icon 或自己寫的 `<svg>`。`<svg>` 會自動套用與預設 icon 相同的尺寸（透過包裹層的 `[&_svg]:size-*` 選擇器）；其他節點（例如 `<img>` 或文字）要自己設定尺寸。
+
+```tsx
+import { Alert, Button, Dialog, DialogHeader } from '@weichenlin/swell-ui'
+import { LoaderIcon, WarningIcon, XIcon } from './icons' // your icon library
+
+export function Example({
+  open,
+  onOpenChange,
+}: {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}) {
+  return (
+    <>
+      <Button loading loadingIcon={<LoaderIcon />}>
+        Save
+      </Button>
+      <Alert tone="warning" title="Quota at 90%" icon={<WarningIcon />} />
+      <Alert tone="info" title="No icon" icon={false} />
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogHeader title="Sync app" closeIcon={<XIcon />} />
+      </Dialog>
+    </>
+  )
+}
+```
+
+- 不傳 prop 就保留預設 icon。
+- 裝飾性 icon（表格最後一欄）傳 `false` 或 `null` 即可隱藏；承載控制項的 icon（例如關閉鈕、spinner）則會改用預設值。
+- spinner 由元件負責旋轉，請傳入靜態 icon。
+- `Checkbox` 裡的勾號與橫線不是 icon，而是方框本身繪製的一部分，所以沒有對應的 prop。
+- 你放在自己內容裡的 icon（`Button` 的 `iconLeft`、`Tab` 的 `icon`、`Select` 選項的 icon）本來就由你提供，這部分沒有變化。
+
+| 元件                                                                                                                              | Prop                                    | 預設                  | 傳 `false` 隱藏 |
+| --------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- | --------------------- | --------------- |
+| `AccordionTrigger`                                                                                                                | `chevronIcon`                           | 向下 chevron          | 否              |
+| `Alert`                                                                                                                           | `icon`                                  | 依 tone 的 icon       | 是              |
+| `Alert`                                                                                                                           | `dismissIcon`                           | X                     | 否              |
+| `Badge`                                                                                                                           | `busyIcon`                              | 圓形 loader           | 否              |
+| `Button`                                                                                                                          | `loadingIcon`                           | 圓形 loader           | 否              |
+| `Combobox`                                                                                                                        | `chevronIcon`、`clearIcon`、`checkIcon` | 向下 chevron、X、勾號 | 否              |
+| `Combobox`                                                                                                                        | `loadingIcon`                           | 圓形 loader           | 否              |
+| `Combobox`                                                                                                                        | `searchErrorIcon`                       | 驚嘆號圓圈            | 是              |
+| `CopyInput`                                                                                                                       | `copyIcon`、`copiedIcon`                | 複製、勾號            | 否              |
+| `DialogHeader`、`DrawerHeader`                                                                                                    | `closeIcon`                             | X                     | 否              |
+| `DrawerClose`、`SidebarTrigger`                                                                                                   | `icon`                                  | X、選單               | 否              |
+| `Input`、`SearchInput`、`PasswordInput`、`CopyInput`                                                                              | `validatingIcon`                        | 圓形 loader           | 否              |
+| `PasswordInput`                                                                                                                   | `showIcon`、`hideIcon`                  | 眼睛、劃掉的眼睛      | 否              |
+| `SearchInput`                                                                                                                     | `searchIcon`                            | 放大鏡                | 是              |
+| `SearchInput`                                                                                                                     | `clearIcon`                             | X                     | 否              |
+| `Select`                                                                                                                          | `chevronIcon`                           | 向下 chevron          | 否              |
+| `Switch`                                                                                                                          | `loadingIcon`                           | 圓形 loader           | 否              |
+| `Table`                                                                                                                           | `icons`（物件）                         | 箭頭、chevron、放大鏡 | 僅 `search`     |
+| `ThemeSwitcher`                                                                                                                   | `lightIcon`、`darkIcon`                 | 太陽、月亮            | 否              |
+| `Toaster`                                                                                                                         | `icons`（物件，依類型）                 | 各類型 icon、loader   | 是              |
+| `Toaster`                                                                                                                         | `closeIcon`                             | X                     | 否              |
+| 有錯誤訊息的欄位（`Input` 系列、`Select`、`Combobox`、`Textarea`、`Checkbox`、`CheckboxGroup`、`RadioGroup`、`Switch`、`Slider`） | `errorIcon`                             | 驚嘆號圓圈            | 是              |
+
+各元件的 API 表格列出確切的 props、key 與預設值。

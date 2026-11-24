@@ -1,4 +1,3 @@
-import { Menu } from 'lucide-react'
 import {
   Children,
   cloneElement,
@@ -13,7 +12,9 @@ import {
   useRef,
   useState,
 } from 'react'
+import { MenuIcon } from '../../icons'
 import { cn } from '../../lib/cn'
+import { iconOr } from '../../lib/icon-slots'
 import { Slot, wrapChildren } from '../../lib/slot'
 import { Badge, type BadgeProps } from '../badge'
 import { Button } from '../button'
@@ -138,11 +139,14 @@ export type SidebarTriggerProps = Omit<
   'aria-label'?: string
   /** Button size: `'sm'`, `'md'` or `'lg'`. Uses the Button default when omitted. */
   size?: 'sm' | 'md' | 'lg'
+  /** Icon to show, sized to the button's icon size. Defaults to a menu (three lines) icon. */
+  icon?: ReactNode
 }
 
 /** Menu button that opens the drawer; only shown below 960px. Focus returns here on close. */
 export function SidebarTrigger({
   'aria-label': ariaLabel = 'Open navigation',
+  icon,
   className,
   onClick,
   ...props
@@ -152,7 +156,7 @@ export function SidebarTrigger({
     <Button
       {...props}
       intent="ghost"
-      icon={<Menu />}
+      icon={iconOr(icon, <MenuIcon />)}
       aria-label={ariaLabel}
       aria-expanded={open}
       aria-controls={drawerId}

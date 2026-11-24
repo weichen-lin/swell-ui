@@ -1,6 +1,6 @@
-import { CircleDashed, LoaderCircle } from 'lucide-react'
 import type { ComponentProps, ReactNode } from 'react'
 import { cn } from '../../lib/cn'
+import { BusyIcon } from '../../lib/icon-slots'
 
 export type BadgeTone = 'neutral' | 'info' | 'success' | 'warning' | 'danger'
 type BadgeVariant = 'subtle' | 'outline' | 'solid'
@@ -27,6 +27,12 @@ export type BadgeProps = Omit<ComponentProps<'span'>, 'onClick'> & {
   icon?: ReactNode
   /** In-progress state: swaps the icon for a spinning ring (a static ring under reduced motion). */
   busy?: boolean
+  /**
+   * Spinner shown while `busy`, sized to the icon slot and spun by the badge (still under reduced
+   * motion), so pass a static icon. Defaults to a circular loader, swapped for a dashed ring under
+   * reduced motion.
+   */
+  busyIcon?: ReactNode
   /** Visually-hidden prefix for screen readers, e.g. "Health" reads as "Health: Unknown". */
   context?: string
 }
@@ -77,6 +83,7 @@ export function Badge({
   size = 'md',
   icon,
   busy = false,
+  busyIcon,
   context,
   className,
   children,
@@ -108,15 +115,7 @@ export function Badge({
             iconClass,
           )}
         >
-          {busy ? (
-            <>
-              {/* Both rings are rendered and switched in CSS, so no JS media-query listener is needed */}
-              <LoaderCircle className="animate-spin motion-reduce:hidden" />
-              <CircleDashed className="hidden motion-reduce:block" />
-            </>
-          ) : (
-            icon
-          )}
+          {busy ? <BusyIcon icon={busyIcon} /> : icon}
         </span>
       )}
       {/* Own element so `truncate` (via className max-w-*) clips the text but not the icon; leading-4 keeps descenders inside its overflow box */}

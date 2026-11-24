@@ -1,8 +1,8 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { Cloud, Globe, Server } from 'lucide-react'
 import { createRef, useState } from 'react'
 import { expect, test } from 'vite-plus/test'
+import { InfoIcon, MoonIcon, SunIcon } from '../../icons'
 import { Select, type SelectGroup, type SelectOption } from './select'
 
 const control = (el: HTMLElement) => el.closest('[data-slot="input-control"]') as HTMLElement
@@ -17,8 +17,8 @@ const clusters: SelectOption[] = [
 ]
 
 const regions: SelectOption[] = [
-  { value: 'tw', label: 'Taiwan', icon: <Globe data-testid="icon-tw" /> },
-  { value: 'jp', label: 'Japan', icon: <Cloud data-testid="icon-jp" /> },
+  { value: 'tw', label: 'Taiwan', icon: <InfoIcon data-testid="icon-tw" /> },
+  { value: 'jp', label: 'Japan', icon: <MoonIcon data-testid="icon-jp" /> },
   { value: 'us', label: 'US East' },
 ]
 
@@ -97,7 +97,7 @@ test('groups render as optgroups; option text equals the label', () => {
     { label: 'Production', options: [{ value: 'prod-tw', label: 'prod-tw' }] },
     {
       label: 'Staging',
-      options: [{ value: 'stg-1', label: 'stg-1', icon: <Server /> }],
+      options: [{ value: 'stg-1', label: 'stg-1', icon: <SunIcon /> }],
     },
   ]
   render(<Select label="Cluster" options={groups} />)
@@ -206,7 +206,7 @@ test('form.reset() without a default returns to the placeholder, not the first o
 })
 
 test('start shows while the selected option has no icon of its own', async () => {
-  render(<Select label="Region" options={regions} start={<Server data-testid="start" />} />)
+  render(<Select label="Region" options={regions} start={<SunIcon data-testid="start" />} />)
   const select = screen.getByRole('combobox', { name: 'Region' })
   // Nothing chosen yet
   expect(leadingIcon(select)?.querySelector('[data-testid="start"]')).not.toBeNull()
@@ -284,4 +284,34 @@ test('Select rejects readOnly, multiple and end, and requires a name', () => {
   render(<Select options={clusters} />)
   // @ts-expect-error floating needs a visible label
   render(<Select aria-label="Cluster" floating options={clusters} />)
+})
+
+test('chevronIcon replaces the chevron and turns with the picker', () => {
+  const { container } = render(
+    <Select label="Region" options={regions} chevronIcon={<svg data-testid="custom" />} />,
+  )
+  expect(screen.getByTestId('custom').parentElement).toHaveClass(
+    'group-has-[select:open]/control:rotate-180',
+  )
+  expect(container.querySelector('[data-icon="chevron-down"]')).toBeNull()
+})
+
+test.each([false, null])('errorIcon replaces the error message icon, and %s hides it', (hidden) => {
+  const { rerender } = render(
+    <Select
+      label="Region"
+      options={regions}
+      error="Pick one"
+      errorIcon={<svg data-testid="custom" />}
+    />,
+  )
+  expect(screen.getByText('Pick one').parentElement).toContainElement(screen.getByTestId('custom'))
+  expect(document.querySelector('[data-icon="circle-alert"]')).toBeNull()
+  rerender(<Select label="Region" options={regions} error="Pick one" errorIcon={hidden} />)
+  expect(screen.getByText('Pick one').parentElement!.querySelector('svg')).toBeNull()
+})
+
+test.each([false, null])('chevronIcon={%s} keeps the chevron', (hidden) => {
+  const { container } = render(<Select label="Region" options={regions} chevronIcon={hidden} />)
+  expect(container.querySelector('[data-icon="chevron-down"]')).not.toBeNull()
 })

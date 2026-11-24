@@ -1,0 +1,72 @@
+---
+title: Icons
+description: Swap or hide the icons the components draw themselves, with any icon library.
+---
+
+The icons swell-ui draws itself (chevrons, close buttons, spinners, status icons) are inline SVG,
+so the package needs no icon library. Each one has a prop that takes any `ReactNode`, such as an
+icon from your library or your own `<svg>`. An `<svg>` gets the default's size automatically
+(through a `[&_svg]:size-*` selector on its wrapper); size any other node, such as an `<img>` or
+text, yourself.
+
+```tsx
+import { Alert, Button, Dialog, DialogHeader } from '@weichenlin/swell-ui'
+import { LoaderIcon, WarningIcon, XIcon } from './icons' // your icon library
+
+export function Example({
+  open,
+  onOpenChange,
+}: {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}) {
+  return (
+    <>
+      <Button loading loadingIcon={<LoaderIcon />}>
+        Save
+      </Button>
+      <Alert tone="warning" title="Quota at 90%" icon={<WarningIcon />} />
+      <Alert tone="info" title="No icon" icon={false} />
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogHeader title="Sync app" closeIcon={<XIcon />} />
+      </Dialog>
+    </>
+  )
+}
+```
+
+- Leave a prop out to keep the default.
+- Decorative icons (the last column) hide with `false` or `null`. Icons that carry a control,
+  such as a close button or a spinner, fall back to the default instead.
+- Spinners are turned by the component, so pass a static icon.
+- The check mark and the dash inside a `Checkbox` are not icons: they are part of how the box
+  itself is drawn, so there is no prop for them.
+- Icons you pass in your own content (`Button` `iconLeft`, `Tab` `icon`, `Select` option icons)
+  were always yours; nothing changes there.
+
+| Component                                                                                                                              | Prop                                    | Default                     | `false` hides |
+| -------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- | --------------------------- | ------------- |
+| `AccordionTrigger`                                                                                                                     | `chevronIcon`                           | Chevron down                | No            |
+| `Alert`                                                                                                                                | `icon`                                  | Tone icon                   | Yes           |
+| `Alert`                                                                                                                                | `dismissIcon`                           | X                           | No            |
+| `Badge`                                                                                                                                | `busyIcon`                              | Circular loader             | No            |
+| `Button`                                                                                                                               | `loadingIcon`                           | Circular loader             | No            |
+| `Combobox`                                                                                                                             | `chevronIcon`, `clearIcon`, `checkIcon` | Chevron down, X, check      | No            |
+| `Combobox`                                                                                                                             | `loadingIcon`                           | Circular loader             | No            |
+| `Combobox`                                                                                                                             | `searchErrorIcon`                       | Exclamation circle          | Yes           |
+| `CopyInput`                                                                                                                            | `copyIcon`, `copiedIcon`                | Copy, check                 | No            |
+| `DialogHeader`, `DrawerHeader`                                                                                                         | `closeIcon`                             | X                           | No            |
+| `DrawerClose`, `SidebarTrigger`                                                                                                        | `icon`                                  | X, menu                     | No            |
+| `Input`, `SearchInput`, `PasswordInput`, `CopyInput`                                                                                   | `validatingIcon`                        | Circular loader             | No            |
+| `PasswordInput`                                                                                                                        | `showIcon`, `hideIcon`                  | Eye, crossed-out eye        | No            |
+| `SearchInput`                                                                                                                          | `searchIcon`                            | Magnifier                   | Yes           |
+| `SearchInput`                                                                                                                          | `clearIcon`                             | X                           | No            |
+| `Select`                                                                                                                               | `chevronIcon`                           | Chevron down                | No            |
+| `Switch`                                                                                                                               | `loadingIcon`                           | Circular loader             | No            |
+| `Table`                                                                                                                                | `icons` (object)                        | Arrows, chevrons, magnifier | `search` only |
+| `ThemeSwitcher`                                                                                                                        | `lightIcon`, `darkIcon`                 | Sun, moon                   | No            |
+| `Toaster`                                                                                                                              | `icons` (object, per type)              | Type icons, loader          | Yes           |
+| `Toaster`                                                                                                                              | `closeIcon`                             | X                           | No            |
+| Fields with an error (`Input` family, `Select`, `Combobox`, `Textarea`, `Checkbox`, `CheckboxGroup`, `RadioGroup`, `Switch`, `Slider`) | `errorIcon`                             | Exclamation circle          | Yes           |
+
+Each component's API table lists the exact props, keys and defaults.

@@ -1,7 +1,7 @@
 /* oxlint-disable jsx-a11y/prefer-tag-over-role -- public ref targets a div; native inputs retain form semantics and the group names the composite field */
-import { CircleAlert } from 'lucide-react'
 import { Fragment, useId, useRef } from 'react'
 import { cn } from '../../lib/cn'
+import { MessageIcon } from '../../lib/icon-slots'
 import { isPresent, useMergedRef } from '../input/field'
 import { createScale } from './scale'
 import type {
@@ -39,6 +39,7 @@ function SliderControl({
   label,
   helperText,
   error,
+  errorIcon,
   showValue = true,
   formatValue = String,
   getValueText,
@@ -296,7 +297,7 @@ function SliderControl({
             invalid ? 'text-danger' : 'text-fg-muted',
           )}
         >
-          {invalid && <CircleAlert aria-hidden className="mt-0.5 size-3.5 shrink-0" />}
+          {invalid && <MessageIcon icon={errorIcon} className="mt-0.5" />}
           <span>{message}</span>
         </p>
       )}

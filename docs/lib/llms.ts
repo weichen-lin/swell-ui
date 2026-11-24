@@ -248,7 +248,7 @@ Each link below is the Markdown version of a docs page; drop the \`.md\` for the
 
 ## Installation
 
-Peer dependencies: \`react\` and \`react-dom\` 19, \`tailwindcss\` 4.3+, \`lucide-react\`.
+Peer dependencies: \`react\` and \`react-dom\` 19, \`tailwindcss\` 4.3+. No icon package: the built-in icons are inline SVG and each one can be swapped through a prop. The entry is marked \`'use client'\`, so Next.js Server Components can import it directly.
 
 \`\`\`sh
 pnpm add @weichenlin/swell-ui

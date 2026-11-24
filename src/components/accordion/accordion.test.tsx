@@ -514,3 +514,30 @@ test('mode-specific API rejects incompatible value types and mixed controlled/de
   const mixed: AccordionProps = { value: 'a', defaultValue: 'b' }
   expect([single, multiple, wrongSingle, wrongMultiple, mixed]).toHaveLength(5)
 })
+
+test('chevronIcon replaces the chevron, sized and turned with the item', () => {
+  render(
+    <Accordion defaultValue="general">
+      <AccordionItem value="general">
+        <AccordionTrigger chevronIcon={<svg data-testid="custom" />}>General</AccordionTrigger>
+        <AccordionContent>Body</AccordionContent>
+      </AccordionItem>
+    </Accordion>,
+  )
+  const slot = screen.getByTestId('custom').parentElement
+  expect(slot).toHaveAttribute('data-slot', 'accordion-chevron')
+  expect(slot).toHaveClass('[&_svg]:size-4', 'rotate-180')
+  expect(trigger().querySelector('[data-icon="chevron-down"]')).toBeNull()
+})
+
+test.each([false, null])('chevronIcon={%s} keeps the chevron', (hidden) => {
+  render(
+    <Accordion defaultValue="general">
+      <AccordionItem value="general">
+        <AccordionTrigger chevronIcon={hidden}>General</AccordionTrigger>
+        <AccordionContent>Body</AccordionContent>
+      </AccordionItem>
+    </Accordion>,
+  )
+  expect(trigger().querySelector('[data-icon="chevron-down"]')).not.toBeNull()
+})

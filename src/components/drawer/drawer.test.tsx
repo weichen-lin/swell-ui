@@ -256,3 +256,31 @@ describe('Drawer', () => {
     ).toThrow(/inside <Dialog>/)
   })
 })
+
+describe('DrawerHeader closeIcon', () => {
+  it('replaces the X of the close button', async () => {
+    await openDrawer({
+      children: <DrawerHeader title="Filters" closeIcon={<svg data-testid="custom" />} />,
+    })
+    const close = screen.getByRole('button', { name: 'Close' })
+    expect(close).toContainElement(screen.getByTestId('custom'))
+    expect(close.querySelector('[data-icon="x"]')).toBeNull()
+  })
+})
+
+describe('close icon fallback', () => {
+  it.each([false, null])('closeIcon={%s} and icon={%s} keep the X', async (hidden) => {
+    await openDrawer({
+      children: (
+        <>
+          <DrawerHeader title="Filters" closeIcon={hidden} />
+          <DrawerClose aria-label="Dismiss" icon={hidden} />
+        </>
+      ),
+    })
+    for (const name of ['Close', 'Dismiss']) {
+      const button = screen.getByRole('button', { name })
+      expect(button.querySelector('[data-icon="x"]')).not.toBeNull()
+    }
+  })
+})

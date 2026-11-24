@@ -115,8 +115,18 @@ export type ComboboxProps = NativeProps &
      * @defaultValue 'Loading…'
      */
     loadingText?: string
+    /**
+     * Spinner before `loadingText`, sized to 16px and spun by the list (slowed under reduced
+     * motion), so pass a static icon. Defaults to a circular loader.
+     */
+    loadingIcon?: ReactNode
     /** Failure message shown instead of options; a string is also announced. */
     searchError?: ReactNode
+    /**
+     * Icon before `searchError`, sized to it. Defaults to a circled exclamation mark; `false` or
+     * `null` hides it.
+     */
+    searchErrorIcon?: ReactNode
     /** Shows a retry button next to `searchError`. */
     onRetry?: () => void
     /**
@@ -154,6 +164,12 @@ export type ComboboxProps = NativeProps &
      * @defaultValue 'Close options'
      */
     closeLabel?: string
+    /** Icon of the clear button, sized to the button's icon size. Defaults to an X. */
+    clearIcon?: ReactNode
+    /** Icon of the open/close button, sized to the button's icon size. Defaults to a chevron. */
+    chevronIcon?: ReactNode
+    /** Mark on the selected option, sized to 16px. Defaults to a check mark. */
+    checkIcon?: ReactNode
     /**
      * Native constraint-validation message: selection is required, not just typed text.
      * @defaultValue 'Choose an option from the list.'
@@ -173,6 +189,11 @@ export type ComboboxProps = NativeProps &
     helperText?: ReactNode
     /** Truthy puts the field in the error state; the text replaces `helperText`. */
     error?: ReactNode
+    /**
+     * Icon before the error text, sized to it. Defaults to a circled exclamation mark; `false` or
+     * `null` hides it.
+     */
+    errorIcon?: ReactNode
     /**
      * Field height and text size: `'sm' | 'md' | 'lg'`.
      * @defaultValue 'md'

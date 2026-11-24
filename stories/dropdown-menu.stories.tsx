@@ -1,15 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import {
-  ChevronDown,
-  Copy,
-  Ellipsis,
-  ExternalLink,
-  LogOut,
-  RefreshCw,
-  Settings,
-  Trash2,
-  UserRound,
-} from 'lucide-react'
 import { useId, useState } from 'react'
 import {
   Badge,
@@ -28,6 +17,17 @@ import {
   Table,
   type DropdownMenuContentProps,
 } from '../src'
+import {
+  ChevronDown,
+  Copy,
+  Ellipsis,
+  ExternalLink,
+  LogOut,
+  RefreshCw,
+  Settings,
+  Trash2,
+  UserRound,
+} from './_helpers/story-icons'
 
 type Args = Pick<DropdownMenuContentProps, 'side' | 'align' | 'sideOffset'>
 const meta = {

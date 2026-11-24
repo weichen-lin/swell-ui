@@ -337,3 +337,34 @@ describe('Sidebar', () => {
     vi.restoreAllMocks()
   })
 })
+
+describe('SidebarTrigger icon', () => {
+  it('replaces the menu icon', () => {
+    render(
+      <SidebarProvider>
+        <SidebarTrigger icon={<svg data-testid="custom" />} />
+        <Sidebar aria-label="Main">
+          <SidebarBody />
+        </Sidebar>
+      </SidebarProvider>,
+    )
+    const trigger = screen.getByRole('button', { name: 'Open navigation', hidden: true })
+    expect(trigger).toContainElement(screen.getByTestId('custom'))
+    expect(trigger.querySelector('[data-icon="menu"]')).toBeNull()
+  })
+})
+
+describe('SidebarTrigger icon fallback', () => {
+  it.each([false, null])('icon={%s} keeps the menu icon', (hidden) => {
+    render(
+      <SidebarProvider>
+        <SidebarTrigger icon={hidden} />
+        <Sidebar aria-label="Main">
+          <SidebarBody />
+        </Sidebar>
+      </SidebarProvider>,
+    )
+    const trigger = screen.getByRole('button', { name: 'Open navigation', hidden: true })
+    expect(trigger.querySelector('[data-icon="menu"]')).not.toBeNull()
+  })
+})

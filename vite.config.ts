@@ -68,11 +68,30 @@ export default defineConfig({
     target: 'es2023',
     tsconfig: 'tsconfig.lib.json',
     dts: true,
+    // The components and hooks run on the client; marking the whole bundle lets Next.js App Router
+    // Server Components import and render them directly. JS only; the .d.ts files stay plain.
+    banner: { js: "'use client'" },
+    hooks: {
+      // The directive only works as the very first statement; fail the build if anything moved it
+      'build:done': ({ chunks }) => {
+        for (const chunk of chunks) {
+          if (
+            chunk.type === 'chunk' &&
+            chunk.fileName.endsWith('.js') &&
+            !chunk.code.startsWith("'use client'")
+          ) {
+            throw new Error(`${chunk.fileName} must start with 'use client'`)
+          }
+        }
+      },
+    },
     copy: [
       'src/styles/theme.css',
       'src/styles/styles.css',
       'src/styles/typography.css',
       { from: 'src/styles/themes/flat.css', to: 'dist/themes' },
+      // The built-in icons' license notices (ISC + Feather MIT) must ship with the copied paths
+      { from: 'src/icons/LICENSE', to: 'dist', rename: 'ICONS-LICENSE' },
     ],
   },
   plugins: lazyPlugins(() => [react(), tailwindcss()]),

@@ -1,4 +1,3 @@
-import { CircleAlert } from 'lucide-react'
 import {
   type ChangeEvent,
   type ComponentProps,
@@ -12,6 +11,7 @@ import {
   useState,
 } from 'react'
 import { cn } from '../../lib/cn'
+import { MessageIcon } from '../../lib/icon-slots'
 import { type ChoiceLabelProps, ChoiceRow } from '../checkbox/choice-row'
 import { isPresent, useMergedRef } from '../input/field'
 
@@ -40,6 +40,11 @@ export type RadioGroupProps = Omit<
     description?: ReactNode
     /** Shows one group message; marks the group invalid. `true` omits the message. */
     error?: ReactNode
+    /**
+     * Icon before the error text, sized to it. Defaults to a circled exclamation mark; `false` or
+     * `null` hides it.
+     */
+    errorIcon?: ReactNode
     /** Marks the group required: native validation needs one selection. */
     required?: boolean
     /** Called when the selection changes, with the new value and the native change event. */
@@ -81,6 +86,7 @@ export function RadioGroup({
   legend,
   description,
   error,
+  errorIcon,
   value,
   defaultValue,
   onValueChange,
@@ -241,7 +247,7 @@ export function RadioGroup({
           </div>
           {hasError && (
             <p id={errorId} className="m-0 mt-2 flex items-start gap-1 text-xs/snug text-danger">
-              <CircleAlert aria-hidden className="mt-px size-3.5 shrink-0" />
+              <MessageIcon icon={errorIcon} className="mt-px" />
               <span>{error}</span>
             </p>
           )}

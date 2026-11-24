@@ -1,6 +1,6 @@
-import { CircleDashed, LoaderCircle } from 'lucide-react'
 import type { ChangeEvent, ComponentProps, ReactNode } from 'react'
 import { cn } from '../../lib/cn'
+import { BusyIcon } from '../../lib/icon-slots'
 import { type ChoiceLabelProps, ChoiceRow } from '../checkbox/choice-row'
 
 export type SwitchSize = 'sm' | 'md'
@@ -17,6 +17,11 @@ export type SwitchProps = NativeSwitchProps &
     /** Truthy sets aria-invalid; text is shown under the label and linked with aria-describedby. */
     error?: ReactNode
     /**
+     * Icon before the error text, sized to it. Defaults to a circled exclamation mark; `false` or
+     * `null` hides it.
+     */
+    errorIcon?: ReactNode
+    /**
      * sm 28x14 for dense rows and tables, md 36x20 for settings.
      * @defaultValue 'md'
      */
@@ -27,6 +32,12 @@ export type SwitchProps = NativeSwitchProps &
      * @defaultValue false
      */
     loading?: boolean
+    /**
+     * Spinner in the thumb while loading, sized to the thumb and spun by the switch (still under
+     * reduced motion), so pass a static icon. Defaults to a circular loader, swapped for a dashed
+     * ring under reduced motion.
+     */
+    loadingIcon?: ReactNode
     /**
      * `start`: label first and the switch pushed to the far end, as in a settings row.
      * @defaultValue 'end'
@@ -56,8 +67,10 @@ export function Switch({
   label,
   description,
   error,
+  errorIcon,
   size = 'md',
   loading = false,
+  loadingIcon,
   labelPosition = 'end',
   className,
   inputClassName,
@@ -88,6 +101,7 @@ export function Switch({
       label={label}
       description={description}
       error={error}
+      errorIcon={errorIcon}
       labelPosition={labelPosition}
       gap="gap-3"
       controlOffset={s.offset}
@@ -167,13 +181,7 @@ export function Switch({
               s.icon,
             )}
           >
-            {loading && (
-              <>
-                {/* Both are rendered and switched in CSS (Badge's busy pattern): reduced motion gets a still ring */}
-                <LoaderCircle className="animate-spin motion-reduce:hidden" />
-                <CircleDashed className="hidden motion-reduce:block" />
-              </>
-            )}
+            {loading && <BusyIcon icon={loadingIcon} />}
           </span>
         </span>
       )}

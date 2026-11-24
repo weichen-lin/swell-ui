@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { Globe } from 'lucide-react'
 import { createRef } from 'react'
 import { expect, test } from 'vite-plus/test'
+import { InfoIcon } from '../../icons'
 import { Input } from './input'
 
 const control = (input: HTMLElement) => input.closest('[data-slot="input-control"]') as HTMLElement
@@ -120,7 +120,7 @@ test.each([
 })
 
 test('adornments: icons are aria-hidden, text stays readable, clicks focus the input', async () => {
-  render(<Input label="Service" start={<Globe data-testid="icon" />} end=".svc.cluster.local" />)
+  render(<Input label="Service" start={<InfoIcon data-testid="icon" />} end=".svc.cluster.local" />)
   const input = screen.getByLabelText('Service')
   const icon = screen.getByTestId('icon')
   expect(icon.closest('[aria-hidden="true"]')).not.toBeNull()
@@ -220,4 +220,32 @@ test('Input rejects password, search and number types and requires a name', () =
   render(<Input />)
   // @ts-expect-error floating needs a visible label
   render(<Input aria-label="Count" floating />)
+})
+
+test.each([false, null])('errorIcon replaces the error message icon, and %s hides it', (hidden) => {
+  const { rerender } = render(
+    <Input label="Name" error="Required" errorIcon={<svg data-testid="custom" />} />,
+  )
+  const message = screen.getByText('Required').parentElement!
+  expect(message).toContainElement(screen.getByTestId('custom'))
+  expect(message.querySelector('[data-icon="circle-alert"]')).toBeNull()
+  rerender(<Input label="Name" error="Required" errorIcon={hidden} />)
+  expect(screen.getByText('Required').parentElement!.querySelector('svg')).toBeNull()
+})
+
+test('validatingIcon replaces the validating spinner and spins it', () => {
+  const { container } = render(
+    <Input label="Name" validating validatingIcon={<svg data-testid="custom" />} />,
+  )
+  const spinner = container.querySelector('[data-slot="spinner"]')
+  expect(spinner).toContainElement(screen.getByTestId('custom'))
+  expect(spinner).toHaveClass('animate-spin')
+  expect(container.querySelector('[data-icon="loader-circle"]')).toBeNull()
+})
+
+test.each([false, null])('validatingIcon={%s} keeps the default spinner', (hidden) => {
+  const { container } = render(<Input label="Name" validating validatingIcon={hidden} />)
+  expect(
+    container.querySelector('[data-slot="spinner"] [data-icon="loader-circle"]'),
+  ).not.toBeNull()
 })

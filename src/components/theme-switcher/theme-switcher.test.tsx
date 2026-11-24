@@ -132,3 +132,26 @@ it('uses the system theme when storage is unavailable', () => {
   expect(result.current.theme).toBe('system')
   expect(document.documentElement.dataset.theme).toBeUndefined()
 })
+
+test('lightIcon shows while dark and darkIcon while light', () => {
+  const icons = {
+    lightIcon: <svg data-testid="light" />,
+    darkIcon: <svg data-testid="dark" />,
+  }
+  const { rerender } = render(<ThemeSwitcher value="dark" onChange={vi.fn()} {...icons} />)
+  expect(screen.getByTestId('light')).toBeInTheDocument()
+  expect(screen.queryByTestId('dark')).toBeNull()
+  expect(document.querySelector('[data-icon="sun"]')).toBeNull()
+  rerender(<ThemeSwitcher value="light" onChange={vi.fn()} {...icons} />)
+  expect(screen.getByTestId('dark')).toBeInTheDocument()
+  expect(document.querySelector('[data-icon="moon"]')).toBeNull()
+})
+
+test.each([false, null])('lightIcon={%s} and darkIcon={%s} keep the sun and moon', (hidden) => {
+  const { rerender } = render(
+    <ThemeSwitcher value="dark" onChange={vi.fn()} lightIcon={hidden} darkIcon={hidden} />,
+  )
+  expect(document.querySelector('[data-icon="sun"]')).not.toBeNull()
+  rerender(<ThemeSwitcher value="light" onChange={vi.fn()} lightIcon={hidden} darkIcon={hidden} />)
+  expect(document.querySelector('[data-icon="moon"]')).not.toBeNull()
+})

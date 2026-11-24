@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { createRef, StrictMode, useState } from 'react'
+import { createRef, type ReactNode, StrictMode, useState } from 'react'
 import { afterEach, beforeEach, expect, test, vi } from 'vite-plus/test'
 import { Combobox } from './combobox'
 import type { ComboboxOption, ComboboxProps } from './types'
@@ -631,3 +631,101 @@ const invalidProps: ComboboxProps[] = [
   { 'aria-label': 'Project', options, floating: true },
 ]
 void invalidProps
+
+test('clearIcon, chevronIcon and checkIcon replace the built-in icons', () => {
+  render(
+    <Combobox
+      label="Service"
+      options={options}
+      defaultValue="api"
+      defaultOpen
+      clearIcon={<svg data-testid="clear" />}
+      chevronIcon={<svg data-testid="chevron" />}
+      checkIcon={<svg data-testid="check" />}
+    />,
+  )
+  expect(screen.getByRole('button', { name: 'Clear selection' })).toContainElement(
+    screen.getByTestId('clear'),
+  )
+  expect(screen.getByRole('button', { name: 'Close options' })).toContainElement(
+    screen.getByTestId('chevron'),
+  )
+  expect(selected()).toContainElement(screen.getAllByTestId('check')[0])
+  for (const name of ['x', 'chevron-down', 'check']) {
+    expect(document.querySelector(`[data-icon="${name}"]`)).toBeNull()
+  }
+})
+
+test('loadingIcon replaces the list spinner and spins it', () => {
+  render(
+    <Combobox
+      label="Service"
+      options={[]}
+      defaultOpen
+      loading
+      loadingIcon={<svg data-testid="custom" />}
+    />,
+  )
+  const spinner = screen.getByTestId('custom').parentElement
+  expect(spinner).toHaveAttribute('data-slot', 'spinner')
+  expect(spinner).toHaveClass('animate-spin')
+  expect(document.querySelector('[data-icon="loader-circle"]')).toBeNull()
+})
+
+test.each([false, null])('searchErrorIcon replaces the failure icon, and %s hides it', (hidden) => {
+  const ui = (searchErrorIcon: ReactNode) => (
+    <Combobox
+      label="Service"
+      options={[]}
+      defaultOpen
+      searchError="Search failed"
+      searchErrorIcon={searchErrorIcon}
+    />
+  )
+  // The visible message, not its live-region copy
+  const message = () =>
+    screen.getByText('Search failed', { selector: 'span.flex-1' }).parentElement!
+  const { rerender } = render(ui(<svg data-testid="custom" />))
+  expect(message()).toContainElement(screen.getByTestId('custom'))
+  expect(document.querySelector('[data-icon="circle-alert"]')).toBeNull()
+  rerender(ui(hidden))
+  expect(message().querySelector('svg')).toBeNull()
+})
+
+test.each([false, null])('errorIcon replaces the field error icon, and %s hides it', (hidden) => {
+  const ui = (errorIcon: ReactNode) => (
+    <Combobox label="Service" options={options} error="Required" errorIcon={errorIcon} />
+  )
+  const { rerender } = render(ui(<svg data-testid="custom" />))
+  expect(screen.getByText('Required').parentElement).toContainElement(screen.getByTestId('custom'))
+  expect(document.querySelector('[data-icon="circle-alert"]')).toBeNull()
+  rerender(ui(hidden))
+  expect(screen.getByText('Required').parentElement!.querySelector('svg')).toBeNull()
+})
+
+test.each([false, null])(
+  'clearIcon, chevronIcon and checkIcon={%s} keep the defaults',
+  (hidden) => {
+    render(
+      <Combobox
+        label="Service"
+        options={options}
+        defaultValue="api"
+        defaultOpen
+        clearIcon={hidden}
+        chevronIcon={hidden}
+        checkIcon={hidden}
+      />,
+    )
+    const clear = screen.getByRole('button', { name: 'Clear selection' })
+    expect(clear.querySelector('[data-icon="x"]')).not.toBeNull()
+    const chevron = screen.getByRole('button', { name: 'Close options' })
+    expect(chevron.querySelector('[data-icon="chevron-down"]')).not.toBeNull()
+    expect(selected().querySelector('[data-icon="check"]')).not.toBeNull()
+  },
+)
+
+test.each([false, null])('loadingIcon={%s} keeps the default spinner', (hidden) => {
+  render(<Combobox label="Service" options={[]} defaultOpen loading loadingIcon={hidden} />)
+  expect(document.querySelector('[data-slot="spinner"] [data-icon="loader-circle"]')).not.toBeNull()
+})

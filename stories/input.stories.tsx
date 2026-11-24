@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Box, GitCommitHorizontal, Globe, Tag } from 'lucide-react'
 import { Input, type InputProps } from '../src/components/input'
 import { cn } from '../src/lib/cn'
+import { Box, GitCommitHorizontal, Globe, Tag } from './_helpers/story-icons'
 
 const sizes = ['sm', 'md', 'lg'] as const
 

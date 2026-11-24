@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Box, Plus, Search } from 'lucide-react'
 import { useState } from 'react'
 import { Badge, type BadgeTone } from '../src/components/badge'
 import { Button } from '../src/components/button'
 import { Card } from '../src/components/card'
 import { Table, type TableColumn, type TableSort } from '../src/components/table'
+import { Box, Plus, Search } from './_helpers/story-icons'
 
 type Deployment = {
   service: string

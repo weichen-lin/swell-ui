@@ -1,6 +1,7 @@
-import { X } from 'lucide-react'
 import type { ComponentProps, ReactNode } from 'react'
+import { XIcon } from '../../icons'
 import { cn } from '../../lib/cn'
+import { iconOr } from '../../lib/icon-slots'
 import { Button } from '../button'
 import {
   type ModalCloseReason,
@@ -151,12 +152,15 @@ export type DialogHeaderProps = Omit<ComponentProps<'div'>, 'title'> & {
    * @defaultValue true
    */
   closeButton?: boolean
+  /** Icon of the close button, sized to the button's icon size. Defaults to an X. */
+  closeIcon?: ReactNode
 }
 
 export function DialogHeader({
   title,
   description,
   closeButton,
+  closeIcon,
   className,
   ...props
 }: DialogHeaderProps) {
@@ -185,7 +189,7 @@ export function DialogHeader({
         <Button
           intent="ghost"
           size="sm"
-          icon={<X />}
+          icon={iconOr(closeIcon, <XIcon />)}
           aria-label="Close"
           // A tooltip would only repeat the label, and would be clipped by the panel's edge
           tooltip={false}

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ArrowRight, Zap } from 'lucide-react'
 import { Badge } from '../src/components/badge'
 import { Card, CardContent, CardHeader } from '../src/components/card'
+import { ArrowRight, Zap } from './_helpers/story-icons'
 
 const meta = {
   title: 'UI/Card',

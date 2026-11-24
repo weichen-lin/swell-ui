@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { RefreshCw, Trash2 } from 'lucide-react'
 import { type FormEvent, type ReactNode, useEffect, useRef, useState } from 'react'
 import { Badge } from '../src/components/badge'
 import { Button } from '../src/components/button'
@@ -12,6 +11,7 @@ import {
 } from '../src/components/dialog'
 import { Input } from '../src/components/input'
 import { Select, type SelectOption } from '../src/components/select'
+import { RefreshCw, Trash2 } from './_helpers/story-icons'
 
 const sizes: DialogSize[] = ['sm', 'md', 'lg']
 

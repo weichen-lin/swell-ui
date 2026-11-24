@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Search } from 'lucide-react'
 import { Button } from '../src/components/button'
 import { Combobox, type ComboboxOption } from '../src/components/combobox'
 import { Input, SearchInput } from '../src/components/input'
 import { Select } from '../src/components/select'
+import { Search } from './_helpers/story-icons'
 
 const meta = {
   title: 'Theme/Control density',

@@ -1,13 +1,4 @@
 import {
-  CircleCheck,
-  CircleDashed,
-  CircleX,
-  Info,
-  LoaderCircle,
-  TriangleAlert,
-  X,
-} from 'lucide-react'
-import {
   type CSSProperties,
   type FocusEvent,
   type KeyboardEvent,
@@ -24,7 +15,17 @@ import {
   useSyncExternalStore,
 } from 'react'
 import { createPortal } from 'react-dom'
+import {
+  CircleCheckIcon,
+  CircleDashedIcon,
+  CircleXIcon,
+  InfoIcon,
+  LoaderCircleIcon,
+  TriangleAlertIcon,
+  XIcon,
+} from '../../icons'
 import { cn } from '../../lib/cn'
+import { iconOr } from '../../lib/icon-slots'
 import { Button } from '../button'
 import {
   dismiss,
@@ -65,7 +66,19 @@ export type ToasterProps = {
    * @defaultValue 3
    */
   visibleToasts?: number
+  /**
+   * Overrides the leading icon per type: `success`, `info`, `warning`, `danger`, `loading`. Each is
+   * sized to 16px and tinted by its type; `false` or `null` hides that type's icon. A `loading`
+   * icon is spun by the toast (still under reduced motion), so pass a static one. Neutral toasts
+   * have no icon.
+   * @defaultValue a check circle, an info circle, a triangle, an X circle and a circular loader
+   */
+  icons?: Partial<Record<ToastIconType, ReactNode>>
+  /** Icon of each toast's close button, sized to the button's icon size. Defaults to an X. */
+  closeIcon?: ReactNode
 }
+
+type ToastIconType = Exclude<ToastType, 'neutral'>
 
 // Stack geometry from Sonner (measured): each card behind the front one sits 14px further back
 // and 5% smaller; expanded, cards are 14px apart
@@ -258,7 +271,14 @@ const positionClasses: Record<ToastPosition, string> = {
   'top-center': 'top-6 bottom-auto left-1/2 right-auto -translate-x-1/2 max-[601px]:top-4',
 }
 
-function Viewport({ id, position = 'bottom-right', visibleToasts = 3, host }: ViewportProps) {
+function Viewport({
+  id,
+  position = 'bottom-right',
+  visibleToasts = 3,
+  icons = {},
+  closeIcon,
+  host,
+}: ViewportProps) {
   const all = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
   // Memoized: effects below key off the list's identity, which must only change with the store
   const toasts = useMemo(() => all.filter((t) => t.toasterId === id), [all, id])
@@ -470,6 +490,8 @@ function Viewport({ id, position = 'bottom-right', visibleToasts = 3, host }: Vi
               ownHeight={heights[record.key]}
               edge={y}
               directions={directions}
+              icons={icons}
+              closeIcon={closeIcon}
               onHeight={onHeight}
               onFocusLost={onFocusLost}
               announce={announce}
@@ -494,12 +516,14 @@ const typeClasses: Record<ToastType, string> = {
   danger: 'border-danger-border bg-danger-subtle-bg text-danger-subtle-fg',
 }
 
-const icons: [Exclude<ToastType, 'neutral' | 'loading'>, string, ReactNode][] = [
-  ['success', 'text-success', <CircleCheck key="success" />],
-  ['info', 'text-info', <Info key="info" />],
-  ['warning', 'text-warning', <TriangleAlert key="warning" />],
-  ['danger', 'text-danger', <CircleX key="danger" />],
+const toneIcons: [Exclude<ToastIconType, 'loading'>, string, ReactNode][] = [
+  ['success', 'text-success', <CircleCheckIcon key="success" />],
+  ['info', 'text-info', <InfoIcon key="info" />],
+  ['warning', 'text-warning', <TriangleAlertIcon key="warning" />],
+  ['danger', 'text-danger', <CircleXIcon key="danger" />],
 ]
+
+const isPresent = (node: ReactNode) => node != null && node !== false && node !== ''
 
 const iconLayer = 'inline-flex opacity-0 transition-opacity duration-200 data-active:opacity-100'
 
@@ -507,31 +531,52 @@ const iconLayer = 'inline-flex opacity-0 transition-opacity duration-200 data-ac
  * Every type's icon sits in the same grid cell and only the current one is opaque, so an update
  * (loading -> success) cross-fades in place. Neutral has no icon (Geist): text carries it.
  */
-function ToastIcon({ type }: { type: ToastType }) {
+function ToastIcon({
+  type,
+  icons,
+}: {
+  type: ToastType
+  icons: Partial<Record<ToastIconType, ReactNode>>
+}) {
   const loading = type === 'loading'
+  const custom = (t: ToastIconType) => icons[t] !== undefined
+  // A hidden icon (false/null) takes no room, so the text starts at the card's edge
+  const shown = type !== 'neutral' && (!custom(type) || isPresent(icons[type]))
   return (
     <span
       aria-hidden
       data-slot="toast-icon"
       className={cn(
-        'mt-0.5 grid size-4 shrink-0 [&_svg]:size-4 *:col-start-1 *:row-start-1',
-        type === 'neutral' && 'hidden',
+        'mt-0.5 grid size-4 shrink-0 [&_svg]:size-4 [&_svg]:shrink-0 *:col-start-1 *:row-start-1',
+        !shown && 'hidden',
       )}
     >
-      {icons.map(([iconType, color, icon]) => (
-        <span
-          key={iconType}
-          data-active={iconType === type || undefined}
-          className={cn(iconLayer, color)}
-        >
-          {icon}
+      {toneIcons.map(([iconType, color, icon]) =>
+        custom(iconType) && !isPresent(icons[iconType]) ? null : (
+          <span
+            key={iconType}
+            data-active={iconType === type || undefined}
+            className={cn(iconLayer, color)}
+          >
+            {custom(iconType) ? icons[iconType] : icon}
+          </span>
+        ),
+      )}
+      {custom('loading') ? (
+        isPresent(icons.loading) && (
+          <span data-active={loading || undefined} className={cn(iconLayer, 'text-fg-muted')}>
+            <span className={cn('flex', loading && 'animate-spin', 'motion-reduce:animate-none')}>
+              {icons.loading}
+            </span>
+          </span>
+        )
+      ) : (
+        <span data-active={loading || undefined} className={cn(iconLayer, 'text-fg-muted')}>
+          {/* Spins only while shown; both rings are switched in CSS, like the Badge's busy state */}
+          <LoaderCircleIcon className={cn(loading && 'animate-spin', 'motion-reduce:hidden')} />
+          <CircleDashedIcon className="hidden motion-reduce:block" />
         </span>
-      ))}
-      <span data-active={loading || undefined} className={cn(iconLayer, 'text-fg-muted')}>
-        {/* Spins only while shown; both rings are switched in CSS, like the Badge's busy state */}
-        <LoaderCircle className={cn(loading && 'animate-spin', 'motion-reduce:hidden')} />
-        <CircleDashed className="hidden motion-reduce:block" />
-      </span>
+      )}
     </span>
   )
 }
@@ -552,6 +597,8 @@ type ToastCardProps = {
   ownHeight: number | undefined
   edge: 'top' | 'bottom'
   directions: SwipeDirection[]
+  icons: Partial<Record<ToastIconType, ReactNode>>
+  closeIcon: ReactNode
   onHeight: (key: number, height: number | undefined) => void
   onFocusLost: (index: number) => void
   announce: (text: string, assertive: boolean) => void
@@ -576,6 +623,8 @@ function ToastCard({
   ownHeight,
   edge,
   directions,
+  icons,
+  closeIcon,
   onHeight,
   onFocusLost,
   announce,
@@ -844,7 +893,7 @@ function ToastCard({
               dismissible && 'pe-[calc(var(--spacing-control-sm)+4px)]',
             )}
           >
-            <ToastIcon type={type} />
+            <ToastIcon type={type} icons={icons} />
             <div className="min-w-0 flex-1">
               <div
                 ref={titleRef}
@@ -891,7 +940,7 @@ function ToastCard({
             <Button
               intent="ghost"
               size="sm"
-              icon={<X />}
+              icon={iconOr(closeIcon, <XIcon />)}
               aria-label="Close"
               tooltip={false}
               // The card's text color, so the X reads on every tint; hover tints with it too

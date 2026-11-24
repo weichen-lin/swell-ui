@@ -145,3 +145,109 @@ test('returns keyboard focus to the table after clearing selection without searc
   expect(screen.getByRole('region', { name: 'Table' })).toHaveFocus()
   expect(screen.getByRole('checkbox', { name: 'Select row api' })).not.toBeChecked()
 })
+
+test('icons replaces the sort, paging and search icons', async () => {
+  const user = userEvent.setup()
+  const icons = {
+    sortAsc: <svg data-testid="asc" />,
+    sortDesc: <svg data-testid="desc" />,
+    unsorted: <svg data-testid="unsorted" />,
+    previousPage: <svg data-testid="previous" />,
+    nextPage: <svg data-testid="next" />,
+    search: <svg data-testid="search" />,
+    clearSearch: <svg data-testid="clear" />,
+  }
+  function Example() {
+    const [sort, setSort] = useState<TableSort | null>(null)
+    return (
+      <Table
+        data={data}
+        columns={columns}
+        getRowId={getRowId}
+        title="Deployments"
+        search={{ value: 'a', onChange: vi.fn() }}
+        sorting={{ value: sort, onChange: setSort }}
+        pagination={{ pageIndex: 0, pageSize: 2, rowCount: 3, onPageChange: vi.fn() }}
+        icons={icons}
+      />
+    )
+  }
+  render(<Example />)
+  const sortButton = within(screen.getByRole('columnheader', { name: 'Service' })).getByRole(
+    'button',
+  )
+  expect(sortButton).toContainElement(screen.getByTestId('unsorted'))
+  expect(screen.getByTestId('unsorted').parentElement).toHaveClass('[&_svg]:size-3.5')
+  await user.click(sortButton)
+  expect(sortButton).toContainElement(screen.getByTestId('asc'))
+  await user.click(sortButton)
+  expect(sortButton).toContainElement(screen.getByTestId('desc'))
+  expect(screen.getByRole('button', { name: 'Previous page' })).toContainElement(
+    screen.getByTestId('previous'),
+  )
+  expect(screen.getByRole('button', { name: 'Next page' })).toContainElement(
+    screen.getByTestId('next'),
+  )
+  expect(screen.getByTestId('search')).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Clear search' })).toContainElement(
+    screen.getByTestId('clear'),
+  )
+  expect(document.querySelector('[data-icon]')).toBeNull()
+})
+
+test.each([false, null])('icons with %s keep the sort, paging and clear icons', async (hidden) => {
+  const user = userEvent.setup()
+  const icons = {
+    sortAsc: hidden,
+    sortDesc: hidden,
+    unsorted: hidden,
+    previousPage: hidden,
+    nextPage: hidden,
+    clearSearch: hidden,
+  }
+  function Example() {
+    const [sort, setSort] = useState<TableSort | null>(null)
+    return (
+      <Table
+        data={data}
+        columns={columns}
+        getRowId={getRowId}
+        title="Deployments"
+        search={{ value: 'a', onChange: vi.fn() }}
+        sorting={{ value: sort, onChange: setSort }}
+        pagination={{ pageIndex: 0, pageSize: 2, rowCount: 3, onPageChange: vi.fn() }}
+        icons={icons}
+      />
+    )
+  }
+  render(<Example />)
+  const sortButton = within(screen.getByRole('columnheader', { name: 'Service' })).getByRole(
+    'button',
+  )
+  expect(sortButton.querySelector('[data-icon="arrow-up-down"]')).not.toBeNull()
+  await user.click(sortButton)
+  expect(sortButton.querySelector('[data-icon="arrow-up"]')).not.toBeNull()
+  await user.click(sortButton)
+  expect(sortButton.querySelector('[data-icon="arrow-down"]')).not.toBeNull()
+  const previous = screen.getByRole('button', { name: 'Previous page' })
+  expect(previous.querySelector('[data-icon="chevron-left"]')).not.toBeNull()
+  const next = screen.getByRole('button', { name: 'Next page' })
+  expect(next.querySelector('[data-icon="chevron-right"]')).not.toBeNull()
+  const clear = screen.getByRole('button', { name: 'Clear search' })
+  expect(clear.querySelector('[data-icon="x"]')).not.toBeNull()
+})
+
+test.each([false, null])('icons.search set to %s hides the search icon', (hidden) => {
+  render(
+    <Table
+      data={data}
+      columns={columns}
+      getRowId={getRowId}
+      title="Deployments"
+      search={{ value: '', onChange: vi.fn() }}
+      icons={{ search: hidden }}
+    />,
+  )
+  expect(document.querySelector('[data-icon="search"]')).toBeNull()
+  expect(screen.getByRole('searchbox')).toBeInTheDocument()
+})

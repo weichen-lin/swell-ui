@@ -35,22 +35,22 @@ test('copies the value, swaps to a check and announces "Copied" for 1.5s', async
   writeText.mockResolvedValue(undefined)
   const { container } = render(<CopyInput label="Commit SHA" value={SHA} />)
   const btn = screen.getByRole('button', { name: 'Copy' })
-  const before = btn.querySelector('svg')?.getAttribute('class')
+  const icon = () => btn.querySelector('svg')?.getAttribute('data-icon')
+  expect(icon()).toBe('copy')
 
   await act(async () => {
     fireEvent.click(btn)
   })
   expect(writeText).toHaveBeenCalledWith(SHA)
   expect(live(container)).toHaveTextContent('Copied')
-  expect(btn.querySelector('svg')?.getAttribute('class')).toContain('lucide-check')
-  expect(btn.querySelector('svg')?.getAttribute('class')).not.toBe(before)
+  expect(icon()).toBe('check')
   expect(btn).toHaveAccessibleName('Copy')
 
   act(() => {
     vi.advanceTimersByTime(1500)
   })
   expect(live(container)).toHaveTextContent('')
-  expect(btn.querySelector('svg')?.getAttribute('class')).toBe(before)
+  expect(icon()).toBe('copy')
 })
 
 test('announces "Copy failed" when the clipboard rejects', async () => {
@@ -99,4 +99,37 @@ test('CopyInput takes a visible label or only an aria-label', () => {
   render(<CopyInput value={SHA} />)
   // @ts-expect-error floating needs a visible label
   render(<CopyInput aria-label="Commit SHA" floating value={SHA} />)
+})
+
+test('copyIcon and copiedIcon replace the copy and check icons', async () => {
+  vi.useFakeTimers()
+  writeText.mockResolvedValue(undefined)
+  render(
+    <CopyInput
+      label="Commit SHA"
+      value={SHA}
+      copyIcon={<svg data-testid="copy" />}
+      copiedIcon={<svg data-testid="copied" />}
+    />,
+  )
+  const btn = screen.getByRole('button', { name: 'Copy' })
+  expect(btn).toContainElement(screen.getByTestId('copy'))
+  expect(btn.querySelector('[data-icon="copy"]')).toBeNull()
+  await act(async () => {
+    fireEvent.click(btn)
+  })
+  expect(btn).toContainElement(screen.getByTestId('copied'))
+  expect(btn.querySelector('[data-icon="check"]')).toBeNull()
+})
+
+test.each([false, null])('copyIcon={%s} and copiedIcon={%s} keep the defaults', async (hidden) => {
+  vi.useFakeTimers()
+  writeText.mockResolvedValue(undefined)
+  render(<CopyInput label="Commit SHA" value={SHA} copyIcon={hidden} copiedIcon={hidden} />)
+  const btn = screen.getByRole('button', { name: 'Copy' })
+  expect(btn.querySelector('[data-icon="copy"]')).not.toBeNull()
+  await act(async () => {
+    fireEvent.click(btn)
+  })
+  expect(btn.querySelector('[data-icon="check"]')).not.toBeNull()
 })

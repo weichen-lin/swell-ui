@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
-import { Heart } from 'lucide-react'
 import { createRef } from 'react'
 import { expect, test } from 'vite-plus/test'
+import { SunIcon } from '../../icons'
 import { Badge, type BadgeTone } from './badge'
 
 const tones: BadgeTone[] = ['neutral', 'info', 'success', 'warning', 'danger']
@@ -60,15 +60,15 @@ test.each(tones)('%s applies its own token classes for every variant', (tone) =>
 })
 
 test('icon color: tone main on subtle/outline, foreground on solid', () => {
-  const { rerender } = render(<Badge tone="success" icon={<Heart />} />)
+  const { rerender } = render(<Badge tone="success" icon={<SunIcon />} />)
   const icon = () => document.querySelector('[data-slot="badge-icon"]') as HTMLElement
   expect(icon()).toHaveClass('text-success')
-  rerender(<Badge tone="success" variant="solid" icon={<Heart />} />)
+  rerender(<Badge tone="success" variant="solid" icon={<SunIcon />} />)
   expect(icon()).toHaveClass('text-success-fg')
 })
 
 test('icon is decorative and gets the tighter padding on its side', () => {
-  render(<Badge icon={<Heart data-testid="heart" />}>Healthy</Badge>)
+  render(<Badge icon={<SunIcon data-testid="heart" />}>Healthy</Badge>)
   const heart = screen.getByTestId('heart')
   expect(heart.closest('[data-slot="badge-icon"]')).toHaveAttribute('aria-hidden', 'true')
   expect(heart.closest('[data-slot="badge"]')).toHaveClass('ps-1.5')
@@ -81,7 +81,7 @@ test('no icon slot renders without icon or busy', () => {
 
 test('busy renders a spinning ring plus a static ring for reduced motion, and ignores icon', () => {
   render(
-    <Badge busy icon={<Heart data-testid="heart" />}>
+    <Badge busy icon={<SunIcon data-testid="heart" />}>
       Progressing
     </Badge>,
   )
@@ -138,7 +138,7 @@ test('forwards native props and merges className without losing base classes', (
 })
 
 test('long text is not truncated by default; a max-w className clips the label only', () => {
-  const { rerender } = render(<Badge icon={<Heart />}>v1.4.2-rc.1-very-long</Badge>)
+  const { rerender } = render(<Badge icon={<SunIcon />}>v1.4.2-rc.1-very-long</Badge>)
   const root = () => document.querySelector('[data-slot="badge"]') as HTMLElement
   const label = () => document.querySelector('[data-slot="badge-label"]') as HTMLElement
   expect(root()).toHaveClass('whitespace-nowrap')
@@ -146,7 +146,7 @@ test('long text is not truncated by default; a max-w className clips the label o
   expect(label()).toHaveTextContent('v1.4.2-rc.1-very-long')
 
   rerender(
-    <Badge icon={<Heart />} className="max-w-24">
+    <Badge icon={<SunIcon />} className="max-w-24">
       v1.4.2-rc.1-very-long
     </Badge>,
   )
@@ -154,4 +154,31 @@ test('long text is not truncated by default; a max-w className clips the label o
   // The label (not the icon) is the clipped, shrinkable part
   expect(label()).toHaveClass('truncate', 'min-w-0')
   expect(document.querySelector('[data-slot="badge-icon"]')).toHaveClass('shrink-0')
+})
+
+test('busyIcon replaces both busy rings and spins until reduced motion', () => {
+  render(
+    <Badge busy busyIcon={<svg data-testid="custom" />}>
+      Progressing
+    </Badge>,
+  )
+  const slot = document.querySelector('[data-slot="badge-icon"]') as HTMLElement
+  expect(slot).toContainElement(screen.getByTestId('custom'))
+  expect(screen.getByTestId('custom').parentElement).toHaveClass(
+    'animate-spin',
+    'motion-reduce:animate-none',
+  )
+  expect(slot.querySelector('[data-icon="loader-circle"]')).toBeNull()
+  expect(slot.querySelector('[data-icon="circle-dashed"]')).toBeNull()
+})
+
+test.each([false, null])('busyIcon={%s} keeps the default busy rings', (hidden) => {
+  render(
+    <Badge busy busyIcon={hidden}>
+      Progressing
+    </Badge>,
+  )
+  const slot = document.querySelector('[data-slot="badge-icon"]') as HTMLElement
+  expect(slot.querySelector('[data-icon="loader-circle"]')).not.toBeNull()
+  expect(slot.querySelector('[data-icon="circle-dashed"]')).not.toBeNull()
 })

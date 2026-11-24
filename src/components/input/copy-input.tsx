@@ -1,5 +1,6 @@
-import { Check, Copy } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { type ReactNode, useEffect, useRef, useState } from 'react'
+import { CheckIcon, CopyIcon } from '../../icons'
+import { iconOr } from '../../lib/icon-slots'
 import { Button } from '../button'
 import { compactButton, FieldFrame, type FieldLabelProps, type FieldProps } from './field'
 
@@ -32,6 +33,10 @@ export type CopyInputProps = Omit<
      * @defaultValue 'Copy failed'
      */
     copyFailedLabel?: string
+    /** Icon of the copy button, sized to the button's icon size. Defaults to two stacked sheets. */
+    copyIcon?: ReactNode
+    /** Icon the copy button shows briefly after a successful copy. Defaults to a check mark. */
+    copiedIcon?: ReactNode
   }
 
 export function CopyInput({
@@ -41,6 +46,8 @@ export function CopyInput({
   copyLabel = 'Copy',
   copiedLabel = 'Copied',
   copyFailedLabel = 'Copy failed',
+  copyIcon,
+  copiedIcon,
   onFocus,
   onClick,
   ...props
@@ -83,7 +90,11 @@ export function CopyInput({
       actions={
         props.disabled ? null : (
           <Button
-            icon={result === 'copied' ? <Check /> : <Copy />}
+            icon={
+              result === 'copied'
+                ? iconOr(copiedIcon, <CheckIcon />)
+                : iconOr(copyIcon, <CopyIcon />)
+            }
             aria-label={copyLabel}
             intent="ghost"
             size={size}

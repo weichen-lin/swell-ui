@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { createRef, StrictMode, useState } from 'react'
+import { createRef, type ReactNode, StrictMode, useState } from 'react'
 import { expect, test, vi } from 'vite-plus/test'
 import { Radio, RadioGroup, type RadioGroupProps, type RadioProps } from './radio-group'
 
@@ -397,3 +397,16 @@ const invalidRadios: RadioProps[] = [
 ]
 void invalidGroups
 void invalidRadios
+
+test.each([false, null])('errorIcon replaces the error message icon, and %s hides it', (hidden) => {
+  const ui = (errorIcon: ReactNode) => (
+    <RadioGroup name="strategy" legend="Strategy" error="Pick one" errorIcon={errorIcon}>
+      <Radio value="rolling" label="Rolling update" />
+    </RadioGroup>
+  )
+  const { rerender } = render(ui(<svg data-testid="custom" />))
+  expect(screen.getByText('Pick one').parentElement).toContainElement(screen.getByTestId('custom'))
+  expect(document.querySelector('[data-icon="circle-alert"]')).toBeNull()
+  rerender(ui(hidden))
+  expect(screen.getByText('Pick one').parentElement!.querySelector('svg')).toBeNull()
+})

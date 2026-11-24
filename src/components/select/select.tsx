@@ -1,4 +1,3 @@
-import { ChevronDown } from 'lucide-react'
 import {
   type ChangeEvent,
   type ComponentProps,
@@ -7,7 +6,9 @@ import {
   useRef,
   useState,
 } from 'react'
+import { ChevronDownIcon } from '../../icons'
 import { cn } from '../../lib/cn'
+import { iconOr } from '../../lib/icon-slots'
 import {
   endSlotPadding,
   type FieldLabelProps,
@@ -58,6 +59,16 @@ export type SelectProps = NativeSelectProps &
     helperText?: ReactNode
     /** Truthy puts the field in the error state; the text replaces helperText. */
     error?: ReactNode
+    /**
+     * Icon before the error text, sized to it. Defaults to a circled exclamation mark; `false` or
+     * `null` hides it.
+     */
+    errorIcon?: ReactNode
+    /**
+     * Trailing open indicator, sized to the field's icons and turned upside down while the picker
+     * is open. Defaults to a chevron pointing down.
+     */
+    chevronIcon?: ReactNode
     /**
      * Field height and text size.
      * @defaultValue 'md'
@@ -185,6 +196,8 @@ export function Select({
   placeholder,
   helperText,
   error,
+  errorIcon,
+  chevronIcon,
   size = 'md',
   start,
   mono = false,
@@ -258,6 +271,7 @@ export function Select({
       floating={floating}
       helperText={helperText}
       error={error}
+      errorIcon={errorIcon}
       size={size}
       id={id}
       required={required}
@@ -346,7 +360,9 @@ export function Select({
               endSlotPadding[size],
             )}
           >
-            <ChevronDown className="transition-transform duration-150 ease-out group-has-[select:open]/control:rotate-180 motion-reduce:transition-none" />
+            <span className="flex transition-transform duration-150 ease-out group-has-[select:open]/control:rotate-180 motion-reduce:transition-none">
+              {iconOr(chevronIcon, <ChevronDownIcon />)}
+            </span>
           </span>
         </>
       )}

@@ -70,6 +70,11 @@ export type SliderCommonProps = Omit<
     /** Error message (replaces helperText) and invalid state. `true` shows no message. */
     error?: ReactNode
     /**
+     * Icon before the error text, sized to it. Defaults to a circled exclamation mark; `false` or
+     * `null` hides it.
+     */
+    errorIcon?: ReactNode
+    /**
      * Shows the current value next to the label.
      * @defaultValue true
      */

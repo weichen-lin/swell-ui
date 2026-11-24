@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Activity, Boxes, LayoutDashboard, Settings } from 'lucide-react'
 import { type ComponentType, type ReactNode, useState } from 'react'
 import { Badge } from '../src/components/badge'
 import { Button } from '../src/components/button'
@@ -16,6 +15,7 @@ import {
   type TabsVariant,
 } from '../src/components/tabs'
 import { DemoNav, useDemoNav } from './_helpers/demo-nav'
+import { Activity, Boxes, LayoutDashboard, Settings } from './_helpers/story-icons'
 
 type PlaygroundArgs = {
   variant: TabsVariant

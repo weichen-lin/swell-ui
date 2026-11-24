@@ -522,3 +522,13 @@ test('public types distinguish scalar and tuple, require labels and exclude mixe
   const mixed: SliderProps = { label: 'Bad', value: 20, defaultValue: 30 }
   expect([single, range, wrongSingle, wrongRange, missingLabel, mixed]).toHaveLength(6)
 })
+
+test.each([false, null])('errorIcon replaces the error message icon, and %s hides it', (hidden) => {
+  const { rerender } = render(
+    <Slider label="Volume" error="Too loud" errorIcon={<svg data-testid="custom" />} />,
+  )
+  expect(screen.getByText('Too loud').parentElement).toContainElement(screen.getByTestId('custom'))
+  expect(document.querySelector('[data-icon="circle-alert"]')).toBeNull()
+  rerender(<Slider label="Volume" error="Too loud" errorIcon={hidden} />)
+  expect(screen.getByText('Too loud').parentElement!.querySelector('svg')).toBeNull()
+})

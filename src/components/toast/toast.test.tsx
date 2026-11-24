@@ -524,3 +524,42 @@ describe('StrictMode', () => {
     expect(cards()).toHaveLength(3)
   })
 })
+
+describe('custom icons', () => {
+  it.each([false, null])('icons replaces a type icon, and %s hides it', (hidden) => {
+    setup({ icons: { success: <svg data-testid="custom" />, danger: hidden } })
+    const saved = show(() => toast.success('Saved'))
+    const icon = card(saved)!.querySelector('[data-slot="toast-icon"]')!
+    expect(icon).toContainElement(screen.getByTestId('custom'))
+    expect(icon.querySelector('[data-icon="circle-check"]')).toBeNull()
+    expect(icon.querySelector('[data-icon="circle-x"]')).toBeNull()
+    const failed = show(() => toast.error('Failed'))
+    expect(card(failed)!.querySelector('[data-slot="toast-icon"]')).toHaveClass('hidden')
+  })
+
+  it('a custom loading icon replaces both rings and spins while loading', () => {
+    setup({ icons: { loading: <svg data-testid="custom" /> } })
+    const id = show(() => toast.loading('Syncing…'))
+    const icon = card(id)!.querySelector('[data-slot="toast-icon"]')!
+    expect(screen.getByTestId('custom').parentElement).toHaveClass('animate-spin')
+    expect(icon.querySelector('[data-icon="loader-circle"]')).toBeNull()
+    expect(icon.querySelector('[data-icon="circle-dashed"]')).toBeNull()
+  })
+
+  it('closeIcon replaces the X of the close button', () => {
+    setup({ closeIcon: <svg data-testid="custom" /> })
+    const id = show(() => toast.success('Saved'))
+    const close = card(id)!.querySelector('button[aria-label="Close"]')!
+    expect(close).toContainElement(screen.getByTestId('custom'))
+    expect(close.querySelector('[data-icon="x"]')).toBeNull()
+  })
+})
+
+describe('close icon fallback', () => {
+  it.each([false, null])('closeIcon={%s} keeps the X', (hidden) => {
+    setup({ closeIcon: hidden })
+    const id = show(() => toast.success('Saved'))
+    const close = card(id)!.querySelector('button[aria-label="Close"]')!
+    expect(close.querySelector('[data-icon="x"]')).not.toBeNull()
+  })
+})

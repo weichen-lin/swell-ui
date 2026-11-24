@@ -96,3 +96,29 @@ test('SearchInput requires aria-label and takes no visible label', () => {
   // @ts-expect-error no floating label
   render(<SearchInput aria-label="Search" floating />)
 })
+
+test.each([false, null])('searchIcon replaces the magnifier, and %s hides it', (hidden) => {
+  const { container, rerender } = render(
+    <SearchInput aria-label="Search" searchIcon={<svg data-testid="custom" />} />,
+  )
+  expect(screen.getByTestId('custom').closest('[aria-hidden="true"]')).not.toBeNull()
+  expect(container.querySelector('[data-icon="search"]')).toBeNull()
+  rerender(<SearchInput aria-label="Search" searchIcon={hidden} />)
+  expect(container.querySelector('svg')).toBeNull()
+  expect(container.querySelector('[data-start]')).toBeNull()
+})
+
+test('clearIcon replaces the X of the clear button', () => {
+  render(
+    <SearchInput aria-label="Search" defaultValue="api" clearIcon={<svg data-testid="custom" />} />,
+  )
+  const clear = screen.getByRole('button', { name: 'Clear search' })
+  expect(clear).toContainElement(screen.getByTestId('custom'))
+  expect(clear.querySelector('[data-icon="x"]')).toBeNull()
+})
+
+test.each([false, null])('clearIcon={%s} keeps the X', (hidden) => {
+  render(<SearchInput aria-label="Search" defaultValue="api" clearIcon={hidden} />)
+  const clear = screen.getByRole('button', { name: 'Clear search' })
+  expect(clear.querySelector('[data-icon="x"]')).not.toBeNull()
+})

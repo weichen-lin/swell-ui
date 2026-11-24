@@ -3,7 +3,7 @@ title: 安裝
 description: 把 swell-ui 加進 React 19 + Tailwind CSS v4 的專案。
 ---
 
-Peer dependencies：`react` 與 `react-dom` 19、`tailwindcss` 4.3+、`lucide-react`。
+Peer dependencies：`react` 與 `react-dom` 19、`tailwindcss` 4.3+。不需要安裝 icon 套件：內建 icon 都是內嵌 SVG，而且每一個都能替換（見[圖示](/icons)）。
 
 ```sh
 pnpm add @weichenlin/swell-ui
@@ -34,3 +34,18 @@ export function App() {
 ```
 
 <ComponentPreview name="button-demo" />
+
+## Next.js App Router
+
+套件入口第一行就是 `'use client'`，所以 Server Component 可以直接 import 並渲染元件，不必自己另包一層檔案：
+
+```tsx
+// app/page.tsx：Server Component
+import { Button } from '@weichenlin/swell-ui'
+
+export default function Page() {
+  return <Button>Deploy</Button>
+}
+```
+
+函式無法從 Server Component 傳給 Client Component，所以任何函式 prop 都必須從 Client Component 傳入：`onClick` 這類事件處理器、`Table` 的 `getRowId` 與欄位的 `cell`、`Slider` 的 `formatValue` 等等。非元件的匯出（`cn`、`toast`、`useTheme`）也經由同一個 client 入口匯出，只能在 Client Component 裡呼叫。

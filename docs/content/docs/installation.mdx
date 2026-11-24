@@ -3,7 +3,8 @@ title: Installation
 description: Add swell-ui to a React 19 + Tailwind CSS v4 app.
 ---
 
-Peer dependencies: `react` and `react-dom` 19, `tailwindcss` 4.3+, `lucide-react`.
+Peer dependencies: `react` and `react-dom` 19, `tailwindcss` 4.3+. No icon package is needed: the
+built-in icons are inline SVG, and each one can be swapped (see [Icons](/icons)).
 
 ```sh
 pnpm add @weichenlin/swell-ui
@@ -35,3 +36,22 @@ export function App() {
 ```
 
 <ComponentPreview name="button-demo" />
+
+## Next.js App Router
+
+The package entry starts with `'use client'`, so a Server Component can import and render the
+components directly, with no wrapper file of your own:
+
+```tsx
+// app/page.tsx: a Server Component
+import { Button } from '@weichenlin/swell-ui'
+
+export default function Page() {
+  return <Button>Deploy</Button>
+}
+```
+
+Functions can't cross from a Server Component to a Client Component, so pass every function prop
+from a Client Component: event handlers such as `onClick`, `Table`'s `getRowId` and column `cell`,
+`Slider`'s `formatValue`, and the like. The non-component exports (`cn`, `toast`, `useTheme`) come
+through the same client entry, so call them only from Client Components.

@@ -8,10 +8,10 @@ import {
   MarkdownCopyButton,
 } from 'fumadocs-ui/layouts/docs/page'
 import defaultMdxComponents from 'fumadocs-ui/mdx'
-import { FileText } from 'lucide-react'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import type { ComponentProps } from 'react'
+import { FileTextIcon } from '@/components/icons'
 import { getMDXComponents } from '@/components/mdx'
 import { docLabels } from '@/lib/doc-labels'
 import { isLang, localizeHref } from '@/lib/i18n'
@@ -51,7 +51,7 @@ export default async function Page(props: PageProps<'/[lang]/[...slug]'>) {
             className: 'gap-2 [&_svg]:size-3.5 [&_svg]:text-fd-muted-foreground',
           })}
         >
-          <FileText aria-hidden />
+          <FileTextIcon />
           {docLabels[lang].viewMarkdown}
         </a>
       </div>

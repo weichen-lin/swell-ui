@@ -1,5 +1,4 @@
 import { cva, type VariantProps } from 'class-variance-authority'
-import { LoaderCircle } from 'lucide-react'
 import {
   Children,
   cloneElement,
@@ -11,6 +10,7 @@ import {
 } from 'react'
 import { usePressFeedback } from '../../hooks/use-press-feedback'
 import { cn } from '../../lib/cn'
+import { Spinner } from '../../lib/icon-slots'
 import { Slot, type SlotProps, wrapChildren } from '../../lib/slot'
 import { Tooltip, type TooltipProps } from '../tooltip'
 
@@ -187,7 +187,11 @@ const buttonVariants = cva(
 
 type Size = 'sm' | 'md' | 'lg'
 
-const spinnerSize = { sm: 16, md: 18, lg: 20 } as const
+const spinnerSize = {
+  sm: '[&_svg]:size-4',
+  md: '[&_svg]:size-[18px]',
+  lg: '[&_svg]:size-5',
+} as const
 const iconSize = {
   sm: '[&_svg]:size-4',
   md: '[&_svg]:size-4',
@@ -209,6 +213,7 @@ type ContentProps = {
   size: Size
   ripple: boolean
   loading?: boolean
+  loadingIcon?: ReactNode
   iconLeft?: ReactNode
   iconRight?: ReactNode
   children?: ReactNode
@@ -219,6 +224,7 @@ function ButtonContent({
   size,
   ripple,
   loading = false,
+  loadingIcon,
   iconLeft,
   iconRight,
   children,
@@ -254,11 +260,15 @@ function ButtonContent({
         )}
       </span>
       {loading && (
-        <span className="absolute inset-0 flex items-center justify-center">
-          <LoaderCircle
-            className="animate-spin forced-colors:text-[ButtonText]"
-            size={spinnerSize[size]}
-            aria-hidden
+        <span
+          className={cn(
+            'absolute inset-0 flex items-center justify-center [&_svg]:shrink-0',
+            spinnerSize[size],
+          )}
+        >
+          <Spinner
+            icon={loadingIcon}
+            className="motion-reduce:[animation-duration:2.5s] forced-colors:text-[ButtonText]"
           />
         </span>
       )}
@@ -296,6 +306,11 @@ type BaseProps = Omit<ComponentProps<'button'>, 'children'> &
      * @defaultValue 'Loading'
      */
     loadingText?: string
+    /**
+     * Spinner shown while loading, sized to the button and spun by it, so pass a static icon.
+     * Defaults to a circular loader.
+     */
+    loadingIcon?: ReactNode
     /** Tooltip explaining why the button is disabled; shown on hover and keyboard focus. */
     disabledReason?: string
     /**
@@ -315,6 +330,7 @@ type AsChildProps = {
   children: ReactElement
   loading?: never
   loadingText?: never
+  loadingIcon?: never
   /**
    * `button` unless set, so a Button inside a form never submits it by accident. Not available
    * with `asChild`.
@@ -379,6 +395,7 @@ function ButtonImpl({
   hang,
   loading = false,
   loadingText = 'Loading',
+  loadingIcon,
   disabled = false,
   iconLeft,
   iconRight,
@@ -404,6 +421,7 @@ function ButtonImpl({
       size={s}
       ripple={ripple ?? true}
       loading={loading}
+      loadingIcon={loadingIcon}
       iconLeft={iconLeft}
       iconRight={iconRight}
     >

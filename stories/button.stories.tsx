@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { GitBranch, RefreshCw, Settings, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { Button, type ButtonProps } from '../src/components/button'
 import { Card, CardContent, CardHeader } from '../src/components/card'
+import { GitBranch, RefreshCw, Settings, Trash2 } from './_helpers/story-icons'
 import { iconArgType } from './_helpers/story-icons'
 
 const intents = ['primary', 'secondary', 'surface', 'dark', 'ghost'] as const

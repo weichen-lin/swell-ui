@@ -1,14 +1,24 @@
-import { Eye, EyeOff } from 'lucide-react'
-import { useRef, useState } from 'react'
+import { type ReactNode, useRef, useState } from 'react'
+import { EyeIcon, EyeOffIcon } from '../../icons'
+import { iconOr } from '../../lib/icon-slots'
 import { Button } from '../button'
 import { compactButton, FieldFrame, type FieldProps } from './field'
 
 export type PasswordInputProps = Omit<FieldProps, 'type'> & {
+  /**
+   * Icon of the reveal button while the password is hidden, sized to the button's icon size.
+   * Defaults to an eye.
+   */
+  showIcon?: ReactNode
+  /** Icon of the reveal button while the password is shown. Defaults to a crossed-out eye. */
+  hideIcon?: ReactNode
   type?: never
 }
 
 export function PasswordInput({
   autoComplete = 'current-password',
+  showIcon,
+  hideIcon,
   size = 'md',
   ...props
 }: PasswordInputProps) {
@@ -26,7 +36,7 @@ export function PasswordInput({
         props.disabled ? null : (
           // Stable name + aria-pressed: changing the label would make the state ambiguous to AT
           <Button
-            icon={visible ? <EyeOff /> : <Eye />}
+            icon={visible ? iconOr(hideIcon, <EyeOffIcon />) : iconOr(showIcon, <EyeIcon />)}
             aria-label="Show password"
             aria-pressed={visible}
             intent="ghost"

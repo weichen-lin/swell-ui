@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Cloud, Globe, Layers, Server } from 'lucide-react'
 import { type FormEvent, useState } from 'react'
 import { Button } from '../src/components/button'
 import {
@@ -9,6 +8,7 @@ import {
   type SelectProps,
 } from '../src/components/select'
 import { cn } from '../src/lib/cn'
+import { Cloud, Globe, Layers, Server } from './_helpers/story-icons'
 
 const sizes = ['sm', 'md', 'lg'] as const
 

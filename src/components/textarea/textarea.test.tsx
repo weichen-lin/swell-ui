@@ -294,3 +294,13 @@ const invalidProps: TextareaProps[] = [
   { 'aria-label': 'Notes', floating: true },
 ]
 void invalidProps
+
+test.each([false, null])('errorIcon replaces the error message icon, and %s hides it', (hidden) => {
+  const { rerender } = render(
+    <Textarea label="Notes" error="Too short" errorIcon={<svg data-testid="custom" />} />,
+  )
+  expect(screen.getByText('Too short').parentElement).toContainElement(screen.getByTestId('custom'))
+  expect(document.querySelector('[data-icon="circle-alert"]')).toBeNull()
+  rerender(<Textarea label="Notes" error="Too short" errorIcon={hidden} />)
+  expect(screen.getByText('Too short').parentElement!.querySelector('svg')).toBeNull()
+})

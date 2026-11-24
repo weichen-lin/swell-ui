@@ -45,3 +45,29 @@ test('PasswordInput takes no type', () => {
   // @ts-expect-error type is fixed
   render(<PasswordInput label="Password" type="text" />)
 })
+
+test('showIcon and hideIcon replace the eye icons', async () => {
+  const user = userEvent.setup()
+  render(
+    <PasswordInput
+      label="Password"
+      showIcon={<svg data-testid="show" />}
+      hideIcon={<svg data-testid="hide" />}
+    />,
+  )
+  const reveal = screen.getByRole('button', { name: 'Show password' })
+  expect(reveal).toContainElement(screen.getByTestId('show'))
+  expect(reveal.querySelector('[data-icon="eye"]')).toBeNull()
+  await user.click(reveal)
+  expect(reveal).toContainElement(screen.getByTestId('hide'))
+  expect(reveal.querySelector('[data-icon="eye-off"]')).toBeNull()
+})
+
+test.each([false, null])('showIcon={%s} and hideIcon={%s} keep the eyes', async (hidden) => {
+  const user = userEvent.setup()
+  render(<PasswordInput label="Password" showIcon={hidden} hideIcon={hidden} />)
+  const reveal = screen.getByRole('button', { name: 'Show password' })
+  expect(reveal.querySelector('[data-icon="eye"]')).not.toBeNull()
+  await user.click(reveal)
+  expect(reveal.querySelector('[data-icon="eye-off"]')).not.toBeNull()
+})
