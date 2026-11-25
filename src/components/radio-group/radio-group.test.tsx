@@ -2,7 +2,15 @@ import { act, fireEvent, render, screen, waitFor, within } from '@testing-librar
 import userEvent from '@testing-library/user-event'
 import { createRef, type ReactNode, StrictMode, useState } from 'react'
 import { expect, test, vi } from 'vite-plus/test'
-import { Radio, RadioGroup, type RadioGroupProps, type RadioProps } from './radio-group'
+import {
+  Radio,
+  RadioGroup,
+  RadioGroupDescription,
+  RadioGroupError,
+  RadioGroupLabel,
+  type RadioGroupProps,
+  type RadioProps,
+} from './radio-group'
 
 function Options() {
   return (
@@ -18,7 +26,9 @@ test('names the group and its native radios separately, and forwards both refs',
   const groupRef = createRef<HTMLFieldSetElement>()
   const inputRef = createRef<HTMLInputElement>()
   render(
-    <RadioGroup name="strategy" legend="Strategy" ref={groupRef} required description="Choose one.">
+    <RadioGroup name="strategy" ref={groupRef} required>
+      <RadioGroupLabel>Strategy</RadioGroupLabel>
+      <RadioGroupDescription>Choose one.</RadioGroupDescription>
       <Radio
         value="rolling"
         label="Rolling update"
@@ -32,7 +42,7 @@ test('names the group and its native radios separately, and forwards both refs',
   expect(groupRef.current).toBe(group)
   expect(inputRef.current).toBe(input)
   expect(group.tagName).toBe('FIELDSET')
-  expect(group.querySelector('legend')).toHaveTextContent('Strategy *')
+  expect(group.querySelector('[data-slot="group-label"]')).toHaveTextContent('Strategy *')
   expect(input).toHaveAttribute('type', 'radio')
   expect(input).toHaveAttribute('name', 'strategy')
   expect(input).toHaveAttribute('required')
@@ -45,7 +55,8 @@ test('no implicit default; selecting the full label submits one value and calls 
   const change = vi.fn()
   const { container } = render(
     <form>
-      <RadioGroup name="strategy" legend="Strategy" onValueChange={change}>
+      <RadioGroup name="strategy" onValueChange={change}>
+        <RadioGroupLabel>Strategy</RadioGroupLabel>
         <Options />
       </RadioGroup>
     </form>,
@@ -67,7 +78,8 @@ test('controlled values remain authoritative and null clears selection', async (
   const user = userEvent.setup()
   const change = vi.fn()
   const { rerender } = render(
-    <RadioGroup name="strategy" legend="Strategy" value="rolling" onValueChange={change}>
+    <RadioGroup name="strategy" value="rolling" onValueChange={change}>
+      <RadioGroupLabel>Strategy</RadioGroupLabel>
       <Options />
     </RadioGroup>,
   )
@@ -76,13 +88,15 @@ test('controlled values remain authoritative and null clears selection', async (
   expect(screen.getByRole('radio', { name: 'Rolling update' })).toBeChecked()
   expect(screen.getByRole('radio', { name: 'Blue / green' })).not.toBeChecked()
   rerender(
-    <RadioGroup name="strategy" legend="Strategy" value="blue-green">
+    <RadioGroup name="strategy" value="blue-green">
+      <RadioGroupLabel>Strategy</RadioGroupLabel>
       <Options />
     </RadioGroup>,
   )
   expect(screen.getByRole('radio', { name: 'Blue / green' })).toBeChecked()
   rerender(
-    <RadioGroup name="strategy" legend="Strategy" value={null}>
+    <RadioGroup name="strategy" value={null}>
+      <RadioGroupLabel>Strategy</RadioGroupLabel>
       <Options />
     </RadioGroup>,
   )
@@ -95,7 +109,8 @@ test('keyboard enters the selected radio, skips disabled options and leaves the 
   const user = userEvent.setup()
   render(
     <>
-      <RadioGroup name="strategy" legend="Strategy" defaultValue="rolling">
+      <RadioGroup name="strategy" defaultValue="rolling">
+        <RadioGroupLabel>Strategy</RadioGroupLabel>
         <Options />
       </RadioGroup>
       <button>Next field</button>
@@ -117,13 +132,8 @@ test('disabled group and item resist interaction and are omitted from form data'
   const change = vi.fn()
   const { container, rerender } = render(
     <form>
-      <RadioGroup
-        name="strategy"
-        legend="Strategy"
-        defaultValue="rolling"
-        disabled
-        onValueChange={change}
-      >
+      <RadioGroup name="strategy" defaultValue="rolling" disabled onValueChange={change}>
+        <RadioGroupLabel>Strategy</RadioGroupLabel>
         <Options />
       </RadioGroup>
     </form>,
@@ -136,7 +146,8 @@ test('disabled group and item resist interaction and are omitted from form data'
   expect([...new FormData(container.querySelector('form')!)]).toEqual([])
   rerender(
     <form>
-      <RadioGroup name="strategy" legend="Strategy" defaultValue="rolling" onValueChange={change}>
+      <RadioGroup name="strategy" defaultValue="rolling" onValueChange={change}>
+        <RadioGroupLabel>Strategy</RadioGroupLabel>
         <Options />
       </RadioGroup>
     </form>,
@@ -150,7 +161,8 @@ test('native required validates at least one selection without a custom submit h
   const user = userEvent.setup()
   const { container } = render(
     <form>
-      <RadioGroup name="strategy" legend="Strategy" required>
+      <RadioGroup name="strategy" required>
+        <RadioGroupLabel>Strategy</RadioGroupLabel>
         <Options />
       </RadioGroup>
     </form>,
@@ -164,15 +176,11 @@ test('error is marked on the radiogroup and described once without changing sele
   const { rerender } = render(
     <>
       <p id="external">External note.</p>
-      <RadioGroup
-        name="strategy"
-        legend="Strategy"
-        defaultValue="rolling"
-        description="Choose one."
-        error="Not allowed."
-        aria-describedby="external"
-      >
+      <RadioGroup name="strategy" defaultValue="rolling" aria-describedby="external" invalid>
+        <RadioGroupLabel>Strategy</RadioGroupLabel>
+        <RadioGroupDescription>Choose one.</RadioGroupDescription>
         <Options />
+        <RadioGroupError>Not allowed.</RadioGroupError>
       </RadioGroup>
     </>,
   )
@@ -187,7 +195,8 @@ test('error is marked on the radiogroup and described once without changing sele
   expect(radio).toBeChecked()
   expect(screen.getAllByText('Not allowed.')).toHaveLength(1)
   rerender(
-    <RadioGroup name="strategy" legend="Strategy" error>
+    <RadioGroup name="strategy" invalid>
+      <RadioGroupLabel>Strategy</RadioGroupLabel>
       <Options />
     </RadioGroup>,
   )
@@ -200,7 +209,8 @@ test.each(['default', 'card'] as const)(
   async (variant) => {
     const user = userEvent.setup()
     render(
-      <RadioGroup name="strategy" legend="Strategy" variant={variant} orientation="horizontal">
+      <RadioGroup name="strategy" variant={variant} orientation="horizontal">
+        <RadioGroupLabel>Strategy</RadioGroupLabel>
         <Radio value="rolling" aria-label="Rolling update" />
         <Radio value="blue-green" label="Blue / green" />
       </RadioGroup>,
@@ -218,7 +228,8 @@ test('native reset restores the initial selection without firing a change callba
   const change = vi.fn()
   render(
     <form>
-      <RadioGroup name="strategy" legend="Strategy" defaultValue="rolling" onValueChange={change}>
+      <RadioGroup name="strategy" defaultValue="rolling" onValueChange={change}>
+        <RadioGroupLabel>Strategy</RadioGroupLabel>
         <Options />
       </RadioGroup>
       <button type="reset">Reset</button>
@@ -235,7 +246,8 @@ test('reset respects preventDefault and supports an initially empty group', asyn
   const user = userEvent.setup()
   const { rerender } = render(
     <form onReset={(event) => event.preventDefault()}>
-      <RadioGroup name="strategy" legend="Strategy">
+      <RadioGroup name="strategy">
+        <RadioGroupLabel>Strategy</RadioGroupLabel>
         <Options />
       </RadioGroup>
       <button type="reset">Reset</button>
@@ -246,7 +258,8 @@ test('reset respects preventDefault and supports an initially empty group', asyn
   expect(screen.getByRole('radio', { name: 'Blue / green' })).toBeChecked()
   rerender(
     <form>
-      <RadioGroup name="strategy" legend="Strategy">
+      <RadioGroup name="strategy">
+        <RadioGroupLabel>Strategy</RadioGroupLabel>
         <Options />
       </RadioGroup>
       <button type="reset">Reset</button>
@@ -263,7 +276,8 @@ test('external forms receive values and reset even when the group is outside', a
       <form id="owner">
         <button type="reset">Reset</button>
       </form>
-      <RadioGroup name="strategy" legend="Strategy" form="owner" defaultValue="rolling">
+      <RadioGroup name="strategy" form="owner" defaultValue="rolling">
+        <RadioGroupLabel>Strategy</RadioGroupLabel>
         <Options />
       </RadioGroup>
     </>,
@@ -281,7 +295,8 @@ test('controlled reset follows the owner value, including a parent onReset updat
     const [value, setValue] = useState<string | null>('blue-green')
     return (
       <form onReset={() => setValue(null)}>
-        <RadioGroup name="strategy" legend="Strategy" value={value} onValueChange={setValue}>
+        <RadioGroup name="strategy" value={value} onValueChange={setValue}>
+          <RadioGroupLabel>Strategy</RadioGroupLabel>
           <Options />
         </RadioGroup>
         <button type="reset">Reset</button>
@@ -298,7 +313,8 @@ test('controlled reset follows the owner value, including a parent onReset updat
 test('removing the selected option clears it; restoring it does not resurrect selection', async () => {
   const { rerender } = render(
     <StrictMode>
-      <RadioGroup name="strategy" legend="Strategy" defaultValue="blue-green">
+      <RadioGroup name="strategy" defaultValue="blue-green">
+        <RadioGroupLabel>Strategy</RadioGroupLabel>
         <Options />
       </RadioGroup>
     </StrictMode>,
@@ -307,7 +323,8 @@ test('removing the selected option clears it; restoring it does not resurrect se
   await act(async () => {
     rerender(
       <StrictMode>
-        <RadioGroup name="strategy" legend="Strategy" defaultValue="blue-green">
+        <RadioGroup name="strategy" defaultValue="blue-green">
+          <RadioGroupLabel>Strategy</RadioGroupLabel>
           <Radio value="rolling" label="Rolling update" />
         </RadioGroup>
       </StrictMode>,
@@ -315,7 +332,8 @@ test('removing the selected option clears it; restoring it does not resurrect se
   })
   rerender(
     <StrictMode>
-      <RadioGroup name="strategy" legend="Strategy" defaultValue="blue-green">
+      <RadioGroup name="strategy" defaultValue="blue-green">
+        <RadioGroupLabel>Strategy</RadioGroupLabel>
         <Options />
       </RadioGroup>
     </StrictMode>,
@@ -327,10 +345,12 @@ test('independent groups and non-control focus targets keep native behavior', as
   const user = userEvent.setup()
   render(
     <>
-      <RadioGroup name="first" legend="First" defaultValue="rolling">
+      <RadioGroup name="first" defaultValue="rolling">
+        <RadioGroupLabel>First</RadioGroupLabel>
         <Options />
       </RadioGroup>
-      <RadioGroup name="second" legend="Second">
+      <RadioGroup name="second">
+        <RadioGroupLabel>Second</RadioGroupLabel>
         <Options />
       </RadioGroup>
     </>,
@@ -348,7 +368,8 @@ test('independent groups and non-control focus targets keep native behavior', as
 test('unmount cancels a pending reset', async () => {
   const { unmount, container } = render(
     <form>
-      <RadioGroup name="strategy" legend="Strategy">
+      <RadioGroup name="strategy">
+        <RadioGroupLabel>Strategy</RadioGroupLabel>
         <Options />
       </RadioGroup>
     </form>,
@@ -364,16 +385,19 @@ test('invalid composition and duplicate or empty values fail clearly', () => {
   expect(() => render(<Radio value="rolling" label="Rolling update" />)).toThrow(
     'inside <RadioGroup>',
   )
+  expect(() => render(<RadioGroupLabel>Strategy</RadioGroupLabel>)).toThrow('inside a RadioGroup')
   expect(() =>
     render(
-      <RadioGroup name="strategy" legend="Strategy">
+      <RadioGroup name="strategy">
+        <RadioGroupLabel>Strategy</RadioGroupLabel>
         <Radio value="" label="Empty" />
       </RadioGroup>,
     ),
   ).toThrow('non-empty')
   expect(() =>
     render(
-      <RadioGroup name="strategy" legend="Strategy">
+      <RadioGroup name="strategy">
+        <RadioGroupLabel>Strategy</RadioGroupLabel>
         <Radio value="a" label="First" />
         <Radio value="a" label="Second" />
       </RadioGroup>,
@@ -383,9 +407,9 @@ test('invalid composition and duplicate or empty values fail clearly', () => {
 
 const invalidGroups: RadioGroupProps[] = [
   // @ts-expect-error controlled and default values are mutually exclusive
-  { name: 'strategy', legend: 'Strategy', children: null, value: 'a', defaultValue: 'a' },
+  { name: 'strategy', children: null, value: 'a', defaultValue: 'a' },
   // @ts-expect-error native grouping requires a name
-  { legend: 'Strategy', children: null },
+  { children: null },
 ]
 const invalidRadios: RadioProps[] = [
   // @ts-expect-error accessible name required
@@ -398,10 +422,12 @@ const invalidRadios: RadioProps[] = [
 void invalidGroups
 void invalidRadios
 
-test.each([false, null])('errorIcon replaces the error message icon, and %s hides it', (hidden) => {
-  const ui = (errorIcon: ReactNode) => (
-    <RadioGroup name="strategy" legend="Strategy" error="Pick one" errorIcon={errorIcon}>
+test.each([false, null])('error icon replaces the message icon, and %s hides it', (hidden) => {
+  const ui = (icon: ReactNode) => (
+    <RadioGroup name="strategy" invalid>
+      <RadioGroupLabel>Strategy</RadioGroupLabel>
       <Radio value="rolling" label="Rolling update" />
+      <RadioGroupError icon={icon}>Pick one</RadioGroupError>
     </RadioGroup>
   )
   const { rerender } = render(ui(<svg data-testid="custom" />))
@@ -409,4 +435,61 @@ test.each([false, null])('errorIcon replaces the error message icon, and %s hide
   expect(document.querySelector('[data-icon="circle-alert"]')).toBeNull()
   rerender(ui(hidden))
   expect(screen.getByText('Pick one').parentElement!.querySelector('svg')).toBeNull()
+})
+
+test('a sr-only label still names the radiogroup', () => {
+  render(
+    <RadioGroup name="strategy">
+      <RadioGroupLabel className="sr-only">Strategy</RadioGroupLabel>
+      <Options />
+    </RadioGroup>,
+  )
+  expect(screen.getByRole('radiogroup', { name: 'Strategy' })).toBeInTheDocument()
+  expect(screen.getByText('Strategy')).toHaveClass('sr-only')
+})
+
+test('aria-label names the group when no label part is rendered', () => {
+  render(
+    <RadioGroup name="colors" aria-label="Colors">
+      <Radio value="red" label="Red" />
+    </RadioGroup>,
+  )
+  const group = screen.getByRole('radiogroup', { name: 'Colors' })
+  expect(group).not.toHaveAttribute('aria-labelledby')
+})
+
+test('description and error parts reach each radio accessible description', () => {
+  render(
+    <RadioGroup name="strategy" invalid>
+      <RadioGroupLabel>Strategy</RadioGroupLabel>
+      <RadioGroupDescription>Choose one.</RadioGroupDescription>
+      <Radio value="rolling" label="Rolling update" description="Replace pods gradually." />
+      <RadioGroupError>Not allowed.</RadioGroupError>
+    </RadioGroup>,
+  )
+  expect(screen.getByRole('radio', { name: 'Rolling update' })).toHaveAccessibleDescription(
+    'Choose one. Not allowed. Replace pods gradually.',
+  )
+})
+
+test('rendering the error part conditionally adds and removes its id from aria-describedby', () => {
+  const ui = (error: boolean) => (
+    <RadioGroup name="strategy">
+      <RadioGroupLabel>Strategy</RadioGroupLabel>
+      <Radio value="rolling" label="Rolling update" />
+      {error && <RadioGroupError>Not allowed.</RadioGroupError>}
+    </RadioGroup>
+  )
+  const { rerender } = render(ui(false))
+  const group = screen.getByRole('radiogroup')
+  const radio = screen.getByRole('radio')
+  expect(group).not.toHaveAttribute('aria-describedby')
+  expect(radio).not.toHaveAttribute('aria-describedby')
+  rerender(ui(true))
+  const errorId = screen.getByText('Not allowed.').parentElement!.id
+  expect(group.getAttribute('aria-describedby')).toContain(errorId)
+  expect(radio.getAttribute('aria-describedby')).toContain(errorId)
+  rerender(ui(false))
+  expect(group).not.toHaveAttribute('aria-describedby')
+  expect(radio).not.toHaveAttribute('aria-describedby')
 })

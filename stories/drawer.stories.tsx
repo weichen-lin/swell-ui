@@ -2,7 +2,12 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useId, useState } from 'react'
 import { Badge } from '../src/components/badge'
 import { Button } from '../src/components/button'
-import { Checkbox, CheckboxGroup } from '../src/components/checkbox'
+import {
+  Checkbox,
+  CheckboxGroup,
+  CheckboxGroupLabel,
+  CheckboxGroupItems,
+} from '../src/components/checkbox'
 import {
   Drawer,
   DrawerBody,
@@ -73,11 +78,14 @@ function FilterFields() {
       <Input label="Name contains" placeholder="checkout" />
       <Select label="Cluster" options={clusters} placeholder="Any cluster" />
       <Input label="Namespace" mono placeholder="payments" />
-      <CheckboxGroup legend="Health">
-        <Checkbox name="health" value="healthy" label="Healthy" defaultChecked />
-        <Checkbox name="health" value="progressing" label="Progressing" defaultChecked />
-        <Checkbox name="health" value="degraded" label="Degraded" />
-        <Checkbox name="health" value="missing" label="Missing" />
+      <CheckboxGroup>
+        <CheckboxGroupLabel>Health</CheckboxGroupLabel>
+        <CheckboxGroupItems>
+          <Checkbox name="health" value="healthy" label="Healthy" defaultChecked />
+          <Checkbox name="health" value="progressing" label="Progressing" defaultChecked />
+          <Checkbox name="health" value="degraded" label="Degraded" />
+          <Checkbox name="health" value="missing" label="Missing" />
+        </CheckboxGroupItems>
       </CheckboxGroup>
     </div>
   )

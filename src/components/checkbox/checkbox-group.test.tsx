@@ -3,11 +3,18 @@ import userEvent from '@testing-library/user-event'
 import type { ReactNode } from 'react'
 import { expect, test } from 'vite-plus/test'
 import { Checkbox } from './checkbox'
-import { CheckboxGroup } from './checkbox-group'
+import {
+  CheckboxGroup,
+  CheckboxGroupDescription,
+  CheckboxGroupError,
+  CheckboxGroupItems,
+  CheckboxGroupLabel,
+} from './checkbox-group'
 
-test('fieldset named by its legend', () => {
+test('fieldset named by its label', () => {
   render(
-    <CheckboxGroup legend="Sync options">
+    <CheckboxGroup>
+      <CheckboxGroupLabel>Sync options</CheckboxGroupLabel>
       <Checkbox label="Prune" />
       <Checkbox label="Dry run" />
     </CheckboxGroup>,
@@ -18,33 +25,52 @@ test('fieldset named by its legend', () => {
 })
 
 test('description and error describe the group', () => {
-  const { rerender } = render(
-    <CheckboxGroup legend="Sync options" description="Applied to this sync only">
+  const ui = (error: boolean) => (
+    <CheckboxGroup aria-describedby="extra">
+      <CheckboxGroupLabel>Sync options</CheckboxGroupLabel>
+      <CheckboxGroupDescription>Applied to this sync only</CheckboxGroupDescription>
       <Checkbox label="Prune" />
-    </CheckboxGroup>,
+      {error && <CheckboxGroupError>Pick at least one</CheckboxGroupError>}
+    </CheckboxGroup>
   )
+  const { rerender } = render(ui(false))
   const group = screen.getByRole('group')
-  expect(group).toHaveAccessibleDescription('Applied to this sync only')
-  rerender(
-    <CheckboxGroup
-      legend="Sync options"
-      description="Applied to this sync only"
-      error="Pick at least one"
-      aria-describedby="extra"
-    >
-      <Checkbox label="Prune" />
-    </CheckboxGroup>,
-  )
+  expect(group.getAttribute('aria-describedby')?.split(' ')).toHaveLength(2)
+  rerender(ui(true))
   expect(group.getAttribute('aria-describedby')?.split(' ')).toHaveLength(3)
   expect(screen.getByText('Pick at least one').parentElement).toHaveClass('text-danger')
   // aria-invalid isn't supported on the group role, so the message carries the error
   expect(group).not.toHaveAttribute('aria-invalid')
+  rerender(ui(false))
+  expect(group.getAttribute('aria-describedby')?.split(' ')).toHaveLength(2)
+})
+
+test('a sr-only label still names the group', () => {
+  render(
+    <CheckboxGroup>
+      <CheckboxGroupLabel className="sr-only">Sync options</CheckboxGroupLabel>
+      <Checkbox label="Prune" />
+    </CheckboxGroup>,
+  )
+  expect(screen.getByRole('group', { name: 'Sync options' })).toBeInTheDocument()
+  expect(screen.getByText('Sync options')).toHaveClass('sr-only')
+})
+
+test('aria-label names the group when no label part is rendered', () => {
+  render(
+    <CheckboxGroup aria-label="Colors">
+      <Checkbox label="Red" />
+    </CheckboxGroup>,
+  )
+  const group = screen.getByRole('group', { name: 'Colors' })
+  expect(group).not.toHaveAttribute('aria-labelledby')
 })
 
 test('disabled reaches every checkbox natively', async () => {
   const user = userEvent.setup()
   render(
-    <CheckboxGroup legend="Sync options" disabled>
+    <CheckboxGroup disabled>
+      <CheckboxGroupLabel>Sync options</CheckboxGroupLabel>
       <Checkbox label="Prune" />
       <Checkbox label="Force" />
     </CheckboxGroup>,
@@ -55,26 +81,27 @@ test('disabled reaches every checkbox natively', async () => {
 })
 
 test('orientation lays the items out', () => {
-  const { container, rerender } = render(
-    <CheckboxGroup legend="Options">
-      <Checkbox label="A" />
-    </CheckboxGroup>,
+  const ui = (orientation?: 'horizontal') => (
+    <CheckboxGroup orientation={orientation}>
+      <CheckboxGroupLabel>Options</CheckboxGroupLabel>
+      <CheckboxGroupItems>
+        <Checkbox label="A" />
+      </CheckboxGroupItems>
+    </CheckboxGroup>
   )
+  const { container, rerender } = render(ui())
   const list = () => container.querySelector('[data-orientation]') as HTMLElement
   expect(list()).toHaveAttribute('data-orientation', 'vertical')
   expect(list()).toHaveClass('flex-col')
-  rerender(
-    <CheckboxGroup legend="Options" orientation="horizontal">
-      <Checkbox label="A" />
-    </CheckboxGroup>,
-  )
+  rerender(ui('horizontal'))
   expect(list()).toHaveAttribute('data-orientation', 'horizontal')
   expect(list()).toHaveClass('flex-row', 'flex-wrap')
 })
 
 test('forwards fieldset props', () => {
   render(
-    <CheckboxGroup legend="Options" name="opts" className="mine" data-testid="g">
+    <CheckboxGroup name="opts" className="mine" data-testid="g">
+      <CheckboxGroupLabel>Options</CheckboxGroupLabel>
       <Checkbox label="A" />
     </CheckboxGroup>,
   )
@@ -83,10 +110,12 @@ test('forwards fieldset props', () => {
   expect(group).toHaveClass('mine')
 })
 
-test.each([false, null])('errorIcon replaces the error message icon, and %s hides it', (hidden) => {
-  const ui = (errorIcon: ReactNode) => (
-    <CheckboxGroup legend="Sync options" error="Pick one" errorIcon={errorIcon}>
+test.each([false, null])('error icon replaces the message icon, and %s hides it', (hidden) => {
+  const ui = (icon: ReactNode) => (
+    <CheckboxGroup>
+      <CheckboxGroupLabel>Sync options</CheckboxGroupLabel>
       <Checkbox label="Prune" />
+      <CheckboxGroupError icon={icon}>Pick one</CheckboxGroupError>
     </CheckboxGroup>
   )
   const { rerender } = render(ui(<svg data-testid="custom" />))

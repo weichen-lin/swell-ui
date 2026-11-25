@@ -38,13 +38,21 @@ The CSS comes with `styles.css`, imported once after Tailwind (see [Installation
 ## Usage
 
 ```tsx
-import { Checkbox, CheckboxGroup } from '@weichenlin/swell-ui'
+import {
+  Checkbox,
+  CheckboxGroup,
+  CheckboxGroupItems,
+  CheckboxGroupLabel,
+} from '@weichenlin/swell-ui'
 
 export function Example() {
   return (
-    <CheckboxGroup legend="Options">
-      <Checkbox name="options" value="a" label="Option A" />
-      <Checkbox name="options" value="b" label="Option B" />
+    <CheckboxGroup>
+      <CheckboxGroupLabel>Options</CheckboxGroupLabel>
+      <CheckboxGroupItems>
+        <Checkbox name="options" value="a" label="Option A" />
+        <Checkbox name="options" value="b" label="Option B" />
+      </CheckboxGroupItems>
     </CheckboxGroup>
   )
 }
@@ -66,13 +74,13 @@ Derive `indeterminate` from the children's state, so it stays correct after ever
 
 ### CheckboxGroup
 
-`legend` names the group; `description` adds a muted line under it.
+`CheckboxGroupLabel` names the group; add `CheckboxGroupDescription` for a muted line under it.
 
 <ComponentPreview name="checkbox-group" />
 
 ### Horizontal group with error
 
-The group has no value of its own, so validate in your handler and pass the message as `error`.
+The group has no value of its own, so validate in your handler and render a `CheckboxGroupError` with the message.
 
 <ComponentPreview name="checkbox-group-horizontal" />
 
@@ -101,6 +109,40 @@ Own props only; every other `<fieldset>` attribute passes through to the element
 />
 
 `CheckboxGroup` holds no value. Each checkbox keeps its own `name` and `checked`, so native form submission and `FormData` work as usual.
+
+#### Anatomy
+
+The group owns the wiring; you place each part, or leave it out.
+
+```tsx
+<CheckboxGroup>
+  <CheckboxGroupLabel>Notify me by</CheckboxGroupLabel>
+  <CheckboxGroupDescription>Pick at least one.</CheckboxGroupDescription>
+  <CheckboxGroupItems>
+    <Checkbox name="channels" value="email" label="Email" />
+    <Checkbox name="channels" value="sms" label="SMS" />
+  </CheckboxGroupItems>
+  {error && <CheckboxGroupError>{error}</CheckboxGroupError>}
+</CheckboxGroup>
+```
+
+| Part                       | Role                                                                                                                 |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `CheckboxGroupLabel`       | Names the group.                                                                                                     |
+| `CheckboxGroupDescription` | Muted hint, linked with `aria-describedby`.                                                                          |
+| `CheckboxGroupItems`       | Default layout for the rows, following `orientation`. Any element works instead.                                     |
+| `CheckboxGroupError`       | Group message, linked with `aria-describedby`. Takes `icon`; `false` or `null` hides it. Render it only when needed. |
+
+To hide the label visually and keep it for assistive technology, add `sr-only`:
+
+```tsx
+<CheckboxGroup>
+  <CheckboxGroupLabel className="sr-only">Notify me by</CheckboxGroupLabel>
+  <CheckboxGroupItems>{/* checkboxes */}</CheckboxGroupItems>
+</CheckboxGroup>
+```
+
+Without a label part, name the group with `aria-label` or `aria-labelledby`.
 
 ## States
 
@@ -176,8 +218,8 @@ Clicking the box or the label text toggles it too, since the whole row is one `<
 - A native `<input type="checkbox">`, so forms, `required`, reset and label clicks stay native.
 - The visible label names the checkbox; `description` and the error text stay out of the name and are linked with `aria-describedby`.
 - `indeterminate` is announced as mixed. The browser clears the DOM property on click, so Checkbox re-applies it whenever `checked` changes.
-- `CheckboxGroup` is a `<fieldset>` with a `<legend>`. It does not set `aria-invalid`, because ARIA 1.2 does not support it on the group role; its description and error are linked with `aria-describedby`.
-- Native `required` cannot express "at least one", so validate in your submit handler and pass the message as `error`.
+- `CheckboxGroup` is a `<fieldset>` named by `CheckboxGroupLabel` through `aria-labelledby`, or by `aria-label` when there is no label part. It does not set `aria-invalid`, because ARIA 1.2 does not support it on the group role; `CheckboxGroupDescription` and `CheckboxGroupError` are linked with `aria-describedby` while they are rendered.
+- Native `required` cannot express "at least one", so validate in your submit handler and render a `CheckboxGroupError`.
 - The check, the dash and the error icon are `aria-hidden`.
 - The row is at least 24px tall; on touch screens the hit area grows to 44px without changing the layout.
 - In forced colors mode the box uses `Canvas`, `Highlight` and `CanvasText`, and disabled uses `GrayText`.

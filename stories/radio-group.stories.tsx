@@ -2,9 +2,25 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { type FormEvent, useId, useState } from 'react'
 import { Button } from '../src/components/button'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '../src/components/dialog'
-import { Radio, RadioGroup, type RadioGroupProps } from '../src/components/radio-group'
+import {
+  Radio,
+  RadioGroup,
+  type RadioGroupProps,
+  RadioGroupLabel,
+  RadioGroupDescription,
+  RadioGroupItems,
+  RadioGroupError,
+} from '../src/components/radio-group'
 
-type StoryArgs = Omit<RadioGroupProps, 'value' | 'defaultValue'> & { defaultValue?: string }
+type StoryArgs = Omit<RadioGroupProps, 'value' | 'defaultValue'> & {
+  defaultValue?: string
+  /** Story-only: fills RadioGroupLabel so Storybook controls can edit it. */
+  legend?: string
+  /** Story-only: fills RadioGroupDescription. */
+  description?: string
+  /** Story-only: fills RadioGroupError and marks the group invalid. */
+  error?: string
+}
 
 function Strategies({ descriptions = true }: { descriptions?: boolean }) {
   return (
@@ -46,7 +62,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'RadioGroup uses a native fieldset/legend with role="radiogroup", and Radio renders a native input. Use distinct name values for independent groups in the same form. value / defaultValue are mutually exclusive; value={null} clears a controlled selection. onValueChange(value, event) receives the native input change event. variant="card" changes the presentation while preserving keyboard and form behavior. Error is announced on the group, with its message linked to each item. Radio must be inside RadioGroup; name, checked, form and required belong to the group. Labels and descriptions should contain non-interactive content.',
+          'RadioGroup is a native fieldset with role="radiogroup", composed from RadioGroupLabel (visible or sr-only), RadioGroupDescription, RadioGroupItems and RadioGroupError; Radio renders a native input. Use distinct name values for independent groups in the same form. value / defaultValue are mutually exclusive; value={null} clears a controlled selection. onValueChange(value, event) receives the native input change event. variant="card" changes the presentation while preserving keyboard and form behavior. Set invalid and render RadioGroupError: the error is announced on the group, with its message linked to each item. Radio must be inside RadioGroup; name, checked, form and required belong to the group. Labels and descriptions should contain non-interactive content.',
       },
     },
   },
@@ -78,12 +94,21 @@ const meta = {
     disabled: { control: 'boolean' },
     children: { control: false },
   },
-  render: function Render(args) {
+  render: function Render({ legend, description, error, ...args }) {
     // Autodocs renders multiple independent groups in one document.
     const suffix = useId()
     return (
-      <RadioGroup {...args} name={`${args.name}-${suffix}`}>
-        <Strategies />
+      <RadioGroup
+        {...args}
+        name={`${args.name}-${suffix}`}
+        invalid={args.invalid || Boolean(error)}
+      >
+        {legend && <RadioGroupLabel>{legend}</RadioGroupLabel>}
+        {description && <RadioGroupDescription>{description}</RadioGroupDescription>}
+        <RadioGroupItems>
+          <Strategies />
+        </RadioGroupItems>
+        {error && <RadioGroupError>{error}</RadioGroupError>}
       </RadioGroup>
     )
   },
@@ -98,20 +123,23 @@ export const Playground: Story = {
 export const Default: Story = { args: { defaultValue: 'rolling' } }
 export const Cards: Story = { args: { variant: 'card', defaultValue: 'rolling' } }
 export const Horizontal: Story = {
-  render: function Render(args) {
+  render: function Render({ variant, disabled, required }) {
     const name = useId()
     return (
       <RadioGroup
-        {...args}
         name={name}
-        legend="Environment"
+        variant={variant}
+        disabled={disabled}
+        required={required}
         orientation="horizontal"
-        value={undefined}
         defaultValue="dev"
       >
-        <Radio value="dev" label="Development" />
-        <Radio value="staging" label="Staging" />
-        <Radio value="prod" label="Production" />
+        <RadioGroupLabel>Environment</RadioGroupLabel>
+        <RadioGroupItems>
+          <Radio value="dev" label="Development" />
+          <Radio value="staging" label="Staging" />
+          <Radio value="prod" label="Production" />
+        </RadioGroupItems>
       </RadioGroup>
     )
   },
@@ -126,6 +154,20 @@ export const Error: Story = {
     required: true,
   },
 }
+/** The label stays the group's accessible name while hidden visually. */
+export const HiddenLabel: Story = {
+  render: function Render() {
+    const name = useId()
+    return (
+      <RadioGroup name={name} defaultValue="rolling">
+        <RadioGroupLabel className="sr-only">Deployment strategy</RadioGroupLabel>
+        <RadioGroupItems>
+          <Strategies descriptions={false} />
+        </RadioGroupItems>
+      </RadioGroup>
+    )
+  },
+}
 export const Disabled: Story = { args: { disabled: true, defaultValue: 'rolling' } }
 export const DisabledCards: Story = {
   args: { disabled: true, defaultValue: 'rolling', variant: 'card' },
@@ -136,17 +178,30 @@ export const States: Story = {
     const id = useId()
     return (
       <div className="flex flex-col gap-7">
-        <RadioGroup name={`${id}-idle`} legend="Default">
-          <Strategies descriptions={false} />
+        <RadioGroup name={`${id}-idle`}>
+          <RadioGroupLabel>Default</RadioGroupLabel>
+          <RadioGroupItems>
+            <Strategies descriptions={false} />
+          </RadioGroupItems>
         </RadioGroup>
-        <RadioGroup name={`${id}-selected`} legend="Selected" defaultValue="rolling">
-          <Strategies descriptions={false} />
+        <RadioGroup name={`${id}-selected`} defaultValue="rolling">
+          <RadioGroupLabel>Selected</RadioGroupLabel>
+          <RadioGroupItems>
+            <Strategies descriptions={false} />
+          </RadioGroupItems>
         </RadioGroup>
-        <RadioGroup name={`${id}-invalid`} legend="Invalid" error="Choose a deployment strategy.">
-          <Strategies descriptions={false} />
+        <RadioGroup name={`${id}-invalid`} invalid>
+          <RadioGroupLabel>Invalid</RadioGroupLabel>
+          <RadioGroupItems>
+            <Strategies descriptions={false} />
+          </RadioGroupItems>
+          <RadioGroupError>Choose a deployment strategy.</RadioGroupError>
         </RadioGroup>
-        <RadioGroup name={`${id}-disabled`} legend="Disabled" disabled defaultValue="rolling">
-          <Strategies descriptions={false} />
+        <RadioGroup name={`${id}-disabled`} disabled defaultValue="rolling">
+          <RadioGroupLabel>Disabled</RadioGroupLabel>
+          <RadioGroupItems>
+            <Strategies descriptions={false} />
+          </RadioGroupItems>
         </RadioGroup>
         <p className="m-0 text-xs text-fg-muted">
           Tab into a group, then use arrow keys. Keyboard focus has an extra ring; hover does not
@@ -168,13 +223,14 @@ export const Required: Story = {
     }
     return (
       <form onSubmit={submit} onReset={() => setSaved('')} className="flex flex-col gap-4">
-        <RadioGroup
-          name={name}
-          legend="Deployment strategy"
-          description="A selection is required. Uses native form validation."
-          required
-        >
-          <Strategies />
+        <RadioGroup name={name} required>
+          <RadioGroupLabel>Deployment strategy</RadioGroupLabel>
+          <RadioGroupDescription>
+            A selection is required. Uses native form validation.
+          </RadioGroupDescription>
+          <RadioGroupItems>
+            <Strategies />
+          </RadioGroupItems>
         </RadioGroup>
         <div className="flex gap-2">
           <Button type="submit">Save strategy</Button>
@@ -196,14 +252,11 @@ export const Controlled: Story = {
     const [value, setValue] = useState<string | null>(null)
     return (
       <div className="flex flex-col gap-4">
-        <RadioGroup
-          name={name}
-          legend="Deployment strategy"
-          value={value}
-          onValueChange={setValue}
-          variant="card"
-        >
-          <Strategies />
+        <RadioGroup name={name} value={value} onValueChange={setValue} variant="card">
+          <RadioGroupLabel>Deployment strategy</RadioGroupLabel>
+          <RadioGroupItems>
+            <Strategies />
+          </RadioGroupItems>
         </RadioGroup>
         <p className="m-0 text-xs text-fg-muted">
           Selected: <code>{value ?? 'null'}</code>
@@ -238,17 +291,22 @@ export const FormReset: Story = {
           setSubmitted(JSON.stringify(Object.fromEntries(new FormData(event.currentTarget))))
         }}
       >
-        <RadioGroup name={`${id}-uncontrolled`} legend="Uncontrolled" defaultValue="rolling">
-          <Strategies descriptions={false} />
+        <RadioGroup name={`${id}-uncontrolled`} defaultValue="rolling">
+          <RadioGroupLabel>Uncontrolled</RadioGroupLabel>
+          <RadioGroupItems>
+            <Strategies descriptions={false} />
+          </RadioGroupItems>
         </RadioGroup>
         <RadioGroup
           name={`${id}-controlled`}
-          legend="Controlled"
           value={controlled}
           onValueChange={setControlled}
           variant="card"
         >
-          <Strategies descriptions={false} />
+          <RadioGroupLabel>Controlled</RadioGroupLabel>
+          <RadioGroupItems>
+            <Strategies descriptions={false} />
+          </RadioGroupItems>
         </RadioGroup>
         <div className="flex gap-2">
           <Button type="reset" intent="secondary">
@@ -271,13 +329,11 @@ export const ExternalForm: Story = {
     const [submitted, setSubmitted] = useState('')
     return (
       <div className="flex flex-col gap-4">
-        <RadioGroup
-          form={formId}
-          name="strategy"
-          legend="Deployment strategy"
-          defaultValue="rolling"
-        >
-          <Strategies />
+        <RadioGroup form={formId} name="strategy" defaultValue="rolling">
+          <RadioGroupLabel>Deployment strategy</RadioGroupLabel>
+          <RadioGroupItems>
+            <Strategies />
+          </RadioGroupItems>
         </RadioGroup>
         <form
           id={formId}
@@ -309,14 +365,12 @@ export const DynamicOptions: Story = {
     const [show, setShow] = useState(true)
     return (
       <div className="flex flex-col gap-4">
-        <RadioGroup
-          name={name}
-          legend="Deployment strategy"
-          defaultValue="blue-green"
-          variant="card"
-        >
-          <Radio value="rolling" label="Rolling update" />
-          {show && <Radio value="blue-green" label="Blue / green" />}
+        <RadioGroup name={name} defaultValue="blue-green" variant="card">
+          <RadioGroupLabel>Deployment strategy</RadioGroupLabel>
+          <RadioGroupItems>
+            <Radio value="rolling" label="Rolling update" />
+            {show && <Radio value="blue-green" label="Blue / green" />}
+          </RadioGroupItems>
         </RadioGroup>
         <Button intent="secondary" onClick={() => setShow(!show)}>
           {show ? 'Remove blue / green' : 'Restore blue / green'}
@@ -334,18 +388,24 @@ export const LongLabels: Story = {
     const name = useId()
     return (
       <div className="max-w-64">
-        <RadioGroup name={name} legend="Deployment strategy" variant="card" defaultValue="gradual">
-          <Radio
-            value="gradual"
-            label="Gradual rollout with manual approval"
-            description="Wait for an operator to approve the next step before replacing additional pods."
-          />
-          <Radio
-            value="scheduled"
-            label="在指定維護時段完成更新，並保留手動確認步驟"
-            description="較長的說明文字會自然換行，單選圓圈保持固定大小。"
-          />
-          <Radio value="token" label="averylongunbrokenselectionlabelthatstillneedstowrapsafely" />
+        <RadioGroup name={name} variant="card" defaultValue="gradual">
+          <RadioGroupLabel>Deployment strategy</RadioGroupLabel>
+          <RadioGroupItems>
+            <Radio
+              value="gradual"
+              label="Gradual rollout with manual approval"
+              description="Wait for an operator to approve the next step before replacing additional pods."
+            />
+            <Radio
+              value="scheduled"
+              label="在指定維護時段完成更新，並保留手動確認步驟"
+              description="較長的說明文字會自然換行，單選圓圈保持固定大小。"
+            />
+            <Radio
+              value="token"
+              label="averylongunbrokenselectionlabelthatstillneedstowrapsafely"
+            />
+          </RadioGroupItems>
         </RadioGroup>
       </div>
     )
@@ -358,24 +418,24 @@ export const Dark: Story = {
     const id = useId()
     return (
       <div className="flex flex-col gap-7">
-        <RadioGroup name={`${id}-plain`} legend="Deployment strategy" defaultValue="rolling">
-          <Strategies />
+        <RadioGroup name={`${id}-plain`} defaultValue="rolling">
+          <RadioGroupLabel>Deployment strategy</RadioGroupLabel>
+          <RadioGroupItems>
+            <Strategies />
+          </RadioGroupItems>
         </RadioGroup>
-        <RadioGroup
-          name={`${id}-card`}
-          legend="Deployment strategy"
-          defaultValue="blue-green"
-          variant="card"
-        >
-          <Strategies />
+        <RadioGroup name={`${id}-card`} defaultValue="blue-green" variant="card">
+          <RadioGroupLabel>Deployment strategy</RadioGroupLabel>
+          <RadioGroupItems>
+            <Strategies />
+          </RadioGroupItems>
         </RadioGroup>
-        <RadioGroup
-          name={`${id}-error`}
-          legend="Required strategy"
-          error="Choose a deployment strategy."
-          required
-        >
-          <Strategies descriptions={false} />
+        <RadioGroup name={`${id}-error`} required invalid>
+          <RadioGroupLabel>Required strategy</RadioGroupLabel>
+          <RadioGroupItems>
+            <Strategies descriptions={false} />
+          </RadioGroupItems>
+          <RadioGroupError>Choose a deployment strategy.</RadioGroupError>
         </RadioGroup>
       </div>
     )
@@ -397,8 +457,11 @@ export const InDialog: Story = {
             description="Choose how to replace the running version."
           />
           <DialogBody>
-            <RadioGroup name={name} legend="Strategy" variant="card" defaultValue="rolling">
-              <Strategies />
+            <RadioGroup name={name} variant="card" defaultValue="rolling">
+              <RadioGroupLabel>Strategy</RadioGroupLabel>
+              <RadioGroupItems>
+                <Strategies />
+              </RadioGroupItems>
             </RadioGroup>
           </DialogBody>
           <DialogFooter>

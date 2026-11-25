@@ -1,6 +1,6 @@
 ---
 title: Radio Group
-description: A group of native radio inputs with legend, description and error, as plain rows or cards.
+description: A group of native radio inputs with composable label, description and error parts, as plain rows or cards.
 ---
 
 <ComponentPreview name="radio-group-demo" />
@@ -38,13 +38,16 @@ The CSS comes with `styles.css`, imported once after Tailwind (see [Installation
 ## Usage
 
 ```tsx
-import { Radio, RadioGroup } from '@weichenlin/swell-ui'
+import { Radio, RadioGroup, RadioGroupItems, RadioGroupLabel } from '@weichenlin/swell-ui'
 
 export function Example() {
   return (
-    <RadioGroup name="plan" legend="Plan" defaultValue="pro">
-      <Radio value="free" label="Free" />
-      <Radio value="pro" label="Pro" />
+    <RadioGroup name="plan" defaultValue="pro">
+      <RadioGroupLabel>Plan</RadioGroupLabel>
+      <RadioGroupItems>
+        <Radio value="free" label="Free" />
+        <Radio value="pro" label="Pro" />
+      </RadioGroupItems>
     </RadioGroup>
   )
 }
@@ -52,11 +55,47 @@ export function Example() {
 
 `Radio` must be rendered inside `RadioGroup`. Nothing is selected until you pass `defaultValue` or `value`, or the user picks one.
 
+## Anatomy
+
+The group owns the wiring; you place each part, or leave it out.
+
+```tsx
+<RadioGroup name="plan" invalid={Boolean(error)}>
+  <RadioGroupLabel>Plan</RadioGroupLabel>
+  <RadioGroupDescription>Pick one.</RadioGroupDescription>
+  <RadioGroupItems>
+    <Radio value="free" label="Free" />
+    <Radio value="pro" label="Pro" />
+  </RadioGroupItems>
+  {error && <RadioGroupError>{error}</RadioGroupError>}
+</RadioGroup>
+```
+
+| Part                    | Role                                                                                                                 |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `RadioGroupLabel`       | Names the group. Appends the required asterisk.                                                                      |
+| `RadioGroupDescription` | Muted hint, linked with `aria-describedby`.                                                                          |
+| `RadioGroupItems`       | Default layout for the radios, following `orientation`. Any element works instead.                                   |
+| `RadioGroupError`       | Group message, linked with `aria-describedby`. Takes `icon`; `false` or `null` hides it. Render it only when needed. |
+
+### Hide the label
+
+The label is a plain element, so style it freely. Add `sr-only` to keep it for assistive technology only:
+
+```tsx
+<RadioGroup name="plan">
+  <RadioGroupLabel className="sr-only">Plan</RadioGroupLabel>
+  <RadioGroupItems>{/* radios */}</RadioGroupItems>
+</RadioGroup>
+```
+
+Without a label part, name the group with `aria-label` or `aria-labelledby` instead.
+
 ## Examples
 
 ### Card variant
 
-`variant="card"` draws each option as a bordered card; a `description` fits well here.
+`variant="card"` draws each option as a bordered card; a `description` on each `Radio` fits well here.
 
 <ComponentPreview name="radio-group-card" />
 
@@ -68,7 +107,7 @@ Use `value` and `onValueChange`. Pass `null` as `value` to clear the selection.
 
 ### Disabled and invalid
 
-Disable the whole group or a single option. `error` shows one group message and marks the group invalid.
+Disable the whole group or a single option. `invalid` marks the group invalid; add a `RadioGroupError` for the message.
 
 <ComponentPreview name="radio-group-states" />
 
@@ -129,19 +168,19 @@ Own props only; every other `<input>` attribute passes through to the element. T
       state: 'Invalid',
       attribute: 'aria-invalid="true"',
       notes:
-        'On the group, when `error` is truthy. Every radio and card gets a danger border; `error={true}` omits the message.',
+        'On the group, when `invalid` is set. Every radio and card gets a danger border; `RadioGroupError` is optional, so `invalid` alone shows no message.',
     },
     {
       state: 'Described',
       attribute: 'aria-describedby',
       notes:
-        'On the group and each radio: the group `description` and error, then the item `description`.',
+        'On the group and each radio: the `RadioGroupDescription` and `RadioGroupError` that are rendered, then the item `description`.',
     },
     {
       state: 'Required',
       attribute: 'aria-required="true"',
       notes:
-        'On the group; each radio is natively `required`, so one selection is needed. The legend gets an `aria-hidden` asterisk.',
+        'On the group; each radio is natively `required`, so one selection is needed. `RadioGroupLabel` gets an `aria-hidden` asterisk.',
     },
     {
       state: 'Disabled',
@@ -195,9 +234,9 @@ These are the browser's native radio keys; `orientation` changes the layout only
 
 ## Accessibility
 
-- The group is a `<fieldset>` with `role="radiogroup"`, named by its `<legend>` through `aria-labelledby`. Each radio is a native `<input type="radio">` named by its label.
-- The group `description` and error are linked to the group, and also to each radio, with `aria-describedby`; the error icon is `aria-hidden`.
-- `error` sets `aria-invalid` on the group, and `required` sets `aria-required`. Native validation needs one selection, with no custom submit handler.
+- The group is a `<fieldset>` with `role="radiogroup"`, named by `RadioGroupLabel` through `aria-labelledby`, or by `aria-label` when there is no label part. Each radio is a native `<input type="radio">` named by its label.
+- `RadioGroupDescription` and `RadioGroupError` are linked to the group, and also to each radio, with `aria-describedby`, only while they are rendered; the error icon is `aria-hidden`.
+- `invalid` sets `aria-invalid` on the group, and `required` sets `aria-required`. Native validation needs one selection, with no custom submit handler.
 - The selected value is submitted under the group `name`. Native form reset restores the uncontrolled default without calling `onValueChange`.
 - `Radio` throws outside `RadioGroup`, and values must be unique and non-empty.
 - On touch screens each row is at least 44px tall, so neighbouring hit areas do not overlap.

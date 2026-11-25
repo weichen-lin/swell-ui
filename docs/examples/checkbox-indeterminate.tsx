@@ -1,5 +1,10 @@
 'use client'
-import { Checkbox, CheckboxGroup } from '@weichenlin/swell-ui'
+import {
+  Checkbox,
+  CheckboxGroup,
+  CheckboxGroupLabel,
+  CheckboxGroupItems,
+} from '@weichenlin/swell-ui'
 import { useState } from 'react'
 
 const options = ['Email', 'SMS', 'Push']
@@ -18,21 +23,24 @@ export default function CheckboxIndeterminate() {
         onChange={(event) => setSelected(event.currentTarget.checked ? options : [])}
       />
       <div className="ps-6">
-        <CheckboxGroup legend="Channels">
-          {options.map((option) => (
-            <Checkbox
-              key={option}
-              label={option}
-              checked={selected.includes(option)}
-              onChange={(event) =>
-                setSelected((current) =>
-                  event.currentTarget.checked
-                    ? [...current, option]
-                    : current.filter((item) => item !== option),
-                )
-              }
-            />
-          ))}
+        <CheckboxGroup>
+          <CheckboxGroupLabel>Channels</CheckboxGroupLabel>
+          <CheckboxGroupItems>
+            {options.map((option) => (
+              <Checkbox
+                key={option}
+                label={option}
+                checked={selected.includes(option)}
+                onChange={(event) =>
+                  setSelected((current) =>
+                    event.currentTarget.checked
+                      ? [...current, option]
+                      : current.filter((item) => item !== option),
+                  )
+                }
+              />
+            ))}
+          </CheckboxGroupItems>
         </CheckboxGroup>
       </div>
     </div>

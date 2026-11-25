@@ -1,6 +1,6 @@
 ---
 title: 單選群組 Radio Group
-description: 由原生 radio 組成的群組，附標題、說明與錯誤，可用一般列或卡片呈現。
+description: 由原生 radio 組成的群組，標題、說明與錯誤都是可自由組合的部件，可用一般列或卡片呈現。
 ---
 
 <ComponentPreview name="radio-group-demo" />
@@ -34,13 +34,16 @@ CSS 包含在 `styles.css` 裡，在 Tailwind 之後引入一次即可（見[安
 ## 用法
 
 ```tsx
-import { Radio, RadioGroup } from '@weichenlin/swell-ui'
+import { Radio, RadioGroup, RadioGroupItems, RadioGroupLabel } from '@weichenlin/swell-ui'
 
 export function Example() {
   return (
-    <RadioGroup name="plan" legend="Plan" defaultValue="pro">
-      <Radio value="free" label="Free" />
-      <Radio value="pro" label="Pro" />
+    <RadioGroup name="plan" defaultValue="pro">
+      <RadioGroupLabel>Plan</RadioGroupLabel>
+      <RadioGroupItems>
+        <Radio value="free" label="Free" />
+        <Radio value="pro" label="Pro" />
+      </RadioGroupItems>
     </RadioGroup>
   )
 }
@@ -48,11 +51,47 @@ export function Example() {
 
 `Radio` 必須放在 `RadioGroup` 裡。除非傳入 `defaultValue` 或 `value`，或使用者自己選了一項，否則不會有選取項。
 
+## 組成
+
+群組負責串接各部件的關聯，你決定每個部件放在哪裡，也可以不放。
+
+```tsx
+<RadioGroup name="plan" invalid={Boolean(error)}>
+  <RadioGroupLabel>Plan</RadioGroupLabel>
+  <RadioGroupDescription>Pick one.</RadioGroupDescription>
+  <RadioGroupItems>
+    <Radio value="free" label="Free" />
+    <Radio value="pro" label="Pro" />
+  </RadioGroupItems>
+  {error && <RadioGroupError>{error}</RadioGroupError>}
+</RadioGroup>
+```
+
+| 部件                    | 用途                                                                                                         |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `RadioGroupLabel`       | 群組的名稱，必填時會附上星號。                                                                               |
+| `RadioGroupDescription` | 較淡的提示文字，以 `aria-describedby` 連結。                                                                 |
+| `RadioGroupItems`       | radio 的預設排版，依 `orientation` 決定方向；也可以換成任何元素。                                            |
+| `RadioGroupError`       | 群組層級的訊息，以 `aria-describedby` 連結。可傳入 `icon`，設為 `false` 或 `null` 則隱藏；只在需要時才渲染。 |
+
+### 隱藏標籤
+
+標籤就是一般元素，樣式可以自由調整。加上 `sr-only` 就只保留給輔助技術：
+
+```tsx
+<RadioGroup name="plan">
+  <RadioGroupLabel className="sr-only">Plan</RadioGroupLabel>
+  <RadioGroupItems>{/* radios */}</RadioGroupItems>
+</RadioGroup>
+```
+
+沒有標籤部件時，請改用 `aria-label` 或 `aria-labelledby` 為群組命名。
+
 ## 範例
 
 ### 卡片變體
 
-`variant="card"` 會把每個選項畫成有邊框的卡片，很適合搭配 `description`。
+`variant="card"` 會把每個選項畫成有邊框的卡片，很適合在每個 `Radio` 上搭配 `description`。
 
 <ComponentPreview name="radio-group-card" />
 
@@ -64,7 +103,7 @@ export function Example() {
 
 ### 停用與無效
 
-可以停用整個群組或單一選項。`error` 會顯示一則群組訊息，並把群組標為無效。
+可以停用整個群組或單一選項。`invalid` 會把群組標為無效，再加上 `RadioGroupError` 顯示訊息。
 
 <ComponentPreview name="radio-group-states" />
 
@@ -124,13 +163,13 @@ export function Example() {
       state: '無效',
       attribute: 'aria-invalid="true"',
       notes:
-        '設在群組上，`error` 為真值時設定。每個 radio 與卡片都會有 danger 邊框；`error={true}` 不顯示訊息。',
+        '設在群組上，設定 `invalid` 時出現。每個 radio 與卡片都會有 danger 邊框；`RadioGroupError` 是選用的，只設 `invalid` 就不會顯示訊息。',
     },
     {
       state: '附描述',
       attribute: 'aria-describedby',
       notes:
-        '設在群組與每個 radio 上：群組的 `description` 與錯誤，再加上選項自己的 `description`。',
+        '設在群組與每個 radio 上：目前有渲染的 `RadioGroupDescription` 與 `RadioGroupError`，再加上選項自己的 `description`。',
     },
     {
       state: '必填',
@@ -187,9 +226,9 @@ export function Example() {
 
 ## 無障礙
 
-- 群組是帶 `role="radiogroup"` 的 `<fieldset>`，透過 `aria-labelledby` 以 `<legend>` 為名稱。每個 radio 都是原生 `<input type="radio">`，以自己的標籤為名稱。
-- 群組的 `description` 與錯誤，除了連結到群組，也用 `aria-describedby` 連結到每個 radio；錯誤圖示是 `aria-hidden`。
-- `error` 會在群組上設定 `aria-invalid`，`required` 會設定 `aria-required`。原生驗證會要求選一項，不需要自訂的送出處理函式。
+- 群組是帶 `role="radiogroup"` 的 `<fieldset>`，透過 `aria-labelledby` 以 `RadioGroupLabel` 為名稱；沒有標籤部件時則用 `aria-label`。每個 radio 都是原生 `<input type="radio">`，以自己的標籤為名稱。
+- `RadioGroupDescription` 與 `RadioGroupError` 只在有渲染時，才會用 `aria-describedby` 連結到群組與每個 radio；錯誤圖示是 `aria-hidden`。
+- `invalid` 會在群組上設定 `aria-invalid`，`required` 會設定 `aria-required`。原生驗證會要求選一項，不需要自訂的送出處理函式。
 - 選取的值會放在群組的 `name` 下送出。原生表單重設會還原非受控的預設值，且不會呼叫 `onValueChange`。
 - `Radio` 放在 `RadioGroup` 之外會丟出錯誤，且值必須唯一、不能是空字串。
 - 在觸控螢幕上，每一列至少 44px 高，相鄰的點擊範圍不會重疊。

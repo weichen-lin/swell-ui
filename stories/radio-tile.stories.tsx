@@ -1,6 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useId } from 'react'
-import { RadioGroup, RadioIndicator, RadioTile } from '../src/components/radio-group'
+import {
+  RadioGroup,
+  RadioIndicator,
+  RadioTile,
+  RadioGroupLabel,
+  RadioGroupItems,
+} from '../src/components/radio-group'
 
 const meta = {
   title: 'UI/RadioTile',
@@ -27,23 +33,20 @@ export const Playground: Story = {
   render: function Render({ disabled, ripple }) {
     const name = useId()
     return (
-      <RadioGroup
-        name={name}
-        legend="Page orientation"
-        defaultValue="portrait"
-        disabled={disabled}
-        itemsClassName="grid max-w-sm grid-cols-2 gap-3"
-      >
-        <RadioTile value="portrait" ripple={ripple}>
-          <span aria-hidden className="h-8 w-6 rounded-sm border border-current" />
-          Portrait
-          <RadioIndicator />
-        </RadioTile>
-        <RadioTile value="landscape" ripple={ripple}>
-          <span aria-hidden className="mt-2 h-6 w-8 rounded-sm border border-current" />
-          Landscape
-          <RadioIndicator />
-        </RadioTile>
+      <RadioGroup name={name} defaultValue="portrait" disabled={disabled}>
+        <RadioGroupLabel>Page orientation</RadioGroupLabel>
+        <RadioGroupItems className="grid max-w-sm grid-cols-2 gap-3">
+          <RadioTile value="portrait" ripple={ripple}>
+            <span aria-hidden className="h-8 w-6 rounded-sm border border-current" />
+            Portrait
+            <RadioIndicator />
+          </RadioTile>
+          <RadioTile value="landscape" ripple={ripple}>
+            <span aria-hidden className="mt-2 h-6 w-8 rounded-sm border border-current" />
+            Landscape
+            <RadioIndicator />
+          </RadioTile>
+        </RadioGroupItems>
       </RadioGroup>
     )
   },

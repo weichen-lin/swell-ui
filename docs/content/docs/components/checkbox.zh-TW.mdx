@@ -34,13 +34,21 @@ CSS 包含在 `styles.css` 裡，在 Tailwind 之後引入一次即可（見[安
 ## 用法
 
 ```tsx
-import { Checkbox, CheckboxGroup } from '@weichenlin/swell-ui'
+import {
+  Checkbox,
+  CheckboxGroup,
+  CheckboxGroupItems,
+  CheckboxGroupLabel,
+} from '@weichenlin/swell-ui'
 
 export function Example() {
   return (
-    <CheckboxGroup legend="Options">
-      <Checkbox name="options" value="a" label="Option A" />
-      <Checkbox name="options" value="b" label="Option B" />
+    <CheckboxGroup>
+      <CheckboxGroupLabel>Options</CheckboxGroupLabel>
+      <CheckboxGroupItems>
+        <Checkbox name="options" value="a" label="Option A" />
+        <Checkbox name="options" value="b" label="Option B" />
+      </CheckboxGroupItems>
     </CheckboxGroup>
   )
 }
@@ -62,13 +70,13 @@ export function Example() {
 
 ### CheckboxGroup
 
-`legend` 為群組命名；`description` 會在下方加一行淡色說明。
+`CheckboxGroupLabel` 為群組命名；加上 `CheckboxGroupDescription` 會在下方多一行淡色說明。
 
 <ComponentPreview name="checkbox-group" />
 
 ### 橫向群組與錯誤
 
-群組本身不保存值，請在你的處理函式裡驗證，並把訊息傳給 `error`。
+群組本身不保存值，請在你的處理函式裡驗證，並渲染帶有訊息的 `CheckboxGroupError`。
 
 <ComponentPreview name="checkbox-group-horizontal" />
 
@@ -97,6 +105,40 @@ export function Example() {
 />
 
 `CheckboxGroup` 不保存值。每個核取方塊各自保有 `name` 與 `checked`，所以原生表單送出與 `FormData` 照常運作。
+
+#### 組成
+
+群組負責串接各部件的關聯，你決定每個部件放在哪裡，也可以不放。
+
+```tsx
+<CheckboxGroup>
+  <CheckboxGroupLabel>Notify me by</CheckboxGroupLabel>
+  <CheckboxGroupDescription>Pick at least one.</CheckboxGroupDescription>
+  <CheckboxGroupItems>
+    <Checkbox name="channels" value="email" label="Email" />
+    <Checkbox name="channels" value="sms" label="SMS" />
+  </CheckboxGroupItems>
+  {error && <CheckboxGroupError>{error}</CheckboxGroupError>}
+</CheckboxGroup>
+```
+
+| 部件                       | 用途                                                                                                         |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `CheckboxGroupLabel`       | 群組的名稱。                                                                                                 |
+| `CheckboxGroupDescription` | 較淡的提示文字，以 `aria-describedby` 連結。                                                                 |
+| `CheckboxGroupItems`       | 各列的預設排版，依 `orientation` 決定方向；也可以換成任何元素。                                              |
+| `CheckboxGroupError`       | 群組層級的訊息，以 `aria-describedby` 連結。可傳入 `icon`，設為 `false` 或 `null` 則隱藏；只在需要時才渲染。 |
+
+想在畫面上隱藏標籤、只留給輔助技術，加上 `sr-only` 即可：
+
+```tsx
+<CheckboxGroup>
+  <CheckboxGroupLabel className="sr-only">Notify me by</CheckboxGroupLabel>
+  <CheckboxGroupItems>{/* checkboxes */}</CheckboxGroupItems>
+</CheckboxGroup>
+```
+
+沒有標籤部件時，請改用 `aria-label` 或 `aria-labelledby` 為群組命名。
 
 ## 狀態
 
@@ -168,8 +210,8 @@ export function Example() {
 - 原生的 `<input type="checkbox">`，所以表單、`required`、重設與點擊標籤都維持原生行為。
 - 可見標籤是核取方塊的名稱；`description` 與錯誤文字不會混進名稱，而是用 `aria-describedby` 連結。
 - `indeterminate` 會被朗讀為混合。瀏覽器在點擊時會清掉這個 DOM 屬性，所以每當 `checked` 改變，Checkbox 都會重新套用。
-- `CheckboxGroup` 是帶 `<legend>` 的 `<fieldset>`。它不設定 `aria-invalid`，因為 ARIA 1.2 不支援在群組角色上使用；群組的描述與錯誤用 `aria-describedby` 連結。
-- 原生 `required` 無法表達「至少選一個」，請在送出處理函式裡驗證，並把訊息傳給 `error`。
+- `CheckboxGroup` 是 `<fieldset>`，透過 `aria-labelledby` 以 `CheckboxGroupLabel` 為名稱；沒有標籤部件時則用 `aria-label`。它不設定 `aria-invalid`，因為 ARIA 1.2 不支援在群組角色上使用；`CheckboxGroupDescription` 與 `CheckboxGroupError` 有渲染時，用 `aria-describedby` 連結。
+- 原生 `required` 無法表達「至少選一個」，請在送出處理函式裡驗證，並渲染 `CheckboxGroupError`。
 - 勾號、短橫線與錯誤圖示都是 `aria-hidden`。
 - 整列高度至少 24px；在觸控螢幕上，點擊範圍擴大到 44px，版面不變。
 - 強制色彩模式下，方塊使用 `Canvas`、`Highlight` 與 `CanvasText`，停用則用 `GrayText`。

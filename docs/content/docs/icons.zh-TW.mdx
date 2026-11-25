@@ -37,29 +37,30 @@ export function Example({
 - `Checkbox` 裡的勾號與橫線不是 icon，而是方框本身繪製的一部分，所以沒有對應的 prop。
 - 你放在自己內容裡的 icon（`Button` 的 `iconLeft`、`Tab` 的 `icon`、`Select` 選項的 icon）本來就由你提供，這部分沒有變化。
 
-| 元件                                                                                                                              | Prop                                    | 預設                  | 傳 `false` 隱藏 |
-| --------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- | --------------------- | --------------- |
-| `AccordionTrigger`                                                                                                                | `chevronIcon`                           | 向下 chevron          | 否              |
-| `Alert`                                                                                                                           | `icon`                                  | 依 tone 的 icon       | 是              |
-| `Alert`                                                                                                                           | `dismissIcon`                           | X                     | 否              |
-| `Badge`                                                                                                                           | `busyIcon`                              | 圓形 loader           | 否              |
-| `Button`                                                                                                                          | `loadingIcon`                           | 圓形 loader           | 否              |
-| `Combobox`                                                                                                                        | `chevronIcon`、`clearIcon`、`checkIcon` | 向下 chevron、X、勾號 | 否              |
-| `Combobox`                                                                                                                        | `loadingIcon`                           | 圓形 loader           | 否              |
-| `Combobox`                                                                                                                        | `searchErrorIcon`                       | 驚嘆號圓圈            | 是              |
-| `CopyInput`                                                                                                                       | `copyIcon`、`copiedIcon`                | 複製、勾號            | 否              |
-| `DialogHeader`、`DrawerHeader`                                                                                                    | `closeIcon`                             | X                     | 否              |
-| `DrawerClose`、`SidebarTrigger`                                                                                                   | `icon`                                  | X、選單               | 否              |
-| `Input`、`SearchInput`、`PasswordInput`、`CopyInput`                                                                              | `validatingIcon`                        | 圓形 loader           | 否              |
-| `PasswordInput`                                                                                                                   | `showIcon`、`hideIcon`                  | 眼睛、劃掉的眼睛      | 否              |
-| `SearchInput`                                                                                                                     | `searchIcon`                            | 放大鏡                | 是              |
-| `SearchInput`                                                                                                                     | `clearIcon`                             | X                     | 否              |
-| `Select`                                                                                                                          | `chevronIcon`                           | 向下 chevron          | 否              |
-| `Switch`                                                                                                                          | `loadingIcon`                           | 圓形 loader           | 否              |
-| `Table`                                                                                                                           | `icons`（物件）                         | 箭頭、chevron、放大鏡 | 僅 `search`     |
-| `ThemeSwitcher`                                                                                                                   | `lightIcon`、`darkIcon`                 | 太陽、月亮            | 否              |
-| `Toaster`                                                                                                                         | `icons`（物件，依類型）                 | 各類型 icon、loader   | 是              |
-| `Toaster`                                                                                                                         | `closeIcon`                             | X                     | 否              |
-| 有錯誤訊息的欄位（`Input` 系列、`Select`、`Combobox`、`Textarea`、`Checkbox`、`CheckboxGroup`、`RadioGroup`、`Switch`、`Slider`） | `errorIcon`                             | 驚嘆號圓圈            | 是              |
+| 元件                                                                                               | Prop                                    | 預設                  | 傳 `false` 隱藏 |
+| -------------------------------------------------------------------------------------------------- | --------------------------------------- | --------------------- | --------------- |
+| `AccordionTrigger`                                                                                 | `chevronIcon`                           | 向下 chevron          | 否              |
+| `Alert`                                                                                            | `icon`                                  | 依 tone 的 icon       | 是              |
+| `Alert`                                                                                            | `dismissIcon`                           | X                     | 否              |
+| `Badge`                                                                                            | `busyIcon`                              | 圓形 loader           | 否              |
+| `Button`                                                                                           | `loadingIcon`                           | 圓形 loader           | 否              |
+| `Combobox`                                                                                         | `chevronIcon`、`clearIcon`、`checkIcon` | 向下 chevron、X、勾號 | 否              |
+| `Combobox`                                                                                         | `loadingIcon`                           | 圓形 loader           | 否              |
+| `Combobox`                                                                                         | `searchErrorIcon`                       | 驚嘆號圓圈            | 是              |
+| `CopyInput`                                                                                        | `copyIcon`、`copiedIcon`                | 複製、勾號            | 否              |
+| `DialogHeader`、`DrawerHeader`                                                                     | `closeIcon`                             | X                     | 否              |
+| `DrawerClose`、`SidebarTrigger`                                                                    | `icon`                                  | X、選單               | 否              |
+| `Input`、`SearchInput`、`PasswordInput`、`CopyInput`                                               | `validatingIcon`                        | 圓形 loader           | 否              |
+| `PasswordInput`                                                                                    | `showIcon`、`hideIcon`                  | 眼睛、劃掉的眼睛      | 否              |
+| `SearchInput`                                                                                      | `searchIcon`                            | 放大鏡                | 是              |
+| `SearchInput`                                                                                      | `clearIcon`                             | X                     | 否              |
+| `Select`                                                                                           | `chevronIcon`                           | 向下 chevron          | 否              |
+| `Switch`                                                                                           | `loadingIcon`                           | 圓形 loader           | 否              |
+| `Table`                                                                                            | `icons`（物件）                         | 箭頭、chevron、放大鏡 | 僅 `search`     |
+| `ThemeSwitcher`                                                                                    | `lightIcon`、`darkIcon`                 | 太陽、月亮            | 否              |
+| `Toaster`                                                                                          | `icons`（物件，依類型）                 | 各類型 icon、loader   | 是              |
+| `Toaster`                                                                                          | `closeIcon`                             | X                     | 否              |
+| 有錯誤訊息的欄位（`Input` 系列、`Select`、`Combobox`、`Textarea`、`Checkbox`、`Switch`、`Slider`） | `errorIcon`                             | 驚嘆號圓圈            | 是              |
+| `CheckboxGroupError`、`RadioGroupError`                                                            | `icon`                                  | 驚嘆號圓圈            | 是              |
 
 各元件的 API 表格列出確切的 props、key 與預設值。

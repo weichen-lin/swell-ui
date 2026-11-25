@@ -1,9 +1,32 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { type FormEvent, useState } from 'react'
 import { Button } from '../src/components/button'
-import { Checkbox, CheckboxGroup, type CheckboxGroupProps } from '../src/components/checkbox'
+import {
+  Checkbox,
+  CheckboxGroup,
+  CheckboxGroupDescription,
+  CheckboxGroupError,
+  CheckboxGroupItems,
+  CheckboxGroupLabel,
+  type CheckboxGroupProps,
+} from '../src/components/checkbox'
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '../src/components/dialog'
 import { RefreshCw } from './_helpers/story-icons'
+
+/** Story-only args that fill the composable parts, so Storybook controls can edit them. */
+type StoryArgs = CheckboxGroupProps & { legend?: string; description?: string; error?: string }
+
+/** Renders the args as a group with its parts; `children` are the checkboxes. */
+function Group({ legend, description, error, children, ...group }: StoryArgs) {
+  return (
+    <CheckboxGroup {...group}>
+      {legend && <CheckboxGroupLabel>{legend}</CheckboxGroupLabel>}
+      {description && <CheckboxGroupDescription>{description}</CheckboxGroupDescription>}
+      <CheckboxGroupItems>{children}</CheckboxGroupItems>
+      {error && <CheckboxGroupError>{error}</CheckboxGroupError>}
+    </CheckboxGroup>
+  )
+}
 
 const meta = {
   title: 'UI/CheckboxGroup',
@@ -14,9 +37,10 @@ const meta = {
     docs: {
       description: {
         component: [
-          '`<fieldset>` + `<legend>` around related checkboxes. It holds no value: each checkbox',
-          'keeps its own `name` / `checked`. `description` and `error` describe the group',
-          '(aria-describedby); `disabled` reaches every checkbox through the native fieldset.',
+          '`<fieldset>` around related checkboxes, composed from CheckboxGroupLabel, CheckboxGroupDescription,',
+          'CheckboxGroupItems and CheckboxGroupError. It holds no value: each checkbox keeps its own',
+          '`name` / `checked`. The description and error describe the group (aria-describedby); add',
+          '`sr-only` to the label to hide it visually; `disabled` reaches every checkbox natively.',
         ].join(' '),
       },
     },
@@ -42,7 +66,7 @@ const meta = {
     disabled: { control: 'boolean' },
     children: { control: false },
   },
-} satisfies Meta<CheckboxGroupProps>
+} satisfies Meta<StoryArgs>
 
 export default meta
 type Story = StoryObj<typeof meta>
@@ -82,20 +106,20 @@ function SyncOptionItems() {
 
 export const SyncOptions: Story = {
   render: (args) => (
-    <CheckboxGroup {...args}>
+    <Group {...args}>
       <SyncOptionItems />
-    </CheckboxGroup>
+    </Group>
   ),
 }
 
 export const Horizontal: Story = {
   args: { legend: 'Resource kinds', orientation: 'horizontal' },
   render: (args) => (
-    <CheckboxGroup {...args}>
+    <Group {...args}>
       {['Deployment', 'Service', 'ConfigMap', 'Secret', 'Ingress'].map((kind, i) => (
         <Checkbox key={kind} name="kinds" value={kind} label={kind} defaultChecked={i < 2} />
       ))}
-    </CheckboxGroup>
+    </Group>
   ),
 }
 
@@ -111,11 +135,11 @@ export const WithError: Story = {
     }
     return (
       <form onSubmit={onSubmit} className="flex flex-col gap-4">
-        <CheckboxGroup {...args} error={error}>
+        <Group {...args} error={error}>
           <Checkbox name="events" value="degraded" label="Health degraded" />
           <Checkbox name="events" value="failed" label="Sync failed" />
           <Checkbox name="events" value="succeeded" label="Sync succeeded" />
-        </CheckboxGroup>
+        </Group>
         <div>
           <Button type="submit">Save</Button>
         </div>
@@ -139,9 +163,9 @@ export const InDialog: Story = {
             description="Applies the manifests at 9f3c2a1 (main) to payments."
           />
           <DialogBody>
-            <CheckboxGroup {...args}>
+            <Group {...args}>
               <SyncOptionItems />
-            </CheckboxGroup>
+            </Group>
           </DialogBody>
           <DialogFooter>
             <Button intent="secondary" onClick={() => setOpen(false)}>

@@ -9,9 +9,20 @@ import {
   useState,
 } from 'react'
 import { cn } from '../../lib/cn'
-import { MessageIcon } from '../../lib/icon-slots'
+import {
+  ChoiceGroupContext,
+  ChoiceGroupDescription,
+  type ChoiceGroupDescriptionProps,
+  ChoiceGroupError,
+  type ChoiceGroupErrorProps,
+  ChoiceGroupItems,
+  type ChoiceGroupItemsProps,
+  ChoiceGroupLabel,
+  type ChoiceGroupLabelProps,
+  useChoiceGroupParts,
+} from '../checkbox/choice-group'
 import { type ChoiceLabelProps, ChoiceRow } from '../checkbox/choice-row'
-import { isPresent, useMergedRef } from '../input/field'
+import { useMergedRef } from '../input/field'
 import { RadioContext, useRadioItem } from './radio-context'
 
 type SelectionProps =
@@ -33,17 +44,8 @@ export type RadioGroupProps = Omit<
   SelectionProps & {
     /** Native group and submitted field name. Independent groups need different names. */
     name: string
-    /** Names the group (fieldset legend). */
-    legend: ReactNode
-    /** Muted line under the legend, linked with aria-describedby. */
-    description?: ReactNode
-    /** Shows one group message; marks the group invalid. `true` omits the message. */
-    error?: ReactNode
-    /**
-     * Icon before the error text, sized to it. Defaults to a circled exclamation mark; `false` or
-     * `null` hides it.
-     */
-    errorIcon?: ReactNode
+    /** Puts the group and its items in the error state. Pair with RadioGroupError for a message. */
+    invalid?: boolean
     /** Marks the group required: native validation needs one selection. */
     required?: boolean
     /** Called when the selection changes, with the new value and the native change event. */
@@ -54,28 +56,29 @@ export type RadioGroupProps = Omit<
      */
     variant?: 'default' | 'card'
     /**
-     * Layout only; both orientations keep native radio keyboard behavior.
+     * Layout of RadioGroupItems; both orientations keep native radio keyboard behavior.
      * @defaultValue 'vertical'
      */
     orientation?: 'vertical' | 'horizontal'
-    /** Classes for the items container; `className` goes to the fieldset. */
-    itemsClassName?: string
-    /** `Radio` or `RadioTile` items. */
+    /**
+     * Compose freely: RadioGroupLabel, RadioGroupDescription, RadioGroupItems (or any layout)
+     * holding `Radio` or `RadioTile` items, and RadioGroupError.
+     */
     children: ReactNode
   }
 
+/**
+ * Holds the selection and wires the parts. Name it with RadioGroupLabel (visible or `sr-only`),
+ * `aria-label` or `aria-labelledby`.
+ */
 export function RadioGroup({
   name,
-  legend,
-  description,
-  error,
-  errorIcon,
+  invalid: invalidProp,
   value,
   defaultValue,
   onValueChange,
   variant = 'default',
   orientation = 'vertical',
-  itemsClassName,
   children,
   className,
   disabled,
@@ -87,16 +90,8 @@ export function RadioGroup({
   ...props
 }: RadioGroupProps) {
   const id = useId()
-  const descriptionId = `${id}-description`
-  const errorId = `${id}-error`
-  const legendId = `${id}-legend`
-  const invalid = Boolean(error) || ariaInvalid === true || ariaInvalid === 'true'
-  const hasDescription = isPresent(description)
-  const hasError = Boolean(error) && error !== true && isPresent(error)
-  const describedBy =
-    [describedByProp, hasDescription && descriptionId, hasError && errorId]
-      .filter(Boolean)
-      .join(' ') || undefined
+  const { slots, labelledBy, describedBy } = useChoiceGroupParts(id, describedByProp)
+  const invalid = Boolean(invalidProp) || ariaInvalid === true || ariaInvalid === 'true'
   const controlled = value !== undefined
   const [internalValue, setInternalValue] = useState<string | null>(defaultValue ?? null)
   const selected = controlled ? value : internalValue
@@ -180,64 +175,46 @@ export function RadioGroup({
         },
       }}
     >
-      <fieldset
-        {...props}
-        ref={mergedRef}
-        name={name}
-        form={form}
-        disabled={disabled}
-        data-slot="radio-group"
-        data-variant={variant}
-        role="radiogroup"
-        aria-labelledby={props['aria-labelledby'] ?? legendId}
-        aria-describedby={describedBy}
-        aria-invalid={invalid ? true : ariaInvalid}
-        aria-required={required || undefined}
-        aria-orientation={orientation}
-        className={cn('group/radio-group m-0 min-w-0 border-0 p-0', className)}
+      <ChoiceGroupContext
+        value={{
+          ...slots,
+          required,
+          orientation,
+          itemsClassName: variant === 'card' && orientation === 'horizontal' ? 'gap-3' : undefined,
+        }}
       >
-        <legend
-          id={legendId}
-          className="float-start mb-1.5 w-full p-0 text-sm font-medium text-fg group-disabled/radio-group:opacity-50"
+        <fieldset
+          {...props}
+          ref={mergedRef}
+          name={name}
+          form={form}
+          disabled={disabled}
+          data-slot="radio-group"
+          data-variant={variant}
+          role="radiogroup"
+          aria-labelledby={props['aria-labelledby'] ?? labelledBy}
+          aria-describedby={describedBy}
+          aria-invalid={invalid ? true : ariaInvalid}
+          aria-required={required || undefined}
+          aria-orientation={orientation}
+          className={cn('group/radio-group m-0 min-w-0 border-0 p-0', className)}
         >
-          {legend}
-          {required && (
-            <span aria-hidden className="text-danger">
-              {' *'}
-            </span>
-          )}
-        </legend>
-        <div className="clear-both flex flex-col">
-          {hasDescription && (
-            <p
-              id={descriptionId}
-              className="m-0 -mt-1 mb-2.5 text-xs/snug text-fg-muted group-disabled/radio-group:opacity-50"
-            >
-              {description}
-            </p>
-          )}
-          <div
-            data-slot="radio-group-items"
-            data-orientation={orientation}
-            className={cn(
-              'flex gap-2',
-              orientation === 'vertical' ? 'flex-col' : 'flex-row flex-wrap gap-x-6',
-              variant === 'card' && orientation === 'horizontal' && 'gap-3',
-              itemsClassName,
-            )}
-          >
-            {children}
-          </div>
-          {hasError && (
-            <p id={errorId} className="m-0 mt-2 flex items-start gap-1 text-xs/snug text-danger">
-              <MessageIcon icon={errorIcon} className="mt-px" />
-              <span>{error}</span>
-            </p>
-          )}
-        </div>
-      </fieldset>
+          {children}
+        </fieldset>
+      </ChoiceGroupContext>
     </RadioContext>
   )
+}
+
+export {
+  ChoiceGroupLabel as RadioGroupLabel,
+  type ChoiceGroupLabelProps as RadioGroupLabelProps,
+  ChoiceGroupDescription as RadioGroupDescription,
+  type ChoiceGroupDescriptionProps as RadioGroupDescriptionProps,
+  ChoiceGroupError as RadioGroupError,
+  type ChoiceGroupErrorProps as RadioGroupErrorProps,
+  ChoiceGroupItems as RadioGroupItems,
+  type ChoiceGroupItemsProps as RadioGroupItemsProps,
 }
 
 export type RadioProps = Omit<

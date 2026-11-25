@@ -2,7 +2,15 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createRef } from 'react'
 import { afterEach, expect, test, vi } from 'vite-plus/test'
-import { Radio, RadioGroup, RadioIndicator, RadioTile } from './index'
+import {
+  Radio,
+  RadioGroup,
+  RadioGroupDescription,
+  RadioGroupError,
+  RadioGroupLabel,
+  RadioIndicator,
+  RadioTile,
+} from './index'
 
 test('tiles and plain radios share native navigation, external form data and reset', async () => {
   const user = userEvent.setup()
@@ -12,14 +20,8 @@ test('tiles and plain radios share native navigation, external form data and res
       <form id="wardrobe">
         <button type="reset">Reset</button>
       </form>
-      <RadioGroup
-        name="outfit"
-        legend="Outfit"
-        form="wardrobe"
-        required
-        defaultValue="fern"
-        onValueChange={change}
-      >
+      <RadioGroup name="outfit" form="wardrobe" required defaultValue="fern" onValueChange={change}>
+        <RadioGroupLabel>Outfit</RadioGroupLabel>
         <RadioTile value="fern">
           <img src="fern.png" alt="" />
           Fern
@@ -60,14 +62,9 @@ test('controlled tiles expose the owner selection and compose explicit names and
     <>
       <span id="ash-name">Ash jacket</span>
       <p id="hint">Lightweight.</p>
-      <RadioGroup
-        name="outfit"
-        legend="Outfit"
-        description="Choose one."
-        value={value}
-        error="Unavailable."
-        onValueChange={change}
-      >
+      <RadioGroup name="outfit" value={value} onValueChange={change} invalid>
+        <RadioGroupLabel>Outfit</RadioGroupLabel>
+        <RadioGroupDescription>Choose one.</RadioGroupDescription>
         <RadioTile
           ref={ref}
           value="fern"
@@ -81,6 +78,7 @@ test('controlled tiles expose the owner selection and compose explicit names and
         <RadioTile value="ash" aria-labelledby="ash-name">
           <img src="ash.png" alt="" />
         </RadioTile>
+        <RadioGroupError>Unavailable.</RadioGroupError>
       </RadioGroup>
     </>
   )
@@ -119,7 +117,8 @@ test('Space and primary pointer presses create ripples; arrow navigation, repeat
   proto.animate = animate
   const view = (disabled = false, outerDisabled = false) => (
     <fieldset disabled={outerDisabled}>
-      <RadioGroup name="outfit" legend="Outfit" disabled={disabled}>
+      <RadioGroup name="outfit" disabled={disabled}>
+        <RadioGroupLabel>Outfit</RadioGroupLabel>
         <RadioTile value="fern">
           Fern
           <RadioIndicator />
@@ -170,7 +169,8 @@ test.each([true, false])(
     proto.animate = animate
     vi.stubGlobal('matchMedia', () => ({ matches: ripple }))
     render(
-      <RadioGroup name="outfit" legend="Outfit">
+      <RadioGroup name="outfit">
+        <RadioGroupLabel>Outfit</RadioGroupLabel>
         <RadioTile value="fern" ripple={ripple}>
           Fern
         </RadioTile>
