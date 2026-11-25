@@ -3,3 +3,4 @@
 @import "./styles.css";
 @source "../";
 @source "../../stories";
+@source not "../../docs/local";

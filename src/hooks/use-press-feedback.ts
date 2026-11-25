@@ -7,10 +7,17 @@ const OPACITY = 0.16
 
 type Ripple = { el: HTMLSpanElement; grow: Animation }
 
-const RELEASE_EVENTS = ['pointerup', 'pointerleave', 'pointercancel', 'keyup', 'blur'] as const
+const RELEASE_EVENTS = [
+  'pointerup',
+  'pointerleave',
+  'pointercancel',
+  'keyup',
+  'blur',
+  'focusout',
+] as const
 
 /**
- * Press feedback for buttons and button-styled links: toggles `data-pressed`
+ * Press feedback for buttons, button-styled links and radio tile labels: toggles `data-pressed`
  * on the host (styled as a sunken, inset look) and, when `ripple` is on, spawns a
  * Material-style ripple via the Web Animations API.
  *
@@ -18,19 +25,28 @@ const RELEASE_EVENTS = ['pointerup', 'pointerleave', 'pointercancel', 'keyup', '
  * the host. Listeners are bound natively to the overlay's parent so the host's
  * own props/ref stay untouched. Hosts with aria-disabled="true" get no feedback.
  */
-export function usePressFeedback<T extends HTMLElement = HTMLSpanElement>(ripple = true) {
+export function usePressFeedback<T extends HTMLElement = HTMLSpanElement>(
+  ripple = true,
+  disabled = false,
+) {
   const ref = useRef<T>(null)
 
   useEffect(() => {
     const layer = ref.current
     const host = layer?.parentElement
-    if (!layer || !host) return
+    if (!layer || !host || disabled) return
 
     const live = new Set<Ripple>()
-    // Links activate on Enter only; Space would scroll the page
-    const activationKeys = host instanceof HTMLAnchorElement ? ['Enter'] : ['Enter', ' ']
+    const label = host instanceof HTMLLabelElement ? host : null
+    // A radio activates with Space; arrow keys only move the native selection.
+    const activationKeys = label
+      ? [' ']
+      : host instanceof HTMLAnchorElement
+        ? ['Enter']
+        : ['Enter', ' ']
 
-    const isInert = () => host.getAttribute('aria-disabled') === 'true'
+    const isInert = () =>
+      host.getAttribute('aria-disabled') === 'true' || label?.control?.matches(':disabled')
 
     const canRipple = () =>
       ripple &&
@@ -64,20 +80,27 @@ export function usePressFeedback<T extends HTMLElement = HTMLSpanElement>(ripple
     }
 
     // Let each ripple finish growing before it fades, so quick taps still read
-    const release = () => {
+    const release = (event?: Event) => {
+      if (label && event && !host.hasAttribute('data-pressed')) return
       delete host.dataset.pressed
+      // Dragging off a tile or losing focus cancels its feedback immediately.
+      if (label && event?.type !== 'pointerup' && event?.type !== 'keyup') {
+        live.clear()
+        layer.replaceChildren()
+        return
+      }
       for (const r of live) {
         live.delete(r)
         r.grow.finished
           .catch(() => {})
-          .then(
-            () =>
-              r.el.animate([{ opacity: 0 }], {
-                duration: FADE_MS,
-                easing: 'linear',
-                fill: 'forwards',
-              }).finished,
-          )
+          .then(() => {
+            if (!layer.contains(r.el)) return
+            return r.el.animate([{ opacity: 0 }], {
+              duration: FADE_MS,
+              easing: 'linear',
+              fill: 'forwards',
+            }).finished
+          })
           .catch(() => {})
           .finally(() => r.el.remove())
       }
@@ -89,6 +112,19 @@ export function usePressFeedback<T extends HTMLElement = HTMLSpanElement>(ripple
       press(e.clientX - rect.left, e.clientY - rect.top)
     }
 
+    // Touch may implicitly capture the pointer, so leaving the label needn't fire pointerleave.
+    const onTilePointerMove = (e: PointerEvent) => {
+      if (e.isPrimary === false || !host.hasAttribute('data-pressed')) return
+      const rect = host.getBoundingClientRect()
+      if (
+        e.clientX < rect.left ||
+        e.clientX > rect.right ||
+        e.clientY < rect.top ||
+        e.clientY > rect.bottom
+      )
+        release()
+    }
+
     // Keyboard presses ripple from the center, like Material
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.repeat || !activationKeys.includes(e.key) || isInert()) return
@@ -96,16 +132,18 @@ export function usePressFeedback<T extends HTMLElement = HTMLSpanElement>(ripple
     }
 
     host.addEventListener('pointerdown', onPointerDown)
+    if (label) host.addEventListener('pointermove', onTilePointerMove)
     host.addEventListener('keydown', onKeyDown)
     for (const type of RELEASE_EVENTS) host.addEventListener(type, release)
 
     return () => {
       host.removeEventListener('pointerdown', onPointerDown)
+      if (label) host.removeEventListener('pointermove', onTilePointerMove)
       host.removeEventListener('keydown', onKeyDown)
       for (const type of RELEASE_EVENTS) host.removeEventListener(type, release)
       release()
     }
-  }, [ripple])
+  }, [ripple, disabled])
 
   return ref
 }

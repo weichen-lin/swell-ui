@@ -18,7 +18,9 @@ overrides:
 peerDependencyRules:
   allowAny:
     - vite
+    - vite-plus
     - vitest
   allowedVersions:
     vite: '*'
+    vite-plus: '*'
     vitest: '*'

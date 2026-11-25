@@ -310,6 +310,24 @@
   --spacing-control-sm: 2.125rem; /* 34px */
   --spacing-control-md: 2.375rem; /* 38px */
   --spacing-control-lg: 2.625rem; /* 42px */
+
+  /* The SVG rotates while the visible arc grows and recedes along its circumference. */
+  --animate-spinner-arc: swell-spinner-arc 1.4s ease-in-out infinite;
+
+  @keyframes swell-spinner-arc {
+    0% {
+      stroke-dasharray: 1 126;
+      stroke-dashoffset: 0;
+    }
+    50% {
+      stroke-dasharray: 94 126;
+      stroke-dashoffset: -16;
+    }
+    100% {
+      stroke-dasharray: 1 126;
+      stroke-dashoffset: -125;
+    }
+  }
 }
 
 /* Follow the system unless data-theme forces one; light-dark() above reads this */

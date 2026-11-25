@@ -1,10 +1,8 @@
 import {
   type ChangeEvent,
   type ComponentProps,
-  createContext,
   type ReactNode,
   useCallback,
-  useContext,
   useId,
   useLayoutEffect,
   useRef,
@@ -14,6 +12,7 @@ import { cn } from '../../lib/cn'
 import { MessageIcon } from '../../lib/icon-slots'
 import { type ChoiceLabelProps, ChoiceRow } from '../checkbox/choice-row'
 import { isPresent, useMergedRef } from '../input/field'
+import { RadioContext, useRadioItem } from './radio-context'
 
 type SelectionProps =
   | {
@@ -61,25 +60,9 @@ export type RadioGroupProps = Omit<
     orientation?: 'vertical' | 'horizontal'
     /** Classes for the items container; `className` goes to the fieldset. */
     itemsClassName?: string
-    /** `Radio` items. */
+    /** `Radio` or `RadioTile` items. */
     children: ReactNode
   }
-
-type RadioContextValue = {
-  name: string
-  form?: string
-  selected: string | null
-  disabled?: boolean
-  required?: boolean
-  invalid: boolean
-  describedBy?: string
-  variant: 'default' | 'card'
-  orientation: 'vertical' | 'horizontal'
-  select: (event: ChangeEvent<HTMLInputElement>) => void
-  register: (node: HTMLInputElement) => () => void
-}
-
-const RadioContext = createContext<RadioContextValue | null>(null)
 
 export function RadioGroup({
   name,
@@ -293,15 +276,7 @@ export function Radio({
   'aria-describedby': describedBy,
   ...props
 }: RadioProps) {
-  const group = useContext(RadioContext)
-  if (!group) throw new Error('Radio must be rendered inside <RadioGroup>')
-  if (value === '') throw new Error('Radio value must be a non-empty string')
-  const ownRef = useRef<HTMLInputElement>(null)
-  const mergedRef = useMergedRef(ownRef, ref)
-  const register = group.register
-  useLayoutEffect(() => {
-    if (ownRef.current) return register(ownRef.current)
-  }, [register, value])
+  const { group, inputProps } = useRadioItem(value, disabled, ref, onChange)
   const card = group.variant === 'card'
   const invalid = group.invalid
 
@@ -335,21 +310,10 @@ export function Radio({
         <span className="relative inline-grid size-4 place-items-center transition-[scale] duration-100 ease-out has-[input:enabled:active]:scale-[0.92]">
           <input
             {...props}
-            ref={mergedRef}
+            {...inputProps}
             data-slot="radio-input"
-            type="radio"
-            name={group.name}
-            form={group.form}
-            value={value}
-            checked={group.selected === value}
-            disabled={group.disabled || disabled}
-            required={group.required}
             aria-labelledby={props['aria-labelledby'] ?? row.labelledBy}
             aria-describedby={row.describedBy}
-            onChange={(event) => {
-              onChange?.(event)
-              group.select(event)
-            }}
             className={cn(
               'peer col-start-1 row-start-1 m-0 size-4 cursor-pointer appearance-none rounded-full border outline-hidden disabled:cursor-not-allowed',
               'bg-input-bg checked:bg-control-checked',
