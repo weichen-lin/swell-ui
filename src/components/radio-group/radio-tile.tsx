@@ -51,14 +51,14 @@ export function RadioTile({
           'shadow-[var(--shadow-raised),var(--shadow-lift)] motion-safe:transition-[border-color,background-color,box-shadow,translate] motion-safe:duration-150 motion-safe:ease-out',
           'data-checked:border-control-checked data-checked:bg-[color-mix(in_oklab,var(--color-control-checked)_4%,var(--color-surface))]',
           !state.invalid &&
-            'pointer-fine:has-[input:enabled]:hover:not-data-checked:border-input-border-hover',
-          'pointer-fine:has-[input:enabled]:hover:not-data-pressed:shadow-[var(--shadow-raised),var(--shadow-lift-hover)] motion-safe:pointer-fine:has-[input:enabled]:hover:not-data-pressed:-translate-y-(--lift)',
+            'pointer-fine:[@media(hover:hover)]:[&:where(:has(input:enabled):hover:not([data-checked]))]:border-input-border-hover',
+          'pointer-fine:[@media(hover:hover)]:[&:where(:has(input:enabled):hover:not([data-pressed]))]:shadow-[var(--shadow-raised),var(--shadow-lift-hover)] motion-safe:pointer-fine:[@media(hover:hover)]:[&:where(:has(input:enabled):hover:not([data-pressed]))]:-translate-y-(--lift)',
           'data-pressed:bg-surface-inset data-pressed:shadow-[var(--shadow-pressed),0_0_0_0_transparent]',
-          'has-[input:focus-visible]:outline-solid has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-control-checked',
-          'has-[input:disabled]:cursor-not-allowed has-[input:disabled]:opacity-50 has-[input:disabled]:shadow-none',
+          '[&:where(:has(input:focus-visible))]:outline-solid [&:where(:has(input:focus-visible))]:outline-2 [&:where(:has(input:focus-visible))]:outline-offset-2 [&:where(:has(input:focus-visible))]:outline-control-checked',
+          '[&:where(:has(input:disabled))]:cursor-not-allowed [&:where(:has(input:disabled))]:opacity-50 [&:where(:has(input:disabled))]:shadow-none',
           state.invalid &&
-            'border-danger data-checked:border-danger has-[input:focus-visible]:outline-danger',
-          'forced-colors:data-checked:border-[Highlight] forced-colors:has-[input:focus-visible]:outline-[Highlight] forced-colors:has-[input:disabled]:border-[GrayText] forced-colors:has-[input:disabled]:text-[GrayText] forced-colors:has-[input:disabled]:opacity-100',
+            'border-danger data-checked:border-danger [&:where(:has(input:focus-visible))]:outline-danger',
+          'forced-colors:data-checked:border-[Highlight] forced-colors:[&:where(:has(input:focus-visible))]:outline-[Highlight] forced-colors:[&:has(:where(input):disabled)]:border-[GrayText] forced-colors:[&:where(:has(input:disabled))]:text-[GrayText] forced-colors:[&:where(:has(input:disabled))]:opacity-100',
           className,
         )}
       >
@@ -74,7 +74,7 @@ export function RadioTile({
           ref={layerRef}
           data-ripple={ripple ? '' : undefined}
           aria-hidden
-          className="pointer-events-none absolute inset-0 -z-10 overflow-hidden rounded-[inherit] opacity-60 group-has-[input:disabled]/radio-tile:hidden motion-reduce:hidden forced-colors:hidden"
+          className="pointer-events-none absolute inset-0 -z-10 overflow-hidden rounded-[inherit] opacity-60 group-[&:where(:has(input:disabled))]/radio-tile:hidden motion-reduce:hidden forced-colors:hidden"
         />
         {children}
       </label>
@@ -102,9 +102,9 @@ export function RadioIndicator({
       data-disabled={state.disabled || undefined}
       data-invalid={state.invalid || undefined}
       className={cn(
-        'pointer-events-none absolute inset-e-2 top-2 inline-flex size-4 items-center justify-center rounded-full bg-control-checked text-control-checked-fg [&_svg]:size-3',
-        'invisible scale-80 data-checked:visible data-checked:scale-100 motion-safe:transition-[scale] motion-safe:duration-100 motion-safe:ease-out group-has-[input:focus-visible]/radio-tile:transition-none',
-        'forced-colors:forced-color-adjust-none forced-colors:bg-[Highlight] forced-colors:text-[HighlightText] forced-colors:group-has-[input:disabled]/radio-tile:bg-[GrayText] forced-colors:group-has-[input:disabled]/radio-tile:text-[Canvas]',
+        'pointer-events-none absolute inset-e-2 top-2 inline-flex size-4 items-center justify-center rounded-full bg-control-checked text-control-checked-fg [&_:where(svg:not([class*=size-]))]:size-3',
+        'invisible scale-80 data-checked:visible data-checked:scale-100 motion-safe:transition-[scale] motion-safe:duration-100 motion-safe:ease-out group-[&:has(:where(input):focus-visible)]/radio-tile:transition-none',
+        'forced-colors:forced-color-adjust-none forced-colors:bg-[Highlight] forced-colors:text-[HighlightText] forced-colors:group-[&:where(:has(input:disabled))]/radio-tile:bg-[GrayText] forced-colors:group-[&:where(:has(input:disabled))]/radio-tile:text-[Canvas]',
         className,
       )}
     >

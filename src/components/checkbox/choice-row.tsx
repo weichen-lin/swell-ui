@@ -118,10 +118,10 @@ export function ChoiceRow({
       className={cn(
         // min size keeps a 24px target even without text (aria-label only, e.g. a table row)
         'relative isolate flex min-h-6 min-w-6 items-start text-sm/6 text-fg',
-        'cursor-pointer has-[input:disabled]:cursor-not-allowed has-[input[aria-busy=true]]:cursor-progress',
-        'has-[input:disabled]:opacity-50',
+        'cursor-pointer [&:where(:has(input:disabled))]:cursor-not-allowed [&:where(:has(input[aria-busy=true]))]:cursor-progress',
+        '[&:where(:has(input:disabled))]:opacity-50',
         // Forced colors ignore the dim; GrayText is the system's "disabled" signal
-        'forced-colors:has-[input:disabled]:text-[GrayText] forced-colors:has-[input:disabled]:opacity-100',
+        'forced-colors:[&:where(:has(input:disabled))]:text-[GrayText] forced-colors:[&:where(:has(input:disabled))]:opacity-100',
         // >=44px hit target on touch without changing the layout (Button's band); sits behind the row
         'pointer-coarse:before:absolute pointer-coarse:before:top-1/2 pointer-coarse:before:left-1/2',
         'pointer-coarse:before:-z-10 pointer-coarse:before:size-full pointer-coarse:before:min-h-11',

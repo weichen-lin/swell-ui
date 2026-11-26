@@ -329,7 +329,10 @@ export function Combobox({
       onClick={() => choose(item)}
     >
       {item.icon && (
-        <span aria-hidden className="shrink-0 text-fg-muted [&_svg]:size-4">
+        <span
+          aria-hidden
+          className="shrink-0 text-fg-muted [&_:where(svg:not([class*=size-]))]:size-4"
+        >
           {item.icon}
         </span>
       )}
@@ -348,7 +351,7 @@ export function Combobox({
         aria-hidden
         data-slot="combobox-check"
         className={cn(
-          'flex shrink-0 [&_svg]:size-4 [&_svg]:shrink-0',
+          'flex shrink-0 [&_:where(svg:not([class*=size-]))]:size-4 [&_:where(svg:not([class*=shrink]))]:shrink-0',
           item.value !== selectedValue && 'invisible',
         )}
       >
@@ -395,7 +398,7 @@ export function Combobox({
         autoComplete={props.autoComplete ?? 'off'}
         status={status}
         inputClassName={inputClassName}
-        className="pointer-coarse:**:data-[slot=input-control]:min-h-11"
+        className="pointer-coarse:[&_:where([data-slot=input-control])]:min-h-11"
         onChange={(event) => {
           if (composing.current) setDraft(event.currentTarget.value)
           else edit(event.currentTarget.value)
@@ -586,7 +589,7 @@ export function Combobox({
             <div className="flex items-center justify-center gap-2 p-4 text-sm text-fg-muted">
               <Spinner
                 icon={loadingIcon}
-                className="motion-reduce:[animation-duration:2.5s] [&_svg]:size-4 [&_svg]:shrink-0"
+                className="motion-reduce:[animation-duration:2.5s] [&_:where(svg:not([class*=size-]))]:size-4 [&_:where(svg:not([class*=shrink]))]:shrink-0"
               />
               {loadingText}
             </div>

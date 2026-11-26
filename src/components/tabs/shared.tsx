@@ -82,7 +82,7 @@ const itemBase = [
   // Inset so the list's overflow clipping never cuts the ring
   'focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus',
   'pointer-coarse:min-h-11 pointer-coarse:min-w-11',
-  'not-data-disabled:not-aria-disabled:hover:text-fg data-selected:text-fg aria-[current=page]:text-fg',
+  '[@media(hover:hover)]:[&:where(:not([data-disabled]):not([aria-disabled=true]):hover)]:text-fg data-selected:text-fg aria-[current=page]:text-fg',
   'data-disabled:cursor-not-allowed data-disabled:opacity-50',
   'aria-disabled:cursor-not-allowed aria-disabled:opacity-50',
   'forced-colors:data-disabled:text-[GrayText] forced-colors:data-disabled:opacity-100',
@@ -118,7 +118,11 @@ export function TabContent({ icon, badge, children }: TabContentProps) {
   return (
     <span data-slot="tab-content" className="inline-flex items-center gap-2">
       {icon != null && icon !== false && (
-        <span aria-hidden data-slot="tab-icon" className="inline-flex shrink-0 [&_svg]:size-4">
+        <span
+          aria-hidden
+          data-slot="tab-icon"
+          className="inline-flex shrink-0 [&_:where(svg:not([class*=size-]))]:size-4"
+        >
           {icon}
         </span>
       )}

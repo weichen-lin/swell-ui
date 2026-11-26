@@ -177,7 +177,9 @@ test('icons replaces the sort, paging and search icons', async () => {
     'button',
   )
   expect(sortButton).toContainElement(screen.getByTestId('unsorted'))
-  expect(screen.getByTestId('unsorted').parentElement).toHaveClass('[&_svg]:size-3.5')
+  expect(screen.getByTestId('unsorted').parentElement).toHaveClass(
+    '[&_:where(svg:not([class*=size-]))]:size-3.5',
+  )
   await user.click(sortButton)
   expect(sortButton).toContainElement(screen.getByTestId('asc'))
   await user.click(sortButton)

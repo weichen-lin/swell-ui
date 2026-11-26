@@ -329,7 +329,7 @@ export function Table<T>({
                             <span
                               aria-hidden
                               data-slot="table-sort-icon"
-                              className="flex shrink-0 [&_svg]:size-3.5 [&_svg]:shrink-0"
+                              className="flex shrink-0 [&_:where(svg:not([class*=size-]))]:size-3.5 [&_:where(svg:not([class*=shrink]))]:shrink-0"
                             >
                               {sortIcon}
                             </span>
@@ -342,12 +342,12 @@ export function Table<T>({
                   })}
                 </tr>
               </thead>
-              <tbody
-                data-slot="table-body"
-                className="[&>tr:not(:last-child)>*]:border-b [&>tr>*]:border-border"
-              >
-                {rows.map(({ row, id, canSelect }) => {
+              <tbody data-slot="table-body">
+                {rows.map(({ row, id, canSelect }, rowIndex) => {
                   const selected = selection?.ids.has(id) ?? false
+                  // Row dividers sit on the cells (not a tbody descendant selector), so a column's
+                  // className border utilities override them like any other class
+                  const divider = cn('border-border', rowIndex < rows.length - 1 && 'border-b')
                   return (
                     <tr
                       key={id}
@@ -356,7 +356,7 @@ export function Table<T>({
                       className="hover:bg-surface-muted data-selected:bg-surface-muted"
                     >
                       {selection && (
-                        <td className="w-12 px-3">
+                        <td className={cn('w-12 px-3', divider)}>
                           <Checkbox
                             aria-label={text.selectRow(id)}
                             checked={selected}
@@ -375,6 +375,7 @@ export function Table<T>({
                             scope={column.rowHeader ? 'row' : undefined}
                             className={cn(
                               'h-13 px-4 py-2 align-middle',
+                              divider,
                               alignClasses[align],
                               column.numeric && 'tabular-nums',
                               column.rowHeader && 'font-medium',

@@ -272,19 +272,19 @@ export function Radio({
         card && [
           'w-full rounded-control border bg-surface p-3 pointer-coarse:p-3',
           'transition-[border-color,background-color] duration-150 ease-out',
-          '[&>span:last-child>span:first-child]:font-medium',
-          'has-[input:checked]:bg-[color-mix(in_oklab,var(--color-control-checked)_4%,var(--color-surface))]',
-          'has-[input:focus-visible]:outline-solid has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2',
+          '[&>:where(span:last-child)>:where(span:first-child)]:font-medium',
+          '[&:where(:has(input:checked))]:bg-[color-mix(in_oklab,var(--color-control-checked)_4%,var(--color-surface))]',
+          '[&:where(:has(input:focus-visible))]:outline-solid [&:where(:has(input:focus-visible))]:outline-2 [&:where(:has(input:focus-visible))]:outline-offset-2',
           invalid
-            ? 'border-danger has-[input:focus-visible]:outline-danger'
-            : 'border-input-border has-[input:checked]:border-control-checked has-[input:enabled]:hover:border-input-border-hover has-[input:focus-visible]:outline-control-checked',
-          'forced-colors:has-[input:checked]:border-[Highlight] forced-colors:has-[input:focus-visible]:outline-[Highlight]',
+            ? 'border-danger [&:where(:has(input:focus-visible))]:outline-danger'
+            : 'border-input-border [&:where(:has(input:checked))]:border-control-checked [@media(hover:hover)]:[&:where(:has(input:enabled):hover)]:border-input-border-hover [&:where(:has(input:focus-visible))]:outline-control-checked',
+          'forced-colors:[&:where(:has(input:checked))]:border-[Highlight] forced-colors:[&:where(:has(input:focus-visible))]:outline-[Highlight]',
           group.orientation === 'horizontal' && 'flex-[1_1_14rem]',
         ],
         className,
       )}
       control={(row) => (
-        <span className="relative inline-grid size-4 place-items-center transition-[scale] duration-100 ease-out has-[input:enabled:active]:scale-[0.92]">
+        <span className="relative inline-grid size-4 place-items-center transition-[scale] duration-100 ease-out [&:where(:has(input:enabled:active))]:scale-[0.92]">
           <input
             {...props}
             {...inputProps}
@@ -295,19 +295,21 @@ export function Radio({
               'peer col-start-1 row-start-1 m-0 size-4 cursor-pointer appearance-none rounded-full border outline-hidden disabled:cursor-not-allowed',
               'bg-input-bg checked:bg-control-checked',
               'transition-[border-color,background-color,box-shadow] duration-150 ease-out',
+              // Row hover: the row label is [data-slot=radio]. Only its :hover counts toward weight, so
+              // it still beats focus-visible: by rule order, as before, without stacking variants
               invalid
                 ? 'border-danger [box-shadow:0_0_0_3px_var(--color-input-halo-invalid)]'
-                : 'border-input-border checked:border-control-checked group-hover/radio:enabled:not-checked:border-input-border-hover',
+                : 'border-input-border checked:border-control-checked [@media(hover:hover)]:[:where([data-slot=radio]):hover_&:where(:enabled:not(:checked))]:border-input-border-hover',
               !card && [
                 invalid
-                  ? 'focus-visible:[box-shadow:0_0_0_3px_var(--color-input-halo-invalid-focus)] not-forced-colors:focus-visible:outline-danger'
-                  : 'focus-visible:border-input-focus focus-visible:[box-shadow:0_0_0_3px_var(--color-input-halo)] not-forced-colors:focus-visible:outline-control-checked',
-                'checked:focus-visible:shadow-none checked:focus-visible:outline-solid checked:focus-visible:outline-2 checked:focus-visible:outline-offset-2',
+                  ? '[&:where(:focus-visible:not(:checked))]:[box-shadow:0_0_0_3px_var(--color-input-halo-invalid-focus)] not-forced-colors:focus-visible:outline-danger'
+                  : 'focus-visible:border-input-focus [&:where(:focus-visible:not(:checked))]:[box-shadow:0_0_0_3px_var(--color-input-halo)] not-forced-colors:focus-visible:outline-control-checked',
+                '[&:where(:checked:focus-visible)]:shadow-none [&:where(:checked:focus-visible)]:outline-solid [&:where(:checked:focus-visible)]:outline-2 [&:where(:checked:focus-visible)]:outline-offset-2',
               ],
               card && 'focus-visible:outline-none',
               'forced-colors:forced-color-adjust-none forced-colors:shadow-none forced-colors:border-[CanvasText] forced-colors:bg-[Canvas]',
               'forced-colors:checked:border-[Highlight] forced-colors:checked:bg-[Highlight]',
-              'forced-colors:disabled:border-[GrayText] forced-colors:disabled:checked:bg-[GrayText]',
+              'forced-colors:disabled:border-[GrayText] forced-colors:[&:disabled:where(:checked)]:bg-[GrayText]',
               !card && 'forced-colors:focus-visible:outline-[Highlight]',
               inputClassName,
             )}

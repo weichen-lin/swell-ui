@@ -134,13 +134,13 @@ test('loadingText defaults to "Loading"', () => {
 test('spinner size follows button size', () => {
   const { rerender, container } = render(<Button loading>Go</Button>)
   const slot = () => container.querySelector('[data-slot="spinner"]')?.parentElement
-  expect(slot()).toHaveClass('[&_svg]:size-[18px]')
+  expect(slot()).toHaveClass('[&_:where(svg:not([class*=size-]))]:size-[18px]')
   rerender(
     <Button loading size="lg">
       Go
     </Button>,
   )
-  expect(slot()).toHaveClass('[&_svg]:size-5')
+  expect(slot()).toHaveClass('[&_:where(svg:not([class*=size-]))]:size-5')
 })
 
 test('no spinner or aria-busy when not loading', () => {
@@ -243,7 +243,7 @@ test('pressed looks sunken: inset shadow and fill, never a scale', () => {
   const btn = screen.getByRole('button', { name: 'Press' })
   expect(btn).toHaveClass(
     'data-pressed:[--btn-shadow:var(--shadow-pressed),0_0_0_0_transparent]',
-    'data-pressed:not-aria-disabled:bg-surface-inset',
+    '[&:where([data-pressed]:not([aria-disabled=true]))]:bg-surface-inset',
   )
   expect(btn.className).not.toMatch(/scale/)
 })
@@ -257,8 +257,8 @@ test('filled intents rest raised and lift on hover; ghost and inert buttons stay
   )
   const filled = screen.getByRole('button', { name: 'Filled' })
   expect(filled).toHaveClass(
-    'not-aria-disabled:not-data-pressed:[--btn-shadow:var(--shadow-raised),var(--shadow-lift)]',
-    'hover:not-aria-disabled:not-data-pressed:-translate-y-(--lift)',
+    '[&:where(:not([aria-disabled=true]):not([data-pressed]))]:[--btn-shadow:var(--shadow-raised),var(--shadow-lift)]',
+    '[@media(hover:hover)]:[&:where(:hover:not([aria-disabled=true]):not([data-pressed]))]:-translate-y-(--lift)',
   )
   // Lift is a transform: no margin, inset or size change
   expect(filled.className).not.toMatch(/(^|:)-?(m[tby]?|top|bottom|h)-\(--lift\)/)
@@ -283,26 +283,34 @@ test('raised intents scale their hover fill by --hover-strength; ghost and dange
     </>,
   )
   const get = (name: string) => screen.getByRole('button', { name })
-  const fade = 'hover:not-aria-disabled:opacity-[calc(1-0.1*var(--hover-strength))]'
+  const fade =
+    '[@media(hover:hover)]:[&:where(:hover:not([aria-disabled=true]):not([data-pressed]))]:opacity-[calc(1-0.1*var(--hover-strength))]'
   expect(get('Primary')).toHaveClass(fade)
   // Dark can't fade (its fill is the page color in dark mode): it mixes toward --color-inverse-hover
   const darkHover =
-    'hover:not-aria-disabled:bg-[color-mix(in_oklab,var(--color-inverse-hover)_calc(var(--hover-strength)*100%),var(--color-inverse))]'
+    '[@media(hover:hover)]:[&:where(:hover:not([aria-disabled=true]):not([data-pressed]))]:bg-[color-mix(in_oklab,var(--color-inverse-hover)_calc(var(--hover-strength)*100%),var(--color-inverse))]'
   expect(get('Dark')).toHaveClass(darkHover)
   expect(get('Dark').className).not.toMatch(/opacity-\[calc/)
   // Dark danger keeps the old fade and its own fill: the inverse hover fill must not leak
-  expect(get('Dark danger')).toHaveClass(fade, 'hover:not-aria-disabled:bg-danger')
+  expect(get('Dark danger')).toHaveClass(
+    fade,
+    '[@media(hover:hover)]:[&:where(:hover:not([aria-disabled=true]):not([data-pressed]))]:bg-danger',
+  )
   expect(get('Dark danger').className).not.toContain('--color-inverse-hover')
   expect(get('Secondary')).toHaveClass(
-    'hover:not-aria-disabled:bg-[color-mix(in_oklab,var(--color-ring)_calc(var(--hover-strength)*100%),var(--color-surface-muted))]',
+    '[@media(hover:hover)]:[&:where(:hover:not([aria-disabled=true]):not([data-pressed]))]:bg-[color-mix(in_oklab,var(--color-ring)_calc(var(--hover-strength)*100%),var(--color-surface-muted))]',
   )
   expect(get('Surface')).toHaveClass(
-    'hover:not-aria-disabled:bg-[color-mix(in_oklab,var(--color-surface-muted)_calc(var(--hover-strength)*100%),var(--color-surface-raised))]',
+    '[@media(hover:hover)]:[&:where(:hover:not([aria-disabled=true]):not([data-pressed]))]:bg-[color-mix(in_oklab,var(--color-surface-muted)_calc(var(--hover-strength)*100%),var(--color-surface-raised))]',
   )
   // Solid danger on hover is a semantic switch, not a tint: not scaled
-  expect(get('Secondary danger')).toHaveClass('hover:not-aria-disabled:bg-danger')
+  expect(get('Secondary danger')).toHaveClass(
+    '[@media(hover:hover)]:[&:where(:hover:not([aria-disabled=true]):not([data-pressed]))]:bg-danger',
+  )
   expect(get('Secondary danger').className).not.toMatch(/hover-strength/)
-  expect(get('Ghost')).toHaveClass('hover:not-aria-disabled:bg-surface-muted')
+  expect(get('Ghost')).toHaveClass(
+    '[@media(hover:hover)]:[&:where(:hover:not([aria-disabled=true]):not([data-pressed]))]:bg-surface-muted',
+  )
   expect(get('Ghost').className).not.toMatch(/hover-strength/)
 })
 
@@ -317,8 +325,8 @@ test('pressed ends the hover fade so its fill shows at full strength', () => {
   )
   for (const name of ['Primary', 'Dark danger'])
     expect(screen.getByRole('button', { name })).toHaveClass(
-      'hover:not-aria-disabled:opacity-[calc(1-0.1*var(--hover-strength))]',
-      'data-pressed:not-aria-disabled:opacity-100',
+      '[@media(hover:hover)]:[&:where(:hover:not([aria-disabled=true]):not([data-pressed]))]:opacity-[calc(1-0.1*var(--hover-strength))]',
+      '[&:where([data-pressed]:not([aria-disabled=true]))]:opacity-100',
     )
 })
 
@@ -609,7 +617,9 @@ test('hang on one side keeps the full padding on the other side next to an icon'
 test.each(sizes)('hang works on the icon-only Button (%s)', (size) => {
   render(<Button size={size} hang="start" icon={<CheckIcon />} aria-label="Edit" tooltip={false} />)
   const btn = screen.getByRole('button', { name: 'Edit' })
-  expect(btn).toHaveClass('aspect-square', hangStart, 'ps-(--btn-ps)')
+  // No padding: justify-center centers the icon; hang still reads the centering inset from --btn-ps
+  expect(btn).toHaveClass('aspect-square', hangStart, 'ps-0', 'pe-0')
+  expect(btn).not.toHaveClass('ps-(--btn-ps)')
   expect(btn.className).toMatch(
     new RegExp(`\\[--btn-p:calc\\(\\(var\\(--spacing-control-${size}\\)`),
   )
@@ -633,7 +643,7 @@ test('loadingIcon replaces the spinner and is spun at the spinner size', () => {
   const spinner = container.querySelector('[data-slot="spinner"]')
   expect(spinner).toContainElement(screen.getByTestId('custom'))
   expect(spinner).toHaveClass('animate-spin')
-  expect(spinner?.parentElement).toHaveClass('[&_svg]:size-[18px]')
+  expect(spinner?.parentElement).toHaveClass('[&_:where(svg:not([class*=size-]))]:size-[18px]')
   expect(container.querySelector('[data-icon="loader-circle"]')).toBeNull()
 })
 

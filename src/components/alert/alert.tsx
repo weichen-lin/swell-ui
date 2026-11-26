@@ -83,7 +83,10 @@ export function Alert({
           <span
             aria-hidden="true"
             data-slot="alert-icon"
-            className={cn('mt-0.5 flex [&_svg]:size-4 [&_svg]:shrink-0', iconClass)}
+            className={cn(
+              'mt-0.5 flex [&_:where(svg:not([class*=size-]))]:size-4 [&_:where(svg:not([class*=shrink]))]:shrink-0',
+              iconClass,
+            )}
           >
             {iconNode}
           </span>

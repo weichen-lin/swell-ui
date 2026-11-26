@@ -196,8 +196,8 @@ describe.each(sizes)('size %s', (size) => {
         intent === 'ghost'
           ? []
           : [
-              'hover:not-aria-disabled:not-data-pressed:[--btn-shadow:var(--shadow-raised),var(--shadow-lift-hover)]',
-              'not-aria-disabled:not-data-pressed:[--btn-shadow:var(--shadow-raised),var(--shadow-lift)]',
+              '[@media(hover:hover)]:[&:where(:hover:not([aria-disabled=true]):not([data-pressed]))]:[--btn-shadow:var(--shadow-raised),var(--shadow-lift-hover)]',
+              '[&:where(:not([aria-disabled=true]):not([data-pressed]))]:[--btn-shadow:var(--shadow-raised),var(--shadow-lift)]',
             ]
       expect(shadows.sort()).toEqual(
         [

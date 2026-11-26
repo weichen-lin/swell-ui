@@ -526,7 +526,7 @@ test('chevronIcon replaces the chevron, sized and turned with the item', () => {
   )
   const slot = screen.getByTestId('custom').parentElement
   expect(slot).toHaveAttribute('data-slot', 'accordion-chevron')
-  expect(slot).toHaveClass('[&_svg]:size-4', 'rotate-180')
+  expect(slot).toHaveClass('[&_:where(svg:not([class*=size-]))]:size-4', 'rotate-180')
   expect(trigger().querySelector('[data-icon="chevron-down"]')).toBeNull()
 })
 

@@ -191,7 +191,7 @@ test('disabled is native and dimmed; readOnly stays focusable with a calmer styl
   expect(input).toHaveAttribute('readonly')
   expect(control(input)).toHaveClass('[--field-bg:var(--color-bg)]')
   // No hover reveal at all, independent of how the focus selector is spelled
-  expect([...control(input).classList].filter((c) => c.startsWith('hover:'))).toEqual([])
+  expect([...control(input).classList].filter((c) => c.includes('hover'))).toEqual([])
   await userEvent.tab()
   expect(input).toHaveFocus()
 })

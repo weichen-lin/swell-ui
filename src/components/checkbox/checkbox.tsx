@@ -82,7 +82,7 @@ export function Checkbox({
           className={cn(
             'relative inline-grid size-4 place-items-center',
             // A short press-in, like Button's 0.97: the box gives under the finger, then the check draws
-            'transition-[scale] duration-100 ease-out has-[input:enabled:active]:scale-[0.92]',
+            'transition-[scale] duration-100 ease-out [&:where(:has(input:enabled:active))]:scale-[0.92]',
           )}
         >
           <input
@@ -105,30 +105,32 @@ export function Checkbox({
                 ? [
                     '[--checkbox-border:var(--color-danger)] [--checkbox-halo:var(--color-input-halo-invalid)]',
                     'focus-visible:[--checkbox-halo:var(--color-input-halo-invalid-focus)]',
-                    'not-forced-colors:checked:focus-visible:outline-danger not-forced-colors:indeterminate:focus-visible:outline-danger',
+                    'not-forced-colors:[&:where(:checked:focus-visible)]:outline-danger not-forced-colors:[&:where(:indeterminate:focus-visible)]:outline-danger',
                   ]
                 : [
                     '[--checkbox-border:var(--color-input-border)]',
                     'checked:[--checkbox-border:var(--color-control-checked)] indeterminate:[--checkbox-border:var(--color-control-checked)]',
-                    'enabled:not-checked:not-indeterminate:hover:[--checkbox-border:var(--color-input-border-hover)]',
-                    'enabled:not-checked:not-indeterminate:hover:[--checkbox-bg:var(--color-input-bg-hover)]',
+                    // :hover stays outside :where() (it ties focus-visible: and wins by rule order, as
+                    // before); the private vars feed border-/bg- utilities a caller overrides directly
+                    '[@media(hover:hover)]:[&:hover:where(:enabled:not(:checked):not(:indeterminate))]:[--checkbox-border:var(--color-input-border-hover)]',
+                    '[@media(hover:hover)]:[&:hover:where(:enabled:not(:checked):not(:indeterminate))]:[--checkbox-bg:var(--color-input-bg-hover)]',
                     // Same focus language as Input: border steps up, soft 3px halo outside
                     'focus-visible:[--checkbox-border:var(--color-input-focus)] focus-visible:[--checkbox-halo:var(--color-input-halo)]',
-                    'not-forced-colors:checked:focus-visible:outline-control-checked not-forced-colors:indeterminate:focus-visible:outline-control-checked',
+                    'not-forced-colors:[&:where(:checked:focus-visible)]:outline-control-checked not-forced-colors:[&:where(:indeterminate:focus-visible)]:outline-control-checked',
                   ],
               // Filled (checked/mixed), the border is already the accent and the halo is too faint to
               // show focus, so focus becomes a 2px ring 2px out (an outline, so the gap shows
               // whatever is behind, on any surface)
-              'checked:focus-visible:[--checkbox-halo:transparent] indeterminate:focus-visible:[--checkbox-halo:transparent]',
+              '[&:checked:where(:focus-visible)]:[--checkbox-halo:transparent] [&:indeterminate:where(:focus-visible)]:[--checkbox-halo:transparent]',
               // outline-hidden sets the style to none outside forced colors; spell the ring out
-              'checked:focus-visible:outline-solid checked:focus-visible:outline-2 checked:focus-visible:outline-offset-2',
-              'indeterminate:focus-visible:outline-solid indeterminate:focus-visible:outline-2 indeterminate:focus-visible:outline-offset-2',
+              '[&:where(:checked:focus-visible)]:outline-solid [&:where(:checked:focus-visible)]:outline-2 [&:where(:checked:focus-visible)]:outline-offset-2',
+              '[&:where(:indeterminate:focus-visible)]:outline-solid [&:where(:indeterminate:focus-visible)]:outline-2 [&:where(:indeterminate:focus-visible)]:outline-offset-2',
               // Forced colors: system colors on an unadjusted box, so the fill and mark stay visible
               'forced-colors:forced-color-adjust-none forced-colors:[box-shadow:none]',
               'forced-colors:border-[CanvasText] forced-colors:bg-[Canvas]',
               'forced-colors:checked:border-[Highlight] forced-colors:checked:bg-[Highlight]',
               'forced-colors:indeterminate:border-[Highlight] forced-colors:indeterminate:bg-[Highlight]',
-              'forced-colors:disabled:border-[GrayText] forced-colors:disabled:checked:bg-[GrayText] forced-colors:disabled:indeterminate:bg-[GrayText]',
+              'forced-colors:disabled:border-[GrayText] forced-colors:[&:disabled:where(:checked)]:bg-[GrayText] forced-colors:[&:disabled:where(:indeterminate)]:bg-[GrayText]',
               'forced-colors:focus-visible:outline-[CanvasText]',
               inputClassName,
             )}
@@ -148,8 +150,8 @@ export function Checkbox({
               // Unchecking fades out fast, then rewinds the stroke while it is invisible
               '[transition:opacity_80ms_ease-out,stroke-dashoffset_0s_80ms]',
               // Checking draws the stroke; it appears at once so the drawing is what you see
-              'peer-[:checked:not(:indeterminate)]:[stroke-dashoffset:0] peer-[:checked:not(:indeterminate)]:opacity-100',
-              'peer-[:checked:not(:indeterminate)]:[transition:stroke-dashoffset_150ms_ease-out]',
+              'peer-[&:where(:checked:not(:indeterminate))]:[stroke-dashoffset:0] peer-[&:where(:checked:not(:indeterminate))]:opacity-100',
+              'peer-[&:where(:checked:not(:indeterminate))]:[transition:stroke-dashoffset_150ms_ease-out]',
             )}
           >
             <path d={CHECK_PATH} />

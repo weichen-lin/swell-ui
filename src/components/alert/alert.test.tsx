@@ -45,7 +45,7 @@ test.each([false, null])('icon replaces the tone icon, and %s hides it', (hidden
   )
   const slot = container.querySelector('[data-slot="alert-icon"]')
   expect(slot).toContainElement(screen.getByTestId('custom'))
-  expect(slot).toHaveClass('text-success', '[&_svg]:size-4')
+  expect(slot).toHaveClass('text-success', '[&_:where(svg:not([class*=size-]))]:size-4')
   expect(container.querySelector('[data-icon="circle-check"]')).toBeNull()
   rerender(<Alert tone="success" title="Synced" icon={hidden} />)
   expect(container.querySelector('[data-slot="alert-icon"]')).toBeNull()

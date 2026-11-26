@@ -54,12 +54,12 @@ const sizeClasses: Record<SwitchSize, { track: string; offset: string; icon: str
   sm: {
     track: 'h-3.5 w-7 [--switch-thumb:10px] [--switch-travel:14px] [--switch-stretch:2px]',
     offset: 'mt-[5px]',
-    icon: '[&_svg]:size-2',
+    icon: '[&_:where(svg:not([class*=size-]))]:size-2',
   },
   md: {
     track: 'h-5 w-9 [--switch-thumb:16px] [--switch-travel:16px] [--switch-stretch:4px]',
     offset: 'mt-0.5',
-    icon: '[&_svg]:size-3',
+    icon: '[&_:where(svg:not([class*=size-]))]:size-3',
   },
 }
 
@@ -130,7 +130,8 @@ export function Switch({
               // Off reuses the input border (>=3:1 on the page); state lives in custom properties so
               // forced colors can override the real properties once
               '[--switch-track:var(--color-input-border)] checked:[--switch-track:var(--color-control-checked)]',
-              pressable && 'not-checked:hover:[--switch-track:var(--color-input-border-hover)]',
+              pressable &&
+                '[@media(hover:hover)]:[&:where(:not(:checked):hover)]:[--switch-track:var(--color-input-border-hover)]',
               // Input's focus language: the border carries the state color (inside the box, so the track never
               // grows), then the 3px halo outside it
               row.invalid
@@ -141,19 +142,19 @@ export function Switch({
                 : [
                     '[--switch-ring:transparent] [--switch-halo:transparent]',
                     'focus-visible:[--switch-ring:var(--color-input-focus)] focus-visible:[--switch-halo:var(--color-input-halo)]',
-                    'not-forced-colors:checked:focus-visible:outline-control-checked',
+                    'not-forced-colors:[&:where(:checked:focus-visible)]:outline-control-checked',
                   ],
               // On, the track is already the accent and the halo is too faint to show focus, so focus
               // becomes a 2px ring 2px out (an outline, so the gap shows whatever is behind, on any surface)
-              'checked:focus-visible:[--switch-ring:transparent] checked:focus-visible:[--switch-halo:transparent]',
+              '[&:checked:where(:focus-visible)]:[--switch-ring:transparent] [&:checked:where(:focus-visible)]:[--switch-halo:transparent]',
               // outline-hidden sets the style to none outside forced colors; spell the ring out
-              'checked:focus-visible:outline-solid checked:focus-visible:outline-2 checked:focus-visible:outline-offset-2',
-              row.invalid && 'not-forced-colors:checked:focus-visible:outline-danger',
+              '[&:where(:checked:focus-visible)]:outline-solid [&:where(:checked:focus-visible)]:outline-2 [&:where(:checked:focus-visible)]:outline-offset-2',
+              row.invalid && 'not-forced-colors:[&:where(:checked:focus-visible)]:outline-danger',
               // Forced colors: system colors on an unadjusted track, so on/off and the thumb stay visible
               'forced-colors:forced-color-adjust-none forced-colors:[box-shadow:none]',
               'forced-colors:border-[CanvasText] forced-colors:bg-[Canvas]',
               'forced-colors:checked:border-[Highlight] forced-colors:checked:bg-[Highlight]',
-              'forced-colors:disabled:border-[GrayText] forced-colors:disabled:checked:bg-[GrayText]',
+              'forced-colors:disabled:border-[GrayText] forced-colors:[&:disabled:where(:checked)]:bg-[GrayText]',
               'forced-colors:focus-visible:outline-[CanvasText]',
               inputClassName,
             )}
@@ -171,13 +172,13 @@ export function Switch({
               // (on: it shifts back by the same amount, so its far edge doesn't move)
               pressable && [
                 'peer-active:[--switch-thumb-w:calc(var(--switch-thumb)+var(--switch-stretch))]',
-                'peer-checked:peer-active:[--switch-x:calc(var(--switch-travel)-var(--switch-stretch))]',
+                'peer-[&:checked:where(:active)]:[--switch-x:calc(var(--switch-travel)-var(--switch-stretch))]',
               ],
               'peer-disabled:shadow-none',
               'forced-colors:forced-color-adjust-none forced-colors:shadow-none',
               'forced-colors:bg-[CanvasText] forced-colors:text-[Canvas]',
               'forced-colors:peer-checked:bg-[HighlightText] forced-colors:peer-checked:text-[Highlight]',
-              'forced-colors:peer-disabled:bg-[GrayText] forced-colors:peer-disabled:peer-checked:bg-[Canvas]',
+              'forced-colors:peer-disabled:bg-[GrayText] forced-colors:peer-[&:disabled:where(:checked)]:bg-[Canvas]',
               s.icon,
             )}
           >

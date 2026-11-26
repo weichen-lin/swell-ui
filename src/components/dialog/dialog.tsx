@@ -228,7 +228,7 @@ export function DialogFooter({ className, ...props }: ComponentProps<'div'>) {
       className={cn(
         'flex shrink-0 flex-wrap items-center justify-end gap-2 px-6 pt-5 pb-6',
         // Sheet: buttons share the row, bigger thumb targets
-        'max-sm:*:data-[slot=button]:flex-1',
+        'max-sm:[&>:where([data-slot=button]:not([class*=flex-],[class*=grow],[class*=basis-]))]:flex-1',
         className,
       )}
     />

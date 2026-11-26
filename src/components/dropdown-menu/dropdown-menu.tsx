@@ -456,10 +456,10 @@ export function DropdownMenuItem({
       className={cn(
         'flex min-h-8 w-full cursor-default items-center gap-2 rounded-control px-2 py-1.5 text-start text-sm/snug outline-none select-none pointer-coarse:min-h-10',
         'focus:bg-popover-highlight focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus',
-        'aria-disabled:cursor-not-allowed aria-disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0',
+        'aria-disabled:cursor-not-allowed aria-disabled:opacity-50 [&_:where(svg:not([class*=size-]))]:size-4 [&_:where(svg:not([class*=shrink]))]:shrink-0',
         tone === 'danger'
           ? 'text-danger-subtle-fg focus:bg-danger-subtle-bg'
-          : 'text-fg [&_svg]:text-fg-muted',
+          : 'text-fg [&_:where(svg:not([class*=text-]))]:text-fg-muted',
         className,
       )}
       onClickCapture={(event) => {

@@ -307,9 +307,11 @@ const itemClasses = [
   // --tw-outline-style, and outline-2 would then draw nothing.
   'focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus',
   // Current item: aria-current is set by the router's link, so it is styled from the DOM, not props
-  'hover:text-fg aria-[current=page]:bg-fg/8 aria-[current=page]:text-fg',
-  // Pressed: one step deeper than where the item was
-  'active:bg-fg/8 aria-[current=page]:active:bg-fg/12',
+  'hover:text-fg [&:where([aria-current=page]:not(:active))]:bg-fg/8 aria-[current=page]:text-fg',
+  // Pressed: one step deeper than where the item was. Current and pressed exclude each other
+  // inside :where(), so the deeper fill needs no extra weight and `active:` / `aria-[current=page]:`
+  // in className still win
+  '[&:where(:active:not([aria-current=page]))]:bg-fg/8 [&:where([aria-current=page]:active)]:bg-fg/12',
   'forced-colors:aria-[current=page]:bg-[Highlight] forced-colors:aria-[current=page]:text-[HighlightText]',
   'forced-colors:aria-[current=page]:[forced-color-adjust:none]',
 ]
@@ -390,7 +392,7 @@ export function SidebarIcon({ className, ...props }: ComponentProps<'span'>) {
       aria-hidden
       {...props}
       data-slot="sidebar-item-icon"
-      className={cn('flex shrink-0 [&_svg]:size-4', className)}
+      className={cn('flex shrink-0 [&_:where(svg:not([class*=size-]))]:size-4', className)}
     />
   )
 }

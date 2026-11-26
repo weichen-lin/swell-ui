@@ -112,7 +112,7 @@ function SliderControl({
       data-invalid={invalid || undefined}
       data-dragging={slider.dragging || undefined}
       className={cn(
-        'min-w-0 has-[input:disabled]:opacity-50 forced-colors:has-[input:disabled]:opacity-100',
+        'min-w-0 [&:where(:has(input:disabled))]:opacity-50 forced-colors:[&:where(:has(input:disabled))]:opacity-100',
         className,
       )}
       onPointerDown={(event) => {
@@ -240,7 +240,7 @@ function SliderControl({
                       'data-active:[box-shadow:0_0_0_4px_var(--color-input-halo)]',
                       invalid
                         ? 'border-danger'
-                        : 'border-control-checked peer-enabled:group-hover/slider-control:border-input-border-hover',
+                        : 'border-control-checked [@media(hover:hover)]:peer-[&:where(:enabled)]:group-[&:where(:hover)]/slider-control:border-input-border-hover',
                       'forced-colors:forced-color-adjust-none forced-colors:border-[ButtonText] forced-colors:bg-[ButtonFace] forced-colors:shadow-none',
                       'forced-colors:peer-focus-visible:outline-[Highlight] forced-colors:peer-disabled:border-[GrayText]',
                     )}

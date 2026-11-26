@@ -157,7 +157,7 @@ describe('Sidebar', () => {
     expect(members).toHaveAttribute('aria-current', 'page')
     // Styled from aria-current itself: no selected flag computed from props
     expect(members).not.toHaveAttribute('data-selected')
-    expect(members.className).toContain('aria-[current=page]:bg-fg/8')
+    expect(members.className).toContain('[&:where([aria-current=page]:not(:active))]:bg-fg/8')
     expect(within(nav).getByRole('link', { name: 'Projects 8' })).not.toHaveAttribute(
       'aria-current',
     )

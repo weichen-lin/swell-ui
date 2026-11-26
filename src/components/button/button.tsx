@@ -23,10 +23,13 @@ import { Tooltip, type TooltipProps } from '../tooltip'
 // Pressed ends the fade (opacity-100) so its fill shows at full strength: a faded pressed fill let the
 // page through, dropping text contrast and blurring pressed against hover.
 // `dark` can't fade: on dark its fill is the page color, so it mixes toward --color-inverse-hover.
+// Guards (not disabled, not pressed) sit inside :where(), so every state rule here weighs one class
+// and a caller's `hover:bg-x` or `data-pressed:bg-x` in className outranks it. Hover also skips
+// [data-pressed]: hover and pressed never match together, so the pressed fill doesn't rest on order.
 const raised = [
-  'not-aria-disabled:not-data-pressed:[--btn-shadow:var(--shadow-raised),var(--shadow-lift)]',
-  'hover:not-aria-disabled:not-data-pressed:[--btn-shadow:var(--shadow-raised),var(--shadow-lift-hover)]',
-  'hover:not-aria-disabled:not-data-pressed:-translate-y-(--lift)',
+  '[&:where(:not([aria-disabled=true]):not([data-pressed]))]:[--btn-shadow:var(--shadow-raised),var(--shadow-lift)]',
+  '[@media(hover:hover)]:[&:where(:hover:not([aria-disabled=true]):not([data-pressed]))]:[--btn-shadow:var(--shadow-raised),var(--shadow-lift-hover)]',
+  '[@media(hover:hover)]:[&:where(:hover:not([aria-disabled=true]):not([data-pressed]))]:-translate-y-(--lift)',
 ]
 
 const buttonVariants = cva(
@@ -34,7 +37,7 @@ const buttonVariants = cva(
     'relative inline-flex cursor-pointer items-center justify-center border font-medium whitespace-nowrap',
     // Horizontal padding comes from two variables so `hang` can read the same numbers: size sets
     // --btn-p, an icon on one side overrides that side. Square (icon-only) sets --btn-p to the inset
-    // that centers its icon.
+    // that centers its icon, for `hang` only: its padding is zero.
     '[--btn-ps:var(--btn-p)] [--btn-pe:var(--btn-p)] ps-(--btn-ps) pe-(--btn-pe)',
     'touch-manipulation select-none [-webkit-tap-highlight-color:transparent]',
     'transition-[color,background-color,border-color,opacity,box-shadow,translate] duration-150 ease-out',
@@ -72,26 +75,26 @@ const buttonVariants = cva(
         // Brand color: the one primary call to action
         primary: [
           ...raised,
-          'bg-primary text-primary-fg rounded-control border-primary hover:not-aria-disabled:opacity-[calc(1-0.1*var(--hover-strength))] data-pressed:not-aria-disabled:bg-primary-pressed data-pressed:not-aria-disabled:opacity-100',
+          'bg-primary text-primary-fg rounded-control border-primary [@media(hover:hover)]:[&:where(:hover:not([aria-disabled=true]):not([data-pressed]))]:opacity-[calc(1-0.1*var(--hover-strength))] [&:where([data-pressed]:not([aria-disabled=true]))]:bg-primary-pressed [&:where([data-pressed]:not([aria-disabled=true]))]:opacity-100',
         ],
         // Muted surface: the workhorse
         secondary: [
           ...raised,
-          'bg-surface-muted text-fg-strong rounded-control border-ring hover:not-aria-disabled:bg-[color-mix(in_oklab,var(--color-ring)_calc(var(--hover-strength)*100%),var(--color-surface-muted))] data-pressed:not-aria-disabled:bg-surface-inset',
+          'bg-surface-muted text-fg-strong rounded-control border-ring [@media(hover:hover)]:[&:where(:hover:not([aria-disabled=true]):not([data-pressed]))]:bg-[color-mix(in_oklab,var(--color-ring)_calc(var(--hover-strength)*100%),var(--color-surface-muted))] [&:where([data-pressed]:not([aria-disabled=true]))]:bg-surface-inset',
         ],
         // Raised surface: shifts toward the secondary background on hover
         surface: [
           ...raised,
-          'bg-surface-raised text-fg rounded-control border-transparent hover:not-aria-disabled:bg-[color-mix(in_oklab,var(--color-surface-muted)_calc(var(--hover-strength)*100%),var(--color-surface-raised))] data-pressed:not-aria-disabled:bg-surface-inset',
+          'bg-surface-raised text-fg rounded-control border-transparent [@media(hover:hover)]:[&:where(:hover:not([aria-disabled=true]):not([data-pressed]))]:bg-[color-mix(in_oklab,var(--color-surface-muted)_calc(var(--hover-strength)*100%),var(--color-surface-raised))] [&:where([data-pressed]:not([aria-disabled=true]))]:bg-surface-inset',
         ],
         // Inverse: strong emphasis without the brand color
         dark: [
           ...raised,
-          'bg-inverse text-inverse-fg rounded-control border-ring hover:not-aria-disabled:bg-[color-mix(in_oklab,var(--color-inverse-hover)_calc(var(--hover-strength)*100%),var(--color-inverse))] data-pressed:not-aria-disabled:bg-inverse-pressed',
+          'bg-inverse text-inverse-fg rounded-control border-ring [@media(hover:hover)]:[&:where(:hover:not([aria-disabled=true]):not([data-pressed]))]:bg-[color-mix(in_oklab,var(--color-inverse-hover)_calc(var(--hover-strength)*100%),var(--color-inverse))] [&:where([data-pressed]:not([aria-disabled=true]))]:bg-inverse-pressed',
         ],
         // No chrome until hover: toolbars, table rows
         ghost:
-          'bg-transparent text-fg rounded-control border-transparent hover:not-aria-disabled:bg-surface-muted data-pressed:not-aria-disabled:bg-surface-inset',
+          'bg-transparent text-fg rounded-control border-transparent [@media(hover:hover)]:[&:where(:hover:not([aria-disabled=true]):not([data-pressed]))]:bg-surface-muted [&:where([data-pressed]:not([aria-disabled=true]))]:bg-surface-inset',
       },
       /**
        * Height and text size; heights (34 / 38 / 42px) match the text fields'.
@@ -114,8 +117,9 @@ const buttonVariants = cva(
        * @defaultValue false
        */
       fullWidth: { true: 'w-full', false: '' },
-      // Icon-only: width follows the size's height
-      square: { true: 'aspect-square', false: '' },
+      // Icon-only: width follows the size's height. No inline padding: justify-center centers the
+      // icon, so a caller's larger icon (`size-6` on the svg) stays centered in the same square
+      square: { true: 'aspect-square ps-0 pe-0', false: '' },
       // Negative inline margin = the side's real inset (padding + the 1px border), so the label or
       // icon, not the button's box, lines up with the surrounding content edge
       hang: {
@@ -125,7 +129,8 @@ const buttonVariants = cva(
       },
     },
     compoundVariants: [
-      // Icon-only: pad so the icon (16px, 18px on lg) sits centered in the square, border included
+      // Icon-only: the inset that centers the default icon (16px, 18px on lg) in the square, border
+      // included. Not applied as padding (see `square`); `hang` reads it to pull the icon to the edge
       {
         square: true,
         size: 'sm',
@@ -145,20 +150,20 @@ const buttonVariants = cva(
         intent: 'primary',
         tone: 'danger',
         class:
-          'bg-danger text-danger-fg border-danger data-pressed:not-aria-disabled:bg-danger-pressed',
+          'bg-danger text-danger-fg border-danger [&:where([data-pressed]:not([aria-disabled=true]))]:bg-danger-pressed',
       },
       // Outline-ish danger fills on hover (GitHub pattern); danger text on the darker hover bg would fail contrast
       {
         intent: 'secondary',
         tone: 'danger',
         class:
-          'text-danger border-danger hover:not-aria-disabled:bg-danger hover:not-aria-disabled:text-danger-fg data-pressed:not-aria-disabled:bg-danger-pressed data-pressed:not-aria-disabled:text-danger-fg',
+          'text-danger border-danger [@media(hover:hover)]:[&:where(:hover:not([aria-disabled=true]):not([data-pressed]))]:bg-danger [@media(hover:hover)]:[&:where(:hover:not([aria-disabled=true]):not([data-pressed]))]:text-danger-fg [&:where([data-pressed]:not([aria-disabled=true]))]:bg-danger-pressed [&:where([data-pressed]:not([aria-disabled=true]))]:text-danger-fg',
       },
       {
         intent: 'surface',
         tone: 'danger',
         class:
-          'text-danger hover:not-aria-disabled:bg-danger hover:not-aria-disabled:text-danger-fg data-pressed:not-aria-disabled:bg-danger-pressed data-pressed:not-aria-disabled:text-danger-fg',
+          'text-danger [@media(hover:hover)]:[&:where(:hover:not([aria-disabled=true]):not([data-pressed]))]:bg-danger [@media(hover:hover)]:[&:where(:hover:not([aria-disabled=true]):not([data-pressed]))]:text-danger-fg [&:where([data-pressed]:not([aria-disabled=true]))]:bg-danger-pressed [&:where([data-pressed]:not([aria-disabled=true]))]:text-danger-fg',
       },
       // Strong emphasis + danger is just solid danger, same as primary. The base hover fill (inverse)
       // is overridden; hover fades like primary instead (danger is no page-colored fill, so it shows)
@@ -166,13 +171,13 @@ const buttonVariants = cva(
         intent: 'dark',
         tone: 'danger',
         class:
-          'bg-danger text-danger-fg border-danger hover:not-aria-disabled:bg-danger hover:not-aria-disabled:opacity-[calc(1-0.1*var(--hover-strength))] data-pressed:not-aria-disabled:bg-danger-pressed data-pressed:not-aria-disabled:opacity-100',
+          'bg-danger text-danger-fg border-danger [@media(hover:hover)]:[&:where(:hover:not([aria-disabled=true]):not([data-pressed]))]:bg-danger [@media(hover:hover)]:[&:where(:hover:not([aria-disabled=true]):not([data-pressed]))]:opacity-[calc(1-0.1*var(--hover-strength))] [&:where([data-pressed]:not([aria-disabled=true]))]:bg-danger-pressed [&:where([data-pressed]:not([aria-disabled=true]))]:opacity-100',
       },
       {
         intent: 'ghost',
         tone: 'danger',
         class:
-          'text-danger hover:not-aria-disabled:bg-danger/10 data-pressed:not-aria-disabled:bg-danger-inset',
+          'text-danger [@media(hover:hover)]:[&:where(:hover:not([aria-disabled=true]):not([data-pressed]))]:bg-danger/10 [&:where([data-pressed]:not([aria-disabled=true]))]:bg-danger-inset',
       },
     ],
     defaultVariants: {
@@ -188,14 +193,14 @@ const buttonVariants = cva(
 type Size = 'sm' | 'md' | 'lg'
 
 const spinnerSize = {
-  sm: '[&_svg]:size-4',
-  md: '[&_svg]:size-[18px]',
-  lg: '[&_svg]:size-5',
+  sm: '[&_:where(svg:not([class*=size-]))]:size-4',
+  md: '[&_:where(svg:not([class*=size-]))]:size-[18px]',
+  lg: '[&_:where(svg:not([class*=size-]))]:size-5',
 } as const
 const iconSize = {
-  sm: '[&_svg]:size-4',
-  md: '[&_svg]:size-4',
-  lg: '[&_svg]:size-[18px]',
+  sm: '[&_:where(svg:not([class*=size-]))]:size-4',
+  md: '[&_:where(svg:not([class*=size-]))]:size-4',
+  lg: '[&_:where(svg:not([class*=size-]))]:size-[18px]',
 } as const
 // The side with an icon looks heavier, so it gets ~4px less padding
 const iconStartPadding = {
@@ -242,7 +247,7 @@ function ButtonContent({
       {/* Content stays in layout (keeps width + accessible name) and fades out under the spinner */}
       <span
         className={cn(
-          'relative inline-flex items-center gap-2 [&_svg]:shrink-0',
+          'relative inline-flex items-center gap-2 [&_:where(svg:not([class*=shrink]))]:shrink-0',
           iconSize[size],
           loading && 'opacity-0',
         )}
@@ -262,7 +267,7 @@ function ButtonContent({
       {loading && (
         <span
           className={cn(
-            'absolute inset-0 flex items-center justify-center [&_svg]:shrink-0',
+            'absolute inset-0 flex items-center justify-center [&_:where(svg:not([class*=shrink]))]:shrink-0',
             spinnerSize[size],
           )}
         >

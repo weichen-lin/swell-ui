@@ -94,7 +94,7 @@ test('disabled: not toggled, row dims via :disabled', async () => {
   await user.click(screen.getByText('Auto-sync'))
   expect(input).not.toBeChecked()
   expect(onChange).not.toHaveBeenCalled()
-  expect(input.closest('label')).toHaveClass('has-[input:disabled]:opacity-50')
+  expect(input.closest('label')).toHaveClass('[&:where(:has(input:disabled))]:opacity-50')
 })
 
 test('loading: aria-busy, stays focusable, clicks and Space do nothing', async () => {

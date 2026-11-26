@@ -68,7 +68,7 @@ test('placeholder option: unselectable, hidden, and selected while nothing is ch
   expect(placeholder).toBeDisabled()
   expect(placeholder).toHaveAttribute('hidden')
   expect(placeholder.selected).toBe(true)
-  expect(select).toHaveClass('[&:has(option[value=""]:checked)]:text-input-placeholder')
+  expect(select).toHaveClass('[&:where(:has(option[value=""]:checked))]:text-input-placeholder')
 })
 
 test('floating ignores the placeholder text; the label rests inside the control', () => {
@@ -291,7 +291,7 @@ test('chevronIcon replaces the chevron and turns with the picker', () => {
     <Select label="Region" options={regions} chevronIcon={<svg data-testid="custom" />} />,
   )
   expect(screen.getByTestId('custom').parentElement).toHaveClass(
-    'group-has-[select:open]/control:rotate-180',
+    'group-[&:where(:has(select:open))]/control:rotate-180',
   )
   expect(container.querySelector('[data-icon="chevron-down"]')).toBeNull()
 })

@@ -95,8 +95,12 @@ export function CardContent({ className, ...props }: ComponentProps<'div'>) {
     <div
       {...props}
       data-slot="card-content"
-      // Tighter top when it follows a header, which already carries the card's top padding
-      className={cn('p-5 [[data-slot=card-header]+&]:pt-4', className)}
+      // Tighter top when it follows a header, which already carries the card's top padding. The
+      // sibling rule only sets a variable, so a `pt-*` / `p-*` in className still replaces the padding
+      className={cn(
+        'p-5 [--card-content-pt:--spacing(5)] [[data-slot=card-header]+&]:[--card-content-pt:--spacing(4)] pt-(--card-content-pt)',
+        className,
+      )}
     />
   )
 }

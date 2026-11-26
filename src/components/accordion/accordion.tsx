@@ -394,7 +394,7 @@ export function AccordionTrigger({
         <span className="min-w-0 flex-1 wrap-anywhere">
           <span
             id={`${item.id}-title`}
-            className="underline-offset-4 group-enabled/accordion-trigger:group-hover/accordion-trigger:underline"
+            className="underline-offset-4 [@media(hover:hover)]:group-[&:where(:enabled:hover)]/accordion-trigger:underline"
           >
             {children}
           </span>
@@ -411,7 +411,7 @@ export function AccordionTrigger({
           aria-hidden
           data-slot="accordion-chevron"
           className={cn(
-            'mt-1 flex shrink-0 text-fg-muted transition-transform duration-200 ease-out motion-reduce:transition-none [&_svg]:size-4 [&_svg]:shrink-0',
+            'mt-1 flex shrink-0 text-fg-muted transition-transform duration-200 ease-out motion-reduce:transition-none [&_:where(svg:not([class*=size-]))]:size-4 [&_:where(svg:not([class*=shrink]))]:shrink-0',
             item.open && 'rotate-180',
           )}
         >

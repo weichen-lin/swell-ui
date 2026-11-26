@@ -55,7 +55,10 @@ export function ThemeSwitcher({
       title={label}
       tooltip={false}
       data-slot="theme-switcher"
-      className={cn('size-11 shrink-0 text-fg-muted hover:text-fg [&_svg]:size-5', className)}
+      className={cn(
+        'size-11 shrink-0 text-fg-muted hover:text-fg [&_:where(svg:not([class*=size-]))]:size-5',
+        className,
+      )}
       onClick={(event) => {
         onClick?.(event)
         if (!event.defaultPrevented) onChange(next)

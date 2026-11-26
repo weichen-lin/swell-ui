@@ -111,7 +111,7 @@ export function Badge({
           aria-hidden="true"
           data-slot="badge-icon"
           className={cn(
-            'inline-flex shrink-0 items-center [&_svg]:size-3 [&_svg]:shrink-0',
+            'inline-flex shrink-0 items-center [&_:where(svg:not([class*=size-]))]:size-3 [&_:where(svg:not([class*=shrink]))]:shrink-0',
             iconClass,
           )}
         >

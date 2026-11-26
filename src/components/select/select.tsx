@@ -166,7 +166,7 @@ function optionClasses(size: FieldSize, mono: boolean) {
     'supports-[appearance:base-select]:[@media(hover:hover)_and_(pointer:fine)]:px-2',
     'supports-[appearance:base-select]:[@media(hover:hover)_and_(pointer:fine)]:py-1.5',
     // Pointer and keyboard share one highlight, so there is never a second "current" row
-    'supports-[appearance:base-select]:[@media(hover:hover)_and_(pointer:fine)]:not-disabled:hover:bg-popover-highlight',
+    'supports-[appearance:base-select]:[@media(hover:hover)_and_(pointer:fine)]:[&:where(:not(:disabled):hover)]:bg-popover-highlight',
     'supports-[appearance:base-select]:[@media(hover:hover)_and_(pointer:fine)]:focus-visible:bg-popover-highlight',
     // Transparent outline: invisible normally, painted as the focus indicator in forced colors
     'supports-[appearance:base-select]:[@media(hover:hover)_and_(pointer:fine)]:focus-visible:outline-hidden',
@@ -257,7 +257,10 @@ export function Select({
       className={optionClass}
     >
       {isPresent(option.icon) && (
-        <span aria-hidden className="flex shrink-0 text-fg-muted [&_svg]:size-4 [&_svg]:shrink-0">
+        <span
+          aria-hidden
+          className="flex shrink-0 text-fg-muted [&_:where(svg:not([class*=size-]))]:size-4 [&_:where(svg:not([class*=shrink]))]:shrink-0"
+        >
           {option.icon}
         </span>
       )}
@@ -305,7 +308,7 @@ export function Select({
               'size-full min-w-0 appearance-none items-center truncate rounded-[inherit] bg-transparent text-fg outline-none',
               'pointer-coarse:text-base disabled:cursor-not-allowed',
               // Nothing chosen: the placeholder option shows in the placeholder color
-              '[&:has(option[value=""]:checked)]:text-input-placeholder',
+              '[&:where(:has(option[value=""]:checked))]:text-input-placeholder',
               textSize[size],
               selectPadding[size],
               hasLeading && iconStartPadding[size],
@@ -344,7 +347,7 @@ export function Select({
             <span
               aria-hidden
               className={cn(
-                'pointer-events-none absolute inset-y-0 inset-s-0 flex items-center text-fg-muted [&_svg]:shrink-0',
+                'pointer-events-none absolute inset-y-0 inset-s-0 flex items-center text-fg-muted [&_:where(svg:not([class*=shrink]))]:shrink-0',
                 iconSize[size],
                 startSlotPadding[size],
               )}
@@ -360,7 +363,7 @@ export function Select({
               endSlotPadding[size],
             )}
           >
-            <span className="flex transition-transform duration-150 ease-out group-has-[select:open]/control:rotate-180 motion-reduce:transition-none">
+            <span className="flex transition-transform duration-150 ease-out group-[&:where(:has(select:open))]/control:rotate-180 motion-reduce:transition-none">
               {iconOr(chevronIcon, <ChevronDownIcon />)}
             </span>
           </span>

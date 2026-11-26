@@ -25,7 +25,10 @@ export function MessageIcon({ icon, className }: { icon: ReactNode; className?: 
     <span
       aria-hidden
       data-slot="message-icon"
-      className={cn('flex shrink-0 [&_svg]:size-3.5 [&_svg]:shrink-0', className)}
+      className={cn(
+        'flex shrink-0 [&_:where(svg:not([class*=size-]))]:size-3.5 [&_:where(svg:not([class*=shrink]))]:shrink-0',
+        className,
+      )}
     >
       {node}
     </span>
@@ -34,7 +37,7 @@ export function MessageIcon({ icon, className }: { icon: ReactNode; className?: 
 
 /**
  * The spinning slot of a built-in loading indicator: the default circular loader, or the caller's
- * static icon, spun the same way. The size comes from the parent's `[&_svg]:size-*`.
+ * static icon, spun the same way. The size comes from the parent's `[&_:where(svg:not([class*=size-]))]:size-*`.
  */
 export function Spinner({ icon, className }: { icon?: ReactNode; className?: string }) {
   return (

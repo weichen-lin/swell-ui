@@ -547,7 +547,7 @@ function ToastIcon({
       aria-hidden
       data-slot="toast-icon"
       className={cn(
-        'mt-0.5 grid size-4 shrink-0 [&_svg]:size-4 [&_svg]:shrink-0 *:col-start-1 *:row-start-1',
+        'mt-0.5 grid size-4 shrink-0 [&_:where(svg:not([class*=size-]))]:size-4 [&_:where(svg:not([class*=shrink]))]:shrink-0 *:col-start-1 *:row-start-1',
         !shown && 'hidden',
       )}
     >
@@ -851,15 +851,16 @@ function ToastCard({
         edge === 'bottom' ? 'after:bottom-full' : 'after:top-full',
         'data-[visible=false]:pointer-events-none data-[visible=false]:opacity-0',
         // Geist's exit: a slight shrink and fade, 150ms, in place
-        'data-removed:pointer-events-none data-removed:scale-99 data-removed:opacity-0 data-removed:duration-150',
-        // Swiped away: slides out along the swipe (Sonner, 200ms ease-out)
-        'data-removed:data-swipe-out:duration-200 data-removed:data-swipe-out:ease-out',
+        'data-removed:pointer-events-none data-removed:scale-99 data-removed:opacity-0 [&:where([data-removed]:not([data-swipe-out]))]:duration-150',
+        // Swiped away: slides out along the swipe (Sonner, 200ms ease-out). The plain exit above skips
+        // swiped toasts, so neither needs extra weight to win
+        '[&:where([data-removed][data-swipe-out])]:duration-200 [&:where([data-removed][data-swipe-out])]:ease-out',
         'data-[swipe-out=right]:[translate:calc(100%+24px)_0]',
         'data-[swipe-out=left]:[translate:calc(-100%-24px)_0]',
         'data-[swipe-out=bottom]:[translate:0_calc(100%+24px)]',
         'data-[swipe-out=top]:[translate:0_calc(-100%-24px)]',
         'data-swiping:transition-none',
-        'group-data-moving/viewport:data-entered:transition-none',
+        'group-[&:where([data-moving])]/viewport:[&:where([data-entered])]:transition-none',
         'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
         touchAction,
       )}
@@ -944,7 +945,7 @@ function ToastCard({
               aria-label="Close"
               tooltip={false}
               // The card's text color, so the X reads on every tint; hover tints with it too
-              className="absolute top-2.25 right-2 text-current hover:not-aria-disabled:bg-current/10"
+              className="absolute top-2.25 right-2 text-current [@media(hover:hover)]:[&:where(:hover:not([aria-disabled=true]):not([data-pressed]))]:bg-current/10"
               onClick={() => dismiss(id)}
             />
           )}
