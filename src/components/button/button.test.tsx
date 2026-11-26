@@ -229,6 +229,38 @@ test('ghost intent and fullWidth', () => {
   expect(screen.getByRole('button', { name: 'Wide' })).toHaveClass('w-full')
 })
 
+test('link intent: text color, underline on hover and press, flat, no ripple by default', () => {
+  render(
+    <>
+      <Button intent="link">Link</Button>
+      <Button intent="link" tone="danger">
+        Danger link
+      </Button>
+      <Button intent="link" ripple>
+        Rippled
+      </Button>
+    </>,
+  )
+  const link = screen.getByRole('button', { name: 'Link' })
+  expect(link).toHaveClass(
+    'bg-transparent',
+    'text-primary',
+    'underline-offset-4',
+    '[@media(hover:hover)]:[&:where(:hover:not([aria-disabled=true]))]:underline',
+    '[&:where([data-pressed]:not([aria-disabled=true]))]:underline',
+  )
+  // No raised depth, and the base sunken bevel is replaced, not stacked
+  expect(link.className).not.toMatch(/shadow-raised|shadow-pressed|--lift/)
+  expect(link.querySelector('[data-ripple]')).toBeNull()
+
+  const danger = screen.getByRole('button', { name: 'Danger link' })
+  expect(danger).toHaveClass('text-danger')
+  expect(danger).not.toHaveClass('text-primary')
+
+  const rippled = screen.getByRole('button', { name: 'Rippled' })
+  expect(rippled.querySelector('[data-ripple]')).not.toBeNull()
+})
+
 test('data-pressed is set on pointerdown and cleared on pointercancel', () => {
   render(<Button>Press</Button>)
   const btn = screen.getByRole('button', { name: 'Press' })

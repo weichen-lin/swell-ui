@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader } from '../src/components/card'
 import { GitBranch, RefreshCw, Settings, Trash2 } from './_helpers/story-icons'
 import { iconArgType } from './_helpers/story-icons'
 
-const intents = ['primary', 'secondary', 'surface', 'dark', 'ghost'] as const
+const intents = ['primary', 'secondary', 'surface', 'dark', 'ghost', 'link'] as const
 const sizes = ['sm', 'md', 'lg'] as const
 
 const meta = {
@@ -63,6 +63,26 @@ export const Secondary: Story = { args: { intent: 'secondary', children: 'Second
 export const Surface: Story = { args: { intent: 'surface', children: 'Surface' } }
 export const Dark: Story = { args: { intent: 'dark', children: 'Dark' } }
 export const Ghost: Story = { args: { intent: 'ghost', children: 'Ghost' } }
+/** An action that reads as a text link: underlined on hover, no ripple by default. */
+export const Link: Story = { args: { intent: 'link', ripple: false, children: 'Forgot password?' } }
+/** `link` next to body text, with `hang` so the label lines up with the paragraph's edge. */
+export const LinkInContext: Story = {
+  parameters: { layout: 'padded' },
+  render: (args) => (
+    <div className="grid max-w-sm gap-1 text-sm">
+      <p>You have 3 unsaved drafts in this workspace.</p>
+      <div className="flex gap-4">
+        <Button {...textArgs(args)} intent="link" size="sm" hang="start">
+          Review drafts
+        </Button>
+        <Button {...textArgs(args)} intent="link" tone="danger" size="sm">
+          Discard all
+        </Button>
+      </div>
+    </div>
+  ),
+  args: { ripple: false },
+}
 export const Danger: Story = { args: { tone: 'danger', children: 'Delete application' } }
 export const Loading: Story = {
   args: { loading: true, loadingText: 'Saving changes', children: 'Saving changes' },

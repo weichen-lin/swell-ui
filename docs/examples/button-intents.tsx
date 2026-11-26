@@ -9,6 +9,7 @@ export default function ButtonIntents() {
       <Button intent="surface">Surface</Button>
       <Button intent="dark">Dark</Button>
       <Button intent="ghost">Ghost</Button>
+      <Button intent="link">Link</Button>
     </div>
   )
 }

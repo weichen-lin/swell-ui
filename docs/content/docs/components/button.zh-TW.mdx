@@ -49,7 +49,7 @@ export function Example() {
 
 ### Intent 樣式
 
-每個畫面只放一個 `primary`，其他都用 `secondary`。
+每個畫面只放一個 `primary`，其他都用 `secondary`。`link` 是看起來像文字連結的動作，滑鼠移入才出現底線；要換頁的話，用 `asChild` 渲染真正的連結。
 
 <ComponentPreview name="button-intents" />
 
@@ -197,7 +197,7 @@ export function Example() {
 
 <TokenList
   tokens={[
-    { name: '--color-primary', description: '`primary` 的底色與邊框。' },
+    { name: '--color-primary', description: '`primary` 的底色與邊框；`link` 的文字。' },
     { name: '--color-primary-fg', description: '`primary` 上的文字。' },
     {
       name: '--color-primary-pressed',

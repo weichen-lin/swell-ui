@@ -68,7 +68,8 @@ const buttonVariants = cva(
       /**
        * Visual weight: `primary` for the one main action, `secondary` as the workhorse, `surface` a
        * borderless raised fill, `dark` strong emphasis without the brand color, `ghost` no chrome
-       * until hover (toolbars, table rows).
+       * until hover (toolbars, table rows), `link` an action that reads as a text link (underlined
+       * on hover). For navigation, render a real link with `asChild`.
        * @defaultValue 'primary'
        */
       intent: {
@@ -95,6 +96,9 @@ const buttonVariants = cva(
         // No chrome until hover: toolbars, table rows
         ghost:
           'bg-transparent text-fg rounded-control border-transparent [@media(hover:hover)]:[&:where(:hover:not([aria-disabled=true]):not([data-pressed]))]:bg-surface-muted [&:where([data-pressed]:not([aria-disabled=true]))]:bg-surface-inset',
+        // Text link look (shadcn's `link`): no fill, no depth, underline on hover. Pressed keeps the
+        // underline (touch has no hover) and drops the base sunken bevel, which reads as a box here.
+        link: 'bg-transparent text-primary rounded-control border-transparent underline-offset-4 [@media(hover:hover)]:[&:where(:hover:not([aria-disabled=true]))]:underline [&:where([data-pressed]:not([aria-disabled=true]))]:underline data-pressed:[--btn-shadow:inset_0_0_0_0_transparent,inset_0_0_0_0_transparent,0_0_0_0_transparent]',
       },
       /**
        * Height and text size; heights (34 / 38 / 42px) match the text fields'.
@@ -179,6 +183,7 @@ const buttonVariants = cva(
         class:
           'text-danger [@media(hover:hover)]:[&:where(:hover:not([aria-disabled=true]):not([data-pressed]))]:bg-danger/10 [&:where([data-pressed]:not([aria-disabled=true]))]:bg-danger-inset',
       },
+      { intent: 'link', tone: 'danger', class: 'text-danger' },
     ],
     defaultVariants: {
       intent: 'primary',
@@ -319,8 +324,8 @@ type BaseProps = Omit<ComponentProps<'button'>, 'children'> &
     /** Tooltip explaining why the button is disabled; shown on hover and keyboard focus. */
     disabledReason?: string
     /**
-     * Material-style press ripple.
-     * @defaultValue true
+     * Material-style press ripple. Off by default on `link`, where a ripple over bare text looks odd.
+     * @defaultValue true (false for `intent="link"`)
      */
     ripple?: boolean
   }
@@ -424,7 +429,7 @@ function ButtonImpl({
   const content = (inner: ReactNode) => (
     <ButtonContent
       size={s}
-      ripple={ripple ?? true}
+      ripple={ripple ?? intent !== 'link'}
       loading={loading}
       loadingIcon={loadingIcon}
       iconLeft={iconLeft}
